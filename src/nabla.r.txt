@@ -1,0 +1,1607 @@
+/*  Module Contains a library of Financial Ratios */
+
+/*  FUNCTION NAME:  Aboutλ
+    DESCRIPTION:*//**Displays this module's repository URL and function list*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+Aboutλ = TRIM(
+    TEXTSPLIT(
+        "About:                     →A library of Financial Ratios¶" &
+        "Version:                   →18 Aug 2026¶" &
+        "Repository:                  →https://github.com/ryanduguid/Nabla ¶" &
+        "Website:                   →<coming soon> ¶" &
+        "Notes:                     →Sources include Investopedia.com, Corporate Finance and WallStreetPrep.com.¶" &
+                                   "→Copyright applies to LAMBDA coding¶" &
+        "→¶" & 
+        "Function                   →Description¶" & 
+        "Aboutλ                     →Produces this table¶" &
+        "→¶" & 
+        "Liquidity Ratios→¶" &
+        "CurrentRatioλ              →Measures ability to pay short-term obligations¶" &
+        "QuickRatioλ                →Measures ability to meet short-term obligations¶" &
+        "CashRatioλ                 →Evaluates ability to repay short-term debt w/cash or near-cash resources¶" &
+        "OperatingCashFlowRatioλ    →Measures how readily current liabilities are covered by cash flows generated from operations. ¶" &
+        "ReceivablesTurnoverRatioλ  →Indicates effectiveness in collecting outstanding balances from clients and managing line of credit process¶" &
+        "InventoryTurnoverRatioλ    →Shows how many times a company turned over its inventory relative  to its cost of goods sold¶" &
+        "WorkingCapitalTurnoverRatioλ→Working Capital Turnover Ratio measures how efficiently a company is using its working capital to support sales and growth¶" &
+        "→¶" & 
+        "Leverage Ratios→¶" &
+        "DebtRatioλ                 →Measures the extent of a company's leverage¶" &
+        "DSCRλ                      →Debt service coverage Ratio measures a firm’s available cash flow to pay its current debt obligations¶" &
+        "DebtToCapitalRatioλ        →Gives analysts and investors a better idea of a company's financial structure and whether or not the company is a suitable investment¶" &
+        "EquityMultiplierλ          →Measures the portion of a company’s assets financed by shareholders'equity rather than by debt¶" &
+        "→¶" & 
+        "Solvency Ratios→¶" &
+        "DebtToEquityRatioλ         →Measures the degree to which a company is financing operations with debt rather than its own resources.¶" &
+        "DebtToAssetRatioλ          →Analysts can compare one company's leverage with that of other companies in the same industry.¶" &
+        "InterestCoverageRatioλ     →Determines how easily a company can pay interest on its outstanding debt¶" &
+        "EquityRatioλ               →Measures the long-term solvency of a company by comparing its shareholders’ equity to its total assets¶" &
+        "→¶" & 
+        "Efficiency Ratios→¶" &
+        "AssetTurnoverRatioλ        →Measures the value of a company's sales or revenues relative to the value of its assets.¶" &
+        "DSIRatioλ                  →Days Sales in Inventory Ratio (aka Average age of inventory indicates the average time in days that a company takes to turn its inventory¶" &
+        "OperatingRatioλ            →Shows how efficient management is at keeping costs low while generating revenue¶" &
+        "→¶" & 
+        "Profitability Margins & Ratios→¶" &
+        "GrossMarginλ               →Shows how much profit a company makes after paying off its Cost of Goods Sold¶" &
+        "EBITDAMarginλ              →Measures a company's operating profit as a percentage of its revenue¶" &
+        "OperatingMarginλ           →Measures how much profit a company makes on a dollar of sales after paying for variable costs of production, such as wages and raw materials, but before paying interest or tax¶" &
+        "PretaxMarginλ              →Measures the operating efficiency of a company ¶" &
+        "NetProfitMarginλ           →Measures how much net income or profit a company generates as a percentage of its revenue.¶" &
+        "CashFlowMarginλ            →Cash Flow Margin is a trusted metric of a company’s profitability and efficiency and its earnings quality¶" &
+        "ROAλ                       →*Return on Assets Indicates how profitable a company is in relation to its total assets¶" &
+        "ROEλ                       →*Return on equity is a measure of financial performance ¶" &
+        "ROIλ                       →Return on Investment ratio  measures the profitability of an investment by comparing the gain or loss to its cost¶" &
+        "ROICλ                      →Return on Invested capital  assesses a company’s efficiency in allocating capital to profitable investments¶" &
+        "→¶" & 
+        "Market Value Ratios→¶" &
+        "PriceEarningsRatioλ        →*Price-earnings Ratio measures a company's share price relative to its earnings per share¶" &
+        "PriceToBookRatioλ          →Many investors use the price-to-book ratio (P/B ratio) to compare a firm's market capitalisation to its book value and locate undervalued companies.¶" &
+        "PriceToSalesRatioλ         →Price to Sales (P/S) Ratio is an indicator of the value that financial markets have placed on each dollar of a company's sales or revenues¶" &
+        "PriceToCashRatioλ          →Price to Cash (P/CF) Ratio is a stock valuation indicator or multiple that measures the value of a stock’s price relative to its operating cash flow per share¶" &
+        "BVPSλ                      →Book value per share ratio is an indicator of the value of a company’s stock¶" &
+        "CAPERatioλ                 →Measure that uses real earnings per share (EPS) over a 10-year period to smooth out fluctuations in corporate profits that occur over different periods of a business cycle (aka Shiller PE Ratio)¶" &
+        "DividendPayoutRatioλ       →Dividend Payout Ratio is the percentage of earnings paid to shareholders via dividends¶" &
+        "DividendYieldRatioλ        →Dividend yield ratio shows how much a company pays out in dividends¶" &
+        "EPSλ                       →Earnings per share measures profitability indicating how much profit each outstanding share of common stock has earned ¶" &
+        "RetentionRatioλ            →Retention Ratio is the proportion of earnings kept back in the business as retained earnings¶" &
+        "→¶" & 
+        "*                          →These are considered 'Key Ratios'¶" &
+        "→", "→", "¶"
+    )
+);
+
+
+
+/*  FUNCTION NAME:  CurrentRatioλ
+    DESCRIPTION:*//**Measures a company’s ability to pay short-term obligations (Current Assets/Liabilities)*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+CurrentRatioλ = LAMBDA(
+//  Parameter Declarations
+        [Assets],  
+        [Liabilites],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →CurrentRatioλ( Assets, Liabilites)¶" & 
+                        "DESCRIPTION:   →Measures a company’s ability to pay short-term obligations  ¶" & 
+                                       "→(Current Assets/Liabilities)¶" & 
+                        "WEBPAGE:       →https://www.investopedia.com/terms/c/cash-ratio.asp ¶" &
+                        "VERSION:       →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "Assets         →(Required) Current Assets. Incluces: ¶" & 
+                                       "→Cash ¶" & 
+                                       "→Accounts receivable ¶" & 
+                                       "→Inventory ¶" & 
+                                       "→Vendor mpm-trade receovables ¶" & 
+                                       "→Assets expected to liquidated in the current year ¶" & 
+                                       "→Marketable securities ¶" & 
+                                       "→Property, Plant and equipment (PPE) ¶" & 
+                                       "→Marketable securities ¶" & 
+                                       "→Assets expected to liquidated in the current year ¶" & 
+                        "Liabilites     →(Required) Current Liabilites. Includes: ¶" & 
+                                       "→Accounts payable ¶" & 
+                                       "→Wages ¶" & 
+                                       "→Taxes payable ¶" & 
+                                       "→Short-term debts ¶" & 
+                                       "→Current portion of long-term debt ¶" & 
+                        "EXAMPLES:      →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "1.075          →=nabla.r.CurrentRatioλ( 134.836, 125.481)", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( Assets),
+                            ISOMITTED( Liabilites )
+                        ),
+    //  Procedure
+        Result,         Assets/Liabilites,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+
+/*  FUNCTION NAME:  QuickRatioλ
+    DESCRIPTION:*//**Measures ability to meet short-term obligations (Quick Assets/Current Liabilities)*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+QuickRatioλ = LAMBDA(
+//  Parameter Declarations
+        [QuickAssets],  
+        [Liabilites],       
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →QuickRatioλ( LiquidAssets, Liabilites)¶" & 
+                        "DESCRIPTION:   →Measures ability to meet short-term obligations¶" & 
+                                       "→(Quick Assets/Current Liabilities)¶" & 
+                        "WEBPAGE:       →https://www.investopedia.com/terms/q/quickratio.asp ¶" &
+                        "VERSION:       →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "QuickAssets  →(Required) Quick Assets. Includes: ¶" & 
+                                       "→• Cash & Cash equivalents ¶" & 
+                                       "→• Marketable securities ¶" & 
+                                       "→• Accounts receivable ¶" & 
+                                       "→Alterantively it includes: ¶" & 
+                                       "→• Current assets ¶" & 
+                                       "→• Less inventory ¶" & 
+                                       "→• Less prepaid expenses ¶" & 
+                        "Liabilites     →(Required) Current Liabilites. Includes: ¶" & 
+                                       "→Accounts payable ¶" & 
+                                       "→Wages ¶" & 
+                                       "→Taxes payable ¶" & 
+                                       "→Short-term debts ¶" & 
+                                       "→Current portion of long-term debt ¶" & 
+                        "EXAMPLES:      →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "1.2            →=nabla.r.QuickRatioλ( 165000, 137500)", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( QuickAssets),
+                            ISOMITTED( Liabilites )
+                        ),
+    //  Procedure
+        Result,         QuickAssets/Liabilites,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+
+/*  FUNCTION NAME:  CashRatioλ
+    DESCRIPTION:*//**Evaluates ability to repay short-term debt w/cash or near-cash resources 
+    (Cash and Cash Equivalents / Current Liabilities)*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+CashRatioλ = LAMBDA(
+//  Parameter Declarations
+        [Cash],  
+        [Liabilites],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →CashRatioλ( Cash, Liabilites)¶" & 
+                        "DESCRIPTION:   →Evaluates ability to repay short-term debt w/cash or near-cash resources" & 
+                                       "→(Cash and Cash Equivalents / Current Liabilities)¶" & 
+                        "WEBPAGE:       →https://www.investopedia.com/terms/c/cash-ratio.asp ¶" &
+                        "VERSION:       →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "Cash           →(Required) Cash and Cash Equivalents¶" & 
+                        "Liabilites     →(Required) Current Liabilites. Includes: ¶" & 
+                                       "→Accounts payable ¶" & 
+                                       "→Wages ¶" & 
+                                       "→Taxes payable ¶" & 
+                                       "→Short-term debts ¶" & 
+                                       "→Current portion of long-term debt ¶" & 
+                        "EXAMPLES:      →Formula (nabla.r is assumed to be the module's name)¶" &
+                        ".517409        →=nabla.r.CashRatioλ( 63900000, 123500000)", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( Cash),
+                            ISOMITTED( Liabilites )
+                        ),
+    //  Procedure
+        Result,         Cash/Liabilites,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+
+/*  FUNCTION NAME:  OperatingCashFlowRatioλ
+    DESCRIPTION:*//**Measures a company’s ability to pay short-term obligations*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+OperatingCashFlowRatioλ = LAMBDA(
+//  Parameter Declarations
+        [OperatingCashFlow],  
+        [Liabilites],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →OperatingCashFlowRatioλ( OperatingCashFlow, Liabilites)¶" & 
+                        "DESCRIPTION:       →Measures how readily current liabilities are covered by cash flows generated from operations.¶" & 
+                                           "→(OperatingCashFlow/Liabilites)¶" & 
+                        "WEBPAGE:           →https://www.investopedia.com/terms/o/ocfratio.asp ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:        →¶" & 
+                        "OperatingCashFlow  →(Required) Operating cash flow. ¶" & 
+                                           "→Indirect method includes: ¶" & 
+                                           "→• Net Income ¶" & 
+                                           "→• Plus depreciation and amortisation ¶" & 
+                                           "→• Less increase in net working capital ¶" & 
+                                           "→Direct method includes: ¶" & 
+                                           "→• Cash revenue ¶" & 
+                                           "→• Less Operating expenses paid in cash¶" & 
+                        "Liabilites         →(Required) Current Liabilites. Includes: ¶" & 
+                                           "→Accounts payable ¶" & 
+                                           "→Wages ¶" & 
+                                           "→Taxes payable ¶" & 
+                                           "→Short-term debts ¶" & 
+                                           "→Current portion of long-term debt ¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "0.35871            →=nabla.r.OperatingCashFlowRatioλ( 27.8, 77.5)", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( OperatingCashFlow),
+                            ISOMITTED( Liabilites )
+                        ),
+    //  Procedure
+        Result,         OperatingCashFlow/Liabilites,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+
+/*  FUNCTION NAME:  ReceivablesTurnoverRatioλ
+    DESCRIPTION:*//**Indicates effectiveness in collecting outstanding balances from clients and 
+managing line of credit process (Net Credit Sales/Average Accounts Receivable) */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+ReceivablesTurnoverRatioλ = LAMBDA(
+//  Parameter Declarations
+        [NetCreditSales],  
+        [AverageAccountsReceivable],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →ReceivablesTurnoverRatioλ( NetCreditSales, AverageAccountsReceivable)¶" & 
+                        "DESCRIPTION:   →Indicates effectiveness in collecting outstanding balances from clients and ¶" &
+                                       "→managing line of credit process (Net Credit Sales/Average Accounts Receivable)¶" & 
+                        "WEBPAGE:       →https://www.investopedia.com/terms/r/receivableturnoverratio.asp ¶" &
+                        "VERSION:       →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "NetCreditSales →(Required) Net Credit Sales. Amount of revenue earned by a company paid via credit¶" & 
+                        "AverageAccountsReceivable→(Required) Average Accounts Receivable. Average of period opening and closing balance¶" & 
+                        "EXAMPLES:      →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "11.76471       →=nabla.r.ReceivablesTurnoverRatioλ( 800000, 68000 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( NetCreditSales),
+                            ISOMITTED( AverageAccountsReceivable)
+                        ),
+    //  Procedure
+        Result,         NetCreditSales/AverageAccountsReceivable,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  InventoryTurnoverRatioλ
+    DESCRIPTION:*//**Shows how many times a company turned over its inventory relative 
+    to its cost of goods sold (COGS) (COGS/Average Inventory) */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+InventoryTurnoverRatioλ = LAMBDA(
+//  Parameter DeclaRations
+        [CostOfGoodsSold],  
+        [AverageInventory],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →InventoryTurnoverRatioλ( CostOfGoodsSold, AverageInventory)¶" & 
+                        "DESCRIPTION:       →Shows how many times a company turned over its inventory relative ¶" &
+                                           "→to its cost of goods sold (COGS) (COGS/Average Inventory)¶" & 
+                        "WEBPAGE:           →https://www.investopedia.com/terms/i/inventoryturnover.asp ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "CostOfGoodsSold    →(Required) Cost of Goods Sold (COGS) which can include:¶" &
+                                           "→Office supply costs¶" &
+                                           "→Rent and utility expenses¶" &
+                                           "→Repair and maintenance costs¶" &
+                                           "→Salary and wage expenses¶" & 
+                        "AverageInventory   →(Required) Average of period open and close inventory ¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "8.461538           →=nabla.r.InventoryTurnoverRatioλ( 429, 50.7)", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( CostOfGoodsSold),
+                            ISOMITTED( AverageInventory)
+                        ),
+    //  Procedure
+        Result,         CostOfGoodsSold/AverageInventory,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  WorkingCapitalTurnoverRatioλ
+    DESCRIPTION:*//**Working Capital Turnover Ratio measures how efficiently a company is using its working 
+capital to support sales and growth (Net Annual Sales/Average Working Capital). */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+WorkingCapitalTurnoverRatioλ = LAMBDA(
+//  Parameter DeclaRations
+        [NetAnnualSales],  
+        [WorkingCapital],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:         →WorkingCapitalTurnoverRatioλ( CostOfGoodsSold, AverageInventory)¶" & 
+                        "DESCRIPTION:      →Working Capital Turnover Ratio measures how efficiently a company ¶" &
+                                          "→is using its working capital to support sales and growth ¶" &
+                                          "→(Net Annual Sales/Average Working Capital). ¶" &
+                        "WEBPAGE:          →https://www.investopedia.com/terms/w/workingcapitalturnover.asp ¶" &
+                        "VERSION:          →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "NetAnnualSales    →(Required) Net Annual Sales can include:¶" &
+                                          "→Gross sales¶" &
+                                          "→Less returns¶" &
+                                          "→Less allowances¶" &
+                                          "→Less discounts¶" & 
+                        "WorkingCapital    →(Required) Average of period open and close current assts less curren liabilities.¶" & 
+                        "EXAMPLES:         →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "6.0               →=nabla.r.WorkingCapitalTurnoverRatioλ( 12.0, 2.0)", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( NetAnnualSales),
+                            ISOMITTED( WorkingCapital)
+                        ),
+    //  Procedure
+        Result,         NetAnnualSales/WorkingCapital,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+
+
+
+
+//  Leverage Ratios (aka Solvency Ratios)
+
+
+
+/*  FUNCTION NAME:  DebtRatioλ
+    DESCRIPTION:*//**Measures the extent of a company’s leverage */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+DebtRatioλ = LAMBDA(
+//  Parameter DeclaRations
+        [TotalDebt],  
+        [TotalAssets],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →DebtRatioλ( TotalDebt, TotalAssets)¶" & 
+                        "DESCRIPTION:   →Measures the extent of a company’s leverage (TotalDebt/TotalAssets)¶" & 
+                        "WEBPAGE:       →https://www.investopedia.com/terms/d/debtratio.asp# ¶" &
+                        "VERSION:       →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "TotalDebt      →(Required) Total Debt ¶" & 
+                        "TotalAssets    →(Required) Total Assets ¶" & 
+                        "EXAMPLES:      →Formula (nabla.r is assumed to be the module's name)¶" &
+                        ".3             →=nabla.r.DebtRatioλ(30.0, 100.0)", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( TotalDebt),
+                            ISOMITTED( TotalAssets)
+                        ),
+    //  Procedure
+        Result,         TotalDebt/TotalAssets,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  DSCRλ
+    DESCRIPTION:*//**Debt service coverage Ratio measures a firm’s available cash flow to pay its 
+current debt obligations(Net Operating Income/Total Debt Service) */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+DSCRλ = LAMBDA(
+//  Parameter DeclaRations
+        [NetOperatingIncome],  
+        [TotalDebtService],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →DSCRλ( NetOperatingIncome, Totaldebtservice)¶" & 
+                        "DESCRIPTION:       →Measures a firm’s available cash flow to pay its current debt obligations¶" &
+                                           "→(Net Operating Income/Total Debt Service)¶" & 
+                        "WEBPAGE:           →https://www.investopedia.com/terms/d/dscr.asp ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "NetOperatingIncome →(Required) Revenue - Certain Operating Expenses¶" & 
+                        "TotaldebtService   →(Required) Interest * (1-Tax Rate), principal, sinking fund,¶" &
+                                           "→and lease payments due in the coming year¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "6.142857           →=nabla.r.DSCRλ(2150.0, 350.0)", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( NetOperatingIncome),
+                            ISOMITTED( Totaldebtservice)
+                        ),
+    //  Procedure
+        Result,         NetOperatingIncome/TotalDebtService,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  DebtToCapitalRatioλ
+    DESCRIPTION:*//**Gives analysts and investors a better idea of a company's financial structure
+and whether or not the company is a suitable investment (Debt/(Debt + Shareholders' equity) */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+DebtToCapitalRatioλ = LAMBDA(
+//  Parameter DeclaRations
+        [Debt],  
+        [ShareholdersEquity],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →DebtToCapitalRatioλ( Debt, ShareholdersEquity)¶" & 
+                        "DESCRIPTION:       →Gives analysts and investors a better idea of a company's financial structure¶" &
+                                           "→and whether or not the company is a suitable investment.¶" & 
+                                           "→(Debt/(Debt + Shareholders' equity)¶" & 
+                        "WEBPAGE:           →https://www.investopedia.com/terms/d/debt-to-capitalratio.asp ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "Debt               →(Required) Total Debt which can include: ¶" &
+                                           "→Notes payable¶" &
+                                           "→Bonds payable¶" &
+                                           "→Long-term liabilities¶" &
+                        "ShareholdersEquity →(Required) Shareholders' Equity (total assets - total liabilities) ¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "26.4%              →=nabla.r.DebtToCapitalRatioλ( 80.0, 223.0 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( Debt),
+                            ISOMITTED( ShareholdersEquity)
+                        ),
+    //  Procedure
+        Result,         Debt/(Debt+ShareholdersEquity),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  EquityMultiplierλ
+    DESCRIPTION:*//**Measures the portion of a company’s assets financed by shareholders'
+equity rather than by debt (TotalAssets/TotalShareholdersEquity) */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+EquityMultiplierλ = LAMBDA(
+//  Parameter DeclaRations
+        [TotalAssets],  
+        [TotalShareholdersEquity],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →EquityMultiplierλ( TotalAssets, TotalShareholdersEquity)¶" & 
+                        "DESCRIPTION:       →Measures the portion of a company’s assets financed by shareholders' ¶" &
+                                           "→equity rather than by debt (TotalAssets/TotalShareholdersEquity)¶" & 
+                        "WEBPAGE:           →https://www.investopedia.com/terms/e/equitymultiplier.asp ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:        →¶" & 
+                        "TotalAssets        →(Required) Both current and long-term assets¶" & 
+                        "ShareholdersEquity →(Required) Shareholders' Equity (total assets - total liabilities) ¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "4.40625            →=nabla.r.EquityMultiplierλ(366.6, 83.2 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( TotalAssets),
+                            ISOMITTED( TotalShareholdersEquity)
+                        ),
+    //  Procedure
+        Result,         TotalAssets/TotalShareholdersEquity,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+
+
+
+
+//  Solvency Ratios
+
+ 
+/*  FUNCTION NAME:  DebtToEquityRatioλ
+    DESCRIPTION:*//**Measures the degree to which a company is financing operations
+with debt rather than its own resources. (Total Liabilities/Shareholders' Equity) */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+DebtToEquityRatioλ = LAMBDA(
+//  Parameter DeclaRations
+        [TotalLiabilities],  
+        [ShareholdersEquity],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →DebtToEquityRatioλ( TotalLiabilities, ShareholdersEquity)¶" & 
+                        "DESCRIPTION:       →Measures the degree to which a company is financing operations¶" &
+                                           "→with debt rather than its own resources. (Total Liabilities/Shareholders' Equity)¶" & 
+                        "WEBPAGE:           →https://www.investopedia.com/terms/d/debtequityratio.asp ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:        →¶" & 
+                        "TotalLiabilities   →(Required) Total Liabilities¶" & 
+                        "ShareholdersEquity →(Required) Shareholders' Equity (total assets - total liabilities) ¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "3.77               →=nabla.r.DebtToEquityRatioλ(279.0, 74.0 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( TotalLiabilities),
+                            ISOMITTED( ShareholdersEquity),
+                        ),
+    //  Procedure
+        Result,         TotalLiabilities/ShareholdersEquity,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  DebtToAssetRatioλ
+    DESCRIPTION:*//**Analysts can compare one company's leverage with that of other 
+companies in the same industry. (Total Debt/Total Assets) */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+DebtToAssetRatioλ = LAMBDA(
+//  Parameter DeclaRations
+        [TotalDebt],  
+        [TotalAssets],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →DebtToAssetRatioλ( TotalDebt, TotalAssets)¶" & 
+                        "DESCRIPTION:       →Analysts can compare one company's leverage with that of other y¶" &
+                                           "→companies in the same industry (Total Debt/Total Assets)¶" &
+                        "WEBPAGE:           →https://www.investopedia.com/terms/t/totaldebttototalassets.asp ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:        →¶" & 
+                        "TotalDebt          →(Required) Total debt includes shortterm and longterm debt¶" & 
+                        "TotalAssets        →(Required) Shareholders' Equity (total assets - total liabilities) ¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        ".49873             →=nabla.r.DebtToAssetRatioλ(31.845, 63.852 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( TotalDebt),
+                            ISOMITTED( TotalAssets)
+                        ),
+    //  Procedure
+        Result,         TotalDebt /TotalAssets,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  InterestCoverateRatioλ
+    DESCRIPTION:*//**Determines how easily a company can pay interest on its outstanding debt
+(Operating Income/Interest Expenses) */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+InterestCoverageRatioλ = LAMBDA(
+//  Parameter DeclaRations
+        [OperatingIncome],  
+        [InterestExpenses],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →InterestCoverageRatioλ( OperatingIncome, InterestExpenses)¶" & 
+                        "DESCRIPTION:       →Determines how easily a company can pay interest on its outstanding debt¶" &
+                                           "→(Operating Income/Interest Expenses)¶" & 
+                        "WEBPAGE:           →https://www.investopedia.com/terms/i/interestcoverageratio.asp ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:        →¶" & 
+                        "OperatingIncome    →(Required) Operating Income (EBIT) ¶" & 
+                        "InterestExpenses   →(Required) Interest Expense ¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "6.944444           →=nabla.r.InterestCoverageRatioλ( 625.0, 90.0 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( OperatingIncome),
+                            ISOMITTED( InterestExpenses)
+                        ),
+    //  Procedure
+        Result,         OperatingIncome/InterestExpenses,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  EquityRatioλ
+    DESCRIPTION:*//**Measures the long-term solvency of a company by comparing its shareholders’ equity to its 
+total assets (Shareholder's Equity/(Total Assets - Intangible Assets)). */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+EquityRatioλ = LAMBDA(
+//  Parameter DeclaRations
+        [ShareholdersEquity],  
+        [TotalAssets],
+        [IntangibleAssets],
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →InterestCoverageRatioλ( ShareholdersEquity, TotalAssets, IntangibleAssets)¶" & 
+                        "DESCRIPTION:       →Measures the long-term solvency of a company by comparing its shareholders’ ¶" &
+                                           "→equity to its total assets (Shareholder's Equity/(Total Assets - Intangible Assets))¶" &
+                        "WEBPAGE:           →https://www.wallstreetprep.com/knowledge/equity-ratio/ ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:        →¶" & 
+                        "OperatingIncome    →(Required) Operating Income (EBIT) ¶" & 
+                        "InterestExpenses   →(Required) Interest Expense ¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "40%                →=nabla.r.EquityRatioλ( 20.0, 60.0, 10.0 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( ShareholdersEquity),
+                            ISOMITTED( TotalAssets),
+                            ISOMITTED( IntangibleAssets)
+                        ),
+    //  Procedure
+        Result,         ShareholdersEquity/(TotalAssets - IntangibleAssets),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+
+
+
+ 
+//  Efficiency Ratios
+
+
+
+/*  FUNCTION NAME:  AssetTurnoverRatioλ
+    DESCRIPTION:*//**Measures the value of a company's sales or revenues relative to the value of its assets.
+(Net Sales/Total Assets)*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+AssetTurnoverRatioλ = LAMBDA(
+//  Parameter DeclaRations
+        [NetSales],  
+        [TotalAssets],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →AssetTurnoverRatioλ( NetSales, TotalAssets)¶" & 
+                        "DESCRIPTION:   →Measures the value of a company's sales or revenues relative to the value of its assets.¶" &
+                                       "→(Net Sales/Total Assets)¶" & 
+                        "WEBPAGE:       →https://www.investopedia.com/terms/a/assetturnover.asp ¶" &
+                        "VERSION:       →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "NetSales       →(Required) revenue or net sales. ¶" & 
+                        "TotalAssets    →(Required) Average of Assets and period start and end.¶" & 
+                        "EXAMPLES:      →Formula (nabla.r is assumed to be the module's name)¶" &
+                        ".32x           →=nabla.r.AssetTurnoverRatioλ( 171760, 538715 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( NetSales),
+                            ISOMITTED( TotalAssets)
+                        ),
+    //  Procedure
+        Result,         NetSales/TotalAssets,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  DSIλ
+    DESCRIPTION:*//**Days Sales in Inventory Ratio (aka Average age of inventory 
+indicates the average time in days that a company takes to turn its inventory 
+(Average Inventory/ Cost of Goods Sold) */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+DSIλ = LAMBDA(
+//  Parameter DeclaRations
+        [AverageInventory],  
+        [CostOfGoodsSold],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →DSIλ( AverageInventory, CostOfGoodsSold)¶" & 
+                        "DESCRIPTION:       →Days Sales in Inventory Ratio (aka Average age of inventory)¶" & 
+                                           "→indicates the average time in days that a company takes to turn its inventory¶" & 
+                                           "→(Average Inventory/ Cost of Goods Sold)¶" & 
+                        "WEBPAGE:           →https://www.investopedia.com/terms/d/days-sales-inventory-dsi.asp ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "AverageInventory→  (Required) Average of period open and close Inventory¶" & 
+                        "CostOfGoodsSold→   (Required) Cost of Goods Sold (COGS) ¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "40.8949 days       →=nabla.r.DSIλ(54.9, 490 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( AverageInventory),
+                            ISOMITTED( CostOfGoodsSold)
+                        ),
+    //  Constants
+        DpY,            365, //Days per Year
+    //  Procedure
+        Result,         AverageInventory/CostOfGoodsSold * DpY,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  OperatingRatioλ
+    DESCRIPTION:*//**Shows how efficient management is at keeping costs low while generating revenue 
+(Operating Expenses + Cost Of Goods Sold)/Net Sales)*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+OperatingRatioλ = LAMBDA(
+//  Parameter DeclaRations
+        [OperatingExpenses],  
+        [CostOfGoodsSold],    
+        [NetSales],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →OperatingRatioλ( OperatingExpenses, CostOfGoodsSold, NetSales)¶" & 
+                        "DESCRIPTION:       →Shows how efficient management is at keeping costs low ¶" &
+                                           "→while generating revenue¶" & 
+                                           "→(Operating Expenses + Cost Of Goods Sold)/Net Sales)¶" & 
+                        "WEBPAGE:           →https://www.investopedia.com/terms/o/operatingratio.asp ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "OperatingExpenses  →(Required) Operating Expenses which can include:¶" &
+                                           "→Accounting and legal fees¶" &
+                                           "→Bank charges¶" &
+                                           "→Sales and marketing costs¶" &
+                                           "→Non-capitalised research¶" &
+                                           "→development (R&D) expenses¶" &
+                                           "→Cost of Goods Sold (COGS)¶" &
+                        "CostOfGoodsSold    →(Required) Cost of Goods Sold (COGS) which can include:¶" &
+                                           "→Office supply costs¶" &
+                                           "→Rent and utility expenses¶" &
+                                           "→Repair and maintenance costs¶" &
+                                           "→Salary and wage expenses¶" & 
+                        "NetSales           →(Required) Net Sales or Revenue.¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "69%                →=nabla.r.OperatingRatioλ( 14.37, 48.48, 90.75 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( OperatingExpenses),
+                            ISOMITTED( CostOfGoodsSold),
+                            ISOMITTED( NetSales)
+                        ),
+    //  Procedure
+        Result,         (OperatingExpenses+CostOfGoodsSold)/NetSales,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+
+
+
+
+//  Profitability Margins and Ratios
+
+
+ 
+/*  FUNCTION NAME:  GrossMarginλ
+    DESCRIPTION:*//**Shows how much profit a company makes after paying off its Cost of Goods Sold */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+GrossMarginλ = LAMBDA(
+//  Parameter Declarations
+        [GrossProfit],  
+        [NetSales],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →GrossMarginλ( GrossProfit, NetSales)¶" & 
+                        "DESCRIPTION:   →Shows how much profit a company makes after paying off its Cost of Goods Sold (COGS).¶" & 
+                                       "→(Gross Profit/Net Sales)¶" & 
+                        "WEBPAGE:       →https://corporatefinanceinstitute.com/resources/accounting/gross-margin-ratio/ ¶" &
+                        "VERSION:       →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "GrossProfit    →(Required) Gross Profit¶" & 
+                        "NetSales       →(Required) Net Sales or Revenue¶" & 
+                        "EXAMPLES:      →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "61.7448%       →=nabla.r.GrossMarginλ( 62.984, 102.007 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( GrossProfit),
+                            ISOMITTED( NetSales)
+                        ),
+    //  Procedure
+        Result,         GrossProfit/NetSales,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  EBITDAMarginλ
+    DESCRIPTION:*//**Measures a company's operating profit as a percentage of its revenue (EBITDA/Total Revenue).*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+EBITDAMarginλ = LAMBDA(
+//  Parameter Declarations
+        [EBITDA],  
+        [TotalRevenue],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →EBITDAMarginλ( EBITDA, TotalRevenue)¶" & 
+                        "DESCRIPTION:   →Measures a company's operating profit as a percentage of its revenue.¶" & 
+                                       "→(EBITDA/Total Revenue)¶" & 
+                        "WEBPAGE:       →https://www.investopedia.com/terms/e/ebitda-margin.asp ¶" &
+                        "VERSION:       →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "EBITDA         →(Required) Earnings Before Interest, tax, depreciation, and amortisation¶" & 
+                        "TotalRevenue   →(Required) Total Revenue¶" & 
+                        "EXAMPLES:      →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "12%            →=nabla.r.EBITDAMarginλ( 15.0, 125.0 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( EBITDA),
+                            ISOMITTED( TotalRevenue)
+                        ),
+    //  Procedure
+        Result,         EBITDA/TotalRevenue,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  OperatingMarginλ
+    DESCRIPTION:*//** Measures how much profit a company makes on a dollar of sales after paying for variable costs 
+of production, such as wages and raw materials, but before paying interest or tax (Operating Earnings/Revenue).*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+OperatingMarginλ = LAMBDA(
+//  Parameter Declarations
+        [OperatingEarnings],  
+        [Revenue],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →OperatingMarginλ( OperatingEarnings, Revenue)¶" & 
+                        "DESCRIPTION:       →Measures how much profit a company makes on a dollar of sales after paying¶" & 
+                                           "→for variable costs of production, such as wages and raw materials, but ¶" & 
+                                           "→before paying interest or tax (Operating Earnings/Revenue).¶" & 
+                        "WEBPAGE:           →https://www.investopedia.com/terms/o/operatingmargin.asp ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "OperatingEarnings  →(Required) Earnings Before Interest and tax (EBIT) which is revenue - COGS¶" & 
+                        "Revenue            →(Required) Revenue¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "40%                →=nabla.r.OperatingMarginλ( .8, 2.0 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( OperatingEarnings),
+                            ISOMITTED( Revenue)
+                        ),
+    //  Procedure
+        Result,         OperatingEarnings/Revenue,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  PretaxMarginλ
+    DESCRIPTION:*//**Measures the operating efficiency of a company (Pretax Earnings/Revenue).*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+PretaxMarginλ = LAMBDA(
+//  Parameter Declarations
+        [PretaxEarnings],  
+        [Revenue],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →PretaxMarginλ( PretaxEarnings, Revenue)¶" & 
+                        "DESCRIPTION:   →Measures the operating efficiency of a company (Pretax Earnings/Revenue).¶" & 
+                        "WEBPAGE:       →https://www.investopedia.com/terms/p/pretax-margin.asp ¶" &
+                        "VERSION:       →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "PretaxEarnings →(Required) Earnings before tax (EBT)¶" & 
+                        "Revenue        →(Required) Revenue¶" & 
+                        "EXAMPLES:      →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "8%             →=nabla.r.PretaxMarginλ( 40.0, 500.0 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( PretaxEarnings),
+                            ISOMITTED( Revenue)
+                        ),
+    //  Procedure
+        Result,         PretaxEarnings/Revenue,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  NetProfitMarginλ
+    DESCRIPTION:*//**Measures how much net income or profit a company generates as a percentage of its revenue. 
+(Net Income/Revenue).*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+NetProfitMarginλ = LAMBDA(
+//  Parameter Declarations
+        [NetIncome],  
+        [Revenue],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →NetProfitMarginλ( NetIncome, Revenue)¶" & 
+                        "DESCRIPTION:   →Measures how much net income or profit a company generates as a ¶" & 
+                                       "→percentage of its revenue. (Net Income/Revenue)¶" & 
+                        "WEBPAGE:       →https://www.investopedia.com/terms/n/net_margin.asp ¶" &
+                        "VERSION:       →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "NetIncome      →(Required) Net Income includes:¶" & 
+                                       "→Revenue¶" & 
+                                       "→Less COGS¶" & 
+                                       "→Less Operating and other expenses¶" & 
+                                       "→Less Interest¶" & 
+                                       "→Less Taxes¶" & 
+                        "Revenue        →(Required) Revenue¶" & 
+                        "EXAMPLES:      →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "56%            →=nabla.r.NetProfitMarginλ( 56.0, 100.0 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( NetIncome),
+                            ISOMITTED( Revenue)
+                        ),
+    //  Procedure
+        Result,         NetIncome/Revenue,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME: CashFlowMarginλ
+    DESCRIPTION:*//**Cash Flow Margin is a trusted metric of a company’s profitability and efficiency 
+and its earnings quality (Cash Flow From Operating Activities/Revenue).*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+CashFlowMarginλ = LAMBDA(
+//  Parameter Declarations
+        [CashFlowFromOperatingActivities],  
+        [Revenue],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →CashFlowMarginλ( NetIncome, Revenue)¶" & 
+                        "DESCRIPTION:   →Cash Flow Margin is a trusted metric of a company’s profitability ¶" & 
+                                       "→and efficiency and its earnings quality ¶" & 
+                                       "→(Cash Flow From Operating Activities/Revenue).¶" & 
+                        "WEBPAGE:       →https://www.investopedia.com/terms/o/operating-cash-flow-margin.asp ¶" &
+                        "VERSION:       →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "CashFlowFromOperatingActivities→(Required) Cash Flow From Operating Activities includes:¶" & 
+                                       "→Net Income¶" & 
+                                       "→Non-cash Expenses (Depreciation and Amortisation)¶" & 
+                                       "→Change in Working Capital¶" & 
+                        "Revenue        →(Required) Revenue¶" & 
+                        "EXAMPLES:      →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "50.8%          →=nabla.r.CashFlowMarginλ( 2.695, 5.3 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( CashFlowFromOperatingActivities),
+                            ISOMITTED( Revenue)
+                        ),
+    //  Procedure
+        Result,         CashFlowFromOperatingActivities/Revenue,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  ROAλ
+    DESCRIPTION:*//**Return on assets (ROA) ratio indicates how profitable a company is 
+in relation to its total assets ( Net Income / Total Assets) */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+ROAλ = LAMBDA(
+//  Parameter Declarations
+        [NetIncome],  
+        [TotalAssets],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →ROAλ( NetIncome, TotalAssets)¶" & 
+                        "DESCRIPTION:   →Return on assets ratio indicates how profitable a company is ¶" & 
+                                       "→in relation to its total assets ( Net Income / Total Assets)¶" & 
+                        "WEBPAGE:       →https://www.investopedia.com/terms/r/returnonassets.asp ¶" &
+                        "VERSION:       →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "NetIncome      →(Required) Net Income¶" & 
+                        "TotalAssets    →(Required) Total Assets¶" & 
+                        "EXAMPLES:      →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "8%             →=nabla.r.ROAλ(1200, 15000 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( NetIncome),
+                            ISOMITTED( TotalAssets)
+                        ),
+    //  Procedure
+        Result,         NetIncome/TotalAssets,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  ROEλ
+    DESCRIPTION:*//**Return on equity (ROE) ratio is a measure of financial performance (Net Income/Shareholders Equity)*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+ROEλ = LAMBDA(
+//  Parameter Declarations
+        [NetIncome],  
+        [ShareholdersEquity],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →ROEλ( NetIncome, ShareholdersEquity)¶" & 
+                        "DESCRIPTION:       →Return on equity ratio is considered a gauge of a corporation's ¶" & 
+                                           "→profitability and how efficient it is in generating profits¶" & 
+                                           "→(Net Income/ Average Shareholders' Equity)¶" &
+                        "WEBPAGE:           →https://www.investopedia.com/terms/r/returnonequity.asp ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "NetIncome          →(Required) Net Income¶" & 
+                        "ShareholdersEquity →(Required) Average Shareholders' Equity from period open and close ¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "23.6213%           →=nabla.r.ROEλ( 59.972, AVERAGE(251.635, 256.144) )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( NetIncome),
+                            ISOMITTED( ShareholdersEquity)
+                        ),
+    //  Procedure
+        Result,         NetIncome/ShareholdersEquity,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  ROIλ
+    DESCRIPTION:*//**Return on Investment (ROI) ratio  measures the profitability of an investment by comparing 
+the gain or loss to its cost (Net Return on Investment/Cost of Investment).*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+ROIλ = LAMBDA(
+//  Parameter Declarations
+        [NetReturnonInvestment],  
+        [CostofInvestment],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:              →ROIλ( NetReturnonInvestment, CostofInvestment)¶" & 
+                        "DESCRIPTION:           →Return on Investment (ROI) ratio  measures the profitability of¶" & 
+                                               "→an investment by comparing the gain or loss to its cost. ¶" & 
+                                               "→(Net Return on Investment/Cost of Investment)¶" & 
+                        "WEBPAGE:               →https://www.investopedia.com/terms/r/returnonequity.asp ¶" &
+                        "VERSION:               →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "NetReturnonInvestment  →(Required) Net Return on Investment is the ¶" & 
+                                               "→final value of investment - initial value of investment¶" & 
+                        "CostofInvestment       →(Required) Cost of Investment ¶" & 
+                        "EXAMPLES:              →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "28.75%                 →=nabla.r.ROIλ( 2875, 10000 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( NetReturnonInvestment),
+                            ISOMITTED( CostofInvestment)
+                        ),
+    //  Procedure
+        Result,         NetReturnonInvestment/CostofInvestment,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  ROICλ
+    DESCRIPTION:*//**Return on Invested capital  assesses a company’s efficiency in allocating 
+capital to profitable investments (Net Operating Profit After Tax/Invested Capital) */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+ROICλ = LAMBDA(
+//  Parameter Declarations
+        [NetOperatingProfitAfterTax],  
+        [InvestedCapital],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →ROICλ( NetOperatingProfitAfterTax, InvestedCapital)¶" & 
+                        "DESCRIPTION:   →Return on Invested capital  assesses a company’s efficiency in allocating ¶" &
+                                       "→capital to profitable investments (Net Operating Profit After Tax/Invested Capital)¶" & 
+                        "WEBPAGE:       →https://www.investopedia.com/terms/r/returnoninvestmentcapital.asp ¶" &
+                        "VERSION:       →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "NetOperatingProfitAfterTax→(Required) Net Operating profit after Tax [ operating profit x (1 - effective tax rate) ].¶" & 
+                        "InvestedCapital→(Required) Invested Capital (Debt + Equity).¶" & 
+                        "EXAMPLES:      →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "12.6122%       →=nabla.r.ROICλ( 3245, 25729 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( NetOperatingProfitAfterTax),
+                            ISOMITTED( InvestedCapital)
+                        ),
+    //  Procedure
+        Result,         NetOperatingProfitAfterTax/InvestedCapital,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+
+
+
+
+//  Market Value Ratios
+
+
+ 
+/*  FUNCTION NAME:  PriceEarningsRatioλ
+    DESCRIPTION:*//**Price-earnings Ratio measures a company's share price relative to 
+its earnings per share (Share Price/Earnings Per Share).*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+PriceEarningsRatioλ = LAMBDA(
+//  Parameter Declarations
+        [SharePrice],  
+        [EarningsPerShare],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →PriceEarningsRatioλ( SharePrice, EarningsPerShare)¶" & 
+                        "DESCRIPTION:       →Price-earnings Ratio measures a company's share price relative to ¶" & 
+                                           "→its earnings per share (Share Price/Earnings Per Share).¶" & 
+                        "WEBPAGE:           →https://www.investopedia.com/terms/p/price-earningsratio.asp ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "SharePrice         →(Required) Share Price (Market Value Per Share) ¶" & 
+                        "EarningsPerShare   →(Required) Earnings Per Share¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "14.39881           →=nabla.r.PriceEarningsRatioλ( 242.62, 16.85)", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( SharePrice),
+                            ISOMITTED( EarningsPerShare)
+                        ),
+    //  Procedure
+        Result,         SharePrice/EarningsPerShare,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  PriceToBookRatioλ
+    DESCRIPTION:*//**Many investors use the price-to-book ratio (P/B ratio) to compare a firm's market 
+capitalisation to its book value and locate undervalued companies. */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+PriceToBookRatioλ = LAMBDA(
+//  Parameter Declarations
+        [MarketPricePerShare],  
+        [BookValuePerShare],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →PriceToBookRatioλ( MarketPricePerShare, BookValuePerShareBvps)¶" & 
+                        "DESCRIPTION:       →Many investors use the price-to-book ratio (P/B ratio) to compare a ¶" & 
+                                           "→firm's market capitalisation to its book value and locate undervalued companies.¶" & 
+                                           "→(Market Price Per Share/Book Value Per Share)¶" & 
+                        "WEBPAGE:           →https://www.investopedia.com/terms/p/price-to-bookratio.asp ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "MarketPricePerShare→(Required) Market Price Per Share (Current market price of the share)¶" & 
+                        "BookValuePerShare  →(Required) Book Value Per share ¶" & 
+                                           "→(Total assets - intangible assets - total liabilities) ÷ number of outstanding shares ¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "2.0                →=nabla.r.PriceToBookRatioλ( 5, 2.50 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( MarketPricePerShare),
+                            ISOMITTED( BookValuePerShare)
+                        ),
+    //  Procedure
+        Result,         MarketPricePerShare/BookValuePerShare,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+
+/*  FUNCTION NAME:  PriceToSalesRatioλ
+    DESCRIPTION:*//**Price to Sales (P/S) Ratio is an indicator of the value that financial markets have 
+placed on each dollar of a company's sales or revenues (Market Price Per Share/Sales Per Share). */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+PriceToSalesRatioλ = LAMBDA(
+//  Parameter Declarations
+        [MarketPricePerShare],  
+        [SalesPerShare],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →PriceToSalesRatioλ( MarketPricePerShare, SalesPerShare)¶" & 
+                        "DESCRIPTION:       →Price to Sales (P/S) Ratio is an indicator of the value that financial markets have¶" & 
+                                           "→placed on each dollar of a company's sales or revenues (Market Price Per Share/Sales Per Share).¶" & 
+                        "WEBPAGE:           →https://www.investopedia.com/terms/p/price-to-salesratio.asp ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "MarketPricePerShare→(Required) Market Price Per Share (Current market price of the share)¶" & 
+                        "SalesPerShare      →(Required) Annual Sales Per Share (Revenue prior 12 months) ¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "4.55               →=nabla.r.PriceToSalesRatioλ( 455.0, 100.0 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( MarketPricePerShare),
+                            ISOMITTED( SalesPerShare)
+                        ),
+    //  Procedure
+        Result,         MarketPricePerShare/SalesPerShare,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+
+/*  FUNCTION NAME:  PriceToCashsRatioλ
+    DESCRIPTION:*//**Price to Cash (P/CF) Ratio is a stock valuation indicator or multiple that measures 
+the value of a stock’s price relative to its operating cash flow per share 
+(Market Price Per Share/Operating Cash Flow Per Share). */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+PriceToCashRatioλ = LAMBDA(
+//  Parameter Declarations
+        [MarketPricePerShare],  
+        [OperatingCashFlowPerShare],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →PriceToCashRatioλ( MarketPricePerShare, SalesPerShare)¶" & 
+                        "DESCRIPTION:       →Price to Cash (P/CF) Ratio  is a stock valuation indicator or multiple that ¶" & 
+                                           "→measures the value of a stock’s price relative to its operating cash flow ¶" & 
+                                           "→per share (Market Price Per Share/Operating Cash Flow Per Share).¶" & 
+                        "WEBPAGE:           →https://www.investopedia.com/terms/p/price-to-cash-flowratio.asp ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "MarketPricePerShare→(Required) Market Price Per Share (Current market price of the share)¶" & 
+                        "OperatingCashFlowPerShare→(Required) Operating Cash Flow for prior 12 months/Shares outstanding ¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "2                  →=nabla.r.PriceToCashRatioλ( 200.0, 100.0 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( MarketPricePerShare),
+                            ISOMITTED( OperatingCashFlowPerShare)
+                        ),
+    //  Procedure
+        Result,         MarketPricePerShare/OperatingCashFlowPerShare,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+
+/*  FUNCTION NAME:  BVPSλ
+    DESCRIPTION:*//**Book value per share ratio is an indicator of the value of a company’s stock 
+(Shareholders' Equity - Preferred Stock)/Average Shares Outstanding) */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+BVPSλ = LAMBDA(
+//  Parameter Declarations
+        [ShareholdersEquity], 
+        [PreferredStock] ,
+        [AverageSharesOutstanding],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →BVPSλ( ShareholdersEquity, PreferredStock, AverageSharesOutstanding )¶" & 
+                        "DESCRIPTION:       →Book value per share ratio is an indicator of the value of a company’s stock¶" & 
+                                           "→(Shareholders' Equity - Preferred Stock)/Average Shares Outstanding)¶" & 
+                        "WEBPAGE:           →https://corporatefinanceinstitute.com/resources/valuation/book-value-per-share-bvps/ ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "ShareholdersEquity →(Required) Shareholders' Equity (total assets - total liabilities) ¶" & 
+                        "PreferredStock     →(Required) Preferred Stock (securities that represent ownership in a corporation).¶" & 
+                        "AverageSharesOutstanding→(Required) Average Shares Out Standing ¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "5                  →=nabla.r.BVPSλ(20.0, 5.0, AVERAGE( 2.9, 3.1) )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( ShareholdersEquity),
+                            ISOMITTED( AverageSharesOutstanding)
+                        ),
+    //  Procedure
+        Result,         (ShareholdersEquity - PreferredStock)/AverageSharesOutstanding,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  CAPERatioλ
+    DESCRIPTION:*//**CAPE Ratio is a valuation measure that uses real earnings per share (EPS) over a 10-year period
+to smooth out fluctuations in corporate profits that occur over different periods of a business
+cycle (aka Shiller PE Ratio) (Share Price/Ten Year Average Earnings Inflation Adjusted) */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+CAPERatioλ = LAMBDA(
+//  Parameter Declarations
+        [SharePrice],  
+        [TenYearAverageEarningsInflationAdjusted],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →CAPERatioλ( SharePrice, TenYearAverageEarningsInflationAdjusted )¶" & 
+                        "DESCRIPTION:   →CAPE Ratio is a valuation measure that uses real earnings per share (EPS) over a 10-year period ¶" & 
+                                        "→to smooth out fluctuations in corporate profits that occur over different periods of a business ¶" & 
+                                        "→cycle (aka Shiller PE Ratio) (Share Price/Ten Year Average Earnings Inflation Adjusted)¶" & 
+                        "WEBPAGE:       →https://www.investopedia.com/terms/c/cape-ratio.asp ¶" &
+                        "VERSION:       →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "SharePrice     →(Required) Current stock price ¶" & 
+                        "TenYearAverageEarningsInflationAdjusted→(Required) Average earnings per share for 10 years adjusted for inflation ¶" & 
+                        "EXAMPLES:      →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "10             →=nabla.r.CAPERatioλ( 100.0, 10.0  )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( SharePrice),
+                            ISOMITTED( TenYearAverageEarningsInflationAdjusted)
+                        ),
+    //  Procedure
+        Result,         SharePrice/TenYearAverageEarningsInflationAdjusted,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  DPRλ
+    DESCRIPTION:*//**Dividend Payout Ratio is the percentage of earnings paid to shareholders via dividends
+    (DividendsPaid/NetIncome) */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+DPRλ = LAMBDA(
+//  Parameter Declarations
+        [DividendsPaid],  
+        [NetIncome],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →DPRλ( DividendsPaid, NetIncome )¶" & 
+                        "DESCRIPTION:   →Dividend Payout Ratio is the percentage of earnings paid to shareholders via dividends¶" & 
+                                       "→(DividendsPaid/NetIncome)¶" & 
+                        "WEBPAGE:       →https://www.investopedia.com/terms/d/dividendpayoutratio.asp ¶" &
+                        "VERSION:       →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "DividendsPaid  →(Required) Dividends paid ¶" & 
+                        "NetIncome      →(Required) Net Income¶" & 
+                        "EXAMPLES:      →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "25%            →=nabla.r.DPRλ( 5.0, 20.0 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( DividendsPaid),
+                            ISOMITTED( NetIncome)
+                        ),
+    //  Procedure
+        Result,         DividendsPaid/NetIncome,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  DividendYieldRatioλ
+    DESCRIPTION:*//**Dividend yield ratio shows how much a company pays out in dividends 
+each year relative to its stock price (Annual Dividends Pe rShare/Share Price) */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+DividendYieldRatioλ = LAMBDA(
+//  Parameter Declarations
+        [AnnualDividendsPerShare],  
+        [SharePrice],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →DividendYieldRatioλ( AnnualDividendsPerShare, SharePrice)¶" & 
+                        "DESCRIPTION:   →Dividend yield ratio shows how much a company pays out in dividends ¶" & 
+                                       "→each year relative to its stock price (Annual Dividends Pe rShare/Share Price)¶" & 
+                        "WEBPAGE:       →https://www.investopedia.com/terms/d/dividendyield.asp ¶" &
+                        "VERSION:       →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "AnnualDividendsPerShare→(Required) Annual Dividends Per Share ¶" & 
+                        "SharePrice     →(Required) Market value per share ¶" & 
+                        "EXAMPLES:      →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "2.6667%        →=nabla.r.DividendYieldRatioλ( 1.2, 45 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( AnnualDividendsPerShare),
+                            ISOMITTED( SharePrice)
+                        ),
+    //  Procedure
+        Result,         AnnualDividendsPerShare/SharePrice,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+
+/*  FUNCTION NAME:  EPSλ
+    DESCRIPTION:*//**Earnings per share measures profitability indicating how much profit each 
+outstanding share of common stock has earned 
+    (Net Income - Preferred Dividends)/End Of Period Common Shares Outstanding) */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+EPSλ = LAMBDA(
+//  Parameter Declarations
+        [NetIncome],  
+        [PreferredDividends],    
+        [EndOfPeriodCommonSharesOutstanding],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →EPSλ( NetIncome, PreferredDividends, EndOfPeriodCommonSharesOutstanding)¶" & 
+                        "DESCRIPTION:       →Earnings per share measures profitability indicating how much profit each ¶" & 
+                                           "→outstanding share of common stock has earned ¶" & 
+                                           "→(Net Income - Preferred Dividends)/End Of Period Common Shares Outstanding)¶" & 
+                        "WEBPAGE:           →https://www.investopedia.com/terms/e/eps.asp ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "NetIncome          →(Required) Net Income ¶" & 
+                        "PreferredDividends →(Required) Dividends paid on prefered stock¶" & 
+                        "EndOfPeriodCommonSharesOutstanding→(Required) End of Periods Common Shares outstanding or ¶" & 
+                                           "→Weighted average number of shares outstanding¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "1.909548           →=nabla.r.EPSλ( 7.6, 0, 3.98 )", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( NetIncome),
+                            ISOMITTED( PreferredDividends),
+                            ISOMITTED( EndOfPeriodCommonSharesOutstanding)
+                        ),
+    //  Procedure
+        Result,         (NetIncome-PreferredDividends)/EndOfPeriodCommonSharesOutstanding,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+ 
+/*  FUNCTION NAME:  RetentionRatioλ
+    DESCRIPTION:*//**Retention Ratio is the proportion of earnings kept back in the 
+business as retained earnings (Retained Earnings/Net Income). */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 27 2024 Craig Hatmaker  Copyright
+*/
+RetentionRatioλ = LAMBDA(
+//  Parameter Declarations
+        [RetainedEarnings],  
+        [NetIncome],    
+//  Help
+    LET(Help,   TRIM(TEXTSPLIT( 
+                        "FUNCTION:          →RetentionRatioλ( RetainedEarnings, NetIncome )¶" & 
+                        "DESCRIPTION:       →Retention Ratio is the proportion of earnings kept back in the ¶" & 
+                                           "→business as retained earnings (Retained Earnings/Net Income).¶" & 
+                        "WEBPAGE:           →https://www.investopedia.com/terms/r/retentionratio.asp ¶" &
+                        "VERSION:           →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "RetainedEarnings   →(Required) Retained Earnings (Net Income - paid dividends)¶" & 
+                        "NetIncome          →(Required) Net Income¶" & 
+                        "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
+                        "189.9%             →=nabla.r.RetentionRatioλ( 41.981, 22.112)", 
+                    "→", "¶" )
+                ),
+    //  Check inputs - Omitted required arguments (do not include optional arguments)
+        Help?,          OR( ISOMITTED( RetainedEarnings),
+                            ISOMITTED( NetIncome)
+                        ),
+    //  Procedure
+        Result,         RetainedEarnings/NetIncome,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);

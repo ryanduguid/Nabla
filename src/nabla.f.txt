@@ -1,0 +1,2224 @@
+/*  FUNCTION NAME:  Aboutλ
+    DESCRIPTION:*//**Displays this module's repository URL and function list*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jul 13 2023 Craig Hatmaker  Original Development
+                    May 13 2024 Craig Hatmaker  Spring 2024 Version
+                    May 18 2024 Craig Hatmaker  Added RollingAvgλ, RollingMinλ and RollingMaxλ
+                    May 28 2024 Craig Hatmaker  See SumContainsλ
+                    May 29 2024 Craig Hatmaker  See LabelAmortiseλ
+*/
+
+Aboutλ = TRIM(TEXTSPLIT(
+    "ABOUT:             →nabla's Financial Models module. Suggested module name: nabla.f¶" &
+    "VERSION:           →18 Aug 2026¶" &
+    "REPOSITORY:          →https://github.com/ryanduguid/Nabla ¶" &
+    "WEBSITE:           →https://github.com/ryanduguid/Nabla ¶" &
+    "→¶" &
+    "FUNCTION           →DESCRIPTION¶" & 
+    "Aboutλ             →Produces this table¶" & 
+    "Corkscrewλ         →Creates a simple corkscrew where the closing balance is the sum of independent flows plus opening balance¶" &
+    "CorkScrewReversalλ →Create a corkscrew where the opening balance is reversed in the next period based on a timing row¶" &
+    "Cumulativeλ        →Creates a row or column of cumulative totals from a total row or column¶" &
+    "IntOnIntλ          →Calculate Interest on Interest. Use to determine amount needed to cover debt plus interest on debt¶" & 
+    "IRRλ               →Calculates IRR, correcting for when the first investment is not in the first period¶" & 
+    "Movementλ          →Create a row of differences from column to column¶" & 
+    "Reversalλ          →Create a row that reverses input values in the next period.¶" & 
+    "RollingAvgλ        →Finds the maximum value the n preceding values in a set moving from beginning to end over a row of values.¶" &
+    "RollingMaxλ        →Finds the maximum value the n preceding values in a set moving from beginning to end over a row of values.¶" &
+    "RollingMinλ        →Finds the minimum value the n preceding values in a set moving from beginning to end over a row of values.¶" &
+    "RollingSumλ        →Creates totals for preceding values of a set size moving from beginning to end over a row of values.¶" &
+    "SumContainsλ       →Creates a row of totals for each row in an array where its labels contain a unique letter, word, or phrase.¶" & 
+    "SumPeriodsλ        →Groups and totals all columns in a Values array by period resulting in one column for each period.¶" & 
+    "→¶" &
+    "AMORTISATION SUITE→¶" & 
+    "Amortiseλ          →Creates a corkscrew amortisation schedule.¶" & 
+    "LabelAmortiseλ     →Create row labels for Amortiseλ result¶" & 
+    "SumAmortiseλ       →Create row totals for payments, interest, and principal portion in Amortiseλ results¶" & 
+    "→¶" &
+    "DEPRECIATION SUITE→¶" & 
+    "Depreciateλ        →Create a block of CAPEX, Opening Balance, Depreciation Values, and Book Value for each asset¶" & 
+    "LabelDepreciateλ   →Create row labels for Depreciateλ result¶" & 
+    "SumDepreciateλ     →Create row totals for CAPEX, Depreciation, Book Value, Salvage Value, and Disposal costs in Depreciateλ results¶" & 
+    "Allocateλ          →Divide one or more amounts equally equally across smaller periods¶" & 
+    "SLNλ               →Straight Line depreciation method for one asset or asset class.¶" & 
+    "SYDλ               →Sum-of-years' digits depreciation method for one asset or asset class.¶" & 
+    "DBλ                →Fixed declining balance depreciation method for one asset or asset class.¶" & 
+    "DDBλ               →Double-declining balance depreciation method for one asset or asset class.¶" & 
+    "VDBλ               →Variable declining balance depreciation method for one asset or asset class.¶" & 
+    "→¶" &
+    "SUBROUTINES        →Functions used by other functions or general purpose functions.¶" & 
+    "FilterContainsλ    →Filter an array by another array that contains specifice text¶" & 
+    "RangeToDAλ         →Create a dynamic array from a static range¶" & 
+    "TimelineOffsetλ    →Determines how many columns a date is offset from a timeline's first date¶" & 
+    "TimelinePositionλ  →Places an array or value appropriately within a model's timeline.¶" &  
+    "PeriodStartλ       →Determine when a period containing a date of interest starts.¶" & 
+    "PeriodDiffλ        →Determine the number of periods between two dates.",
+    "→","¶"
+    )
+);
+
+
+
+
+/*  FUNCTION NAME:  Corkscrewλ
+    DESCRIPTION:*//**Create a corkscrew section that sums the opening balance and up to 4 independent flows.*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Mar 06 2023 Craig Hatmaker  Original Development
+                    Jun 13 2023 Craig Hatmaker  Added Help
+                    May 01 2924 Craig Hatmaker  Modified Help
+*/
+Corkscrewλ = LAMBDA(
+//  Parameter Declarations
+    [Opening],
+    [Flow1],
+    [Flow2],
+    [Flow3],
+    [Flow4],
+
+    LET(
+    //  Help
+        Help,       TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →Corkscrewλ( Opening, FLow1, [Flow2], [Flow3], [Flow4])¶" &
+                        "DESCRIPTION:   →Create a corkscrew section that sums the opening balance and up to 4 independent flows¶" & 
+                        "WEBPAGE:       →<Coming Soon>¶" & 
+                        "VERSION:       →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "Opening        →(Required) First periods opening balance.¶" & 
+                        "Flow1          →(Required) First row (or array of rows) of numbers to include in period totals.¶" & 
+                        "Flow2          →(Optional) Second row (or array of rows) of numbers to include in period totals.¶" & 
+                        "Flow3          →(Optional) Third row (or array of rows) of numbers to include in period totals.¶" & 
+                        "Flow4          →(Optional) Fourth row (or array of rows) of numbers to include in period totals.¶" & 
+                        "NOTE!          →All flows are added. To subtract a flow make it negative.¶" & 
+                        "→¶" &
+                        "EXAMPLES:      →NOTE! nabla.f is assumed to be the module's name¶" & 
+                        "Formula:       →=nabla.f.Corkscrewλ(0, Sequence(1,5))¶" &
+                        "Result:        →00, 01, 03, 06, 10¶" &
+                                       "→01, 02, 03, 04, 05¶" &
+                                       "→01, 03, 06, 10, 15", 
+                        "→", "¶" )
+                    ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Opening),
+                            ISOMITTED( Flow1)
+                        ),
+    //  Processing
+        Cols,           Columns(Flow1),
+        Rows,           IF(ISOMITTED(Flow2), 1, 
+                            IF(ISOMITTED(Flow3), 2, 
+                                IF(ISOMITTED(Flow4), 3, 4)
+                            )
+                        ),                        
+        PeriodArray,    SWITCH(Rows, 
+                            1,  Flow1, 
+                            2,  VSTACK(Flow1, Flow2), 
+                            3,  VSTACK(Flow1, Flow2, Flow3),
+                            4,  VSTACK(Flow1, Flow2, Flow3, Flow4)
+                        ), 
+        PeriodTotal,    BYCOL(PeriodArray, LAMBDA(Col, SUM(Col))), 
+        ClosingTotal,   SCAN(Opening, PeriodTotal, LAMBDA(Opn, PrdTot, Opn + PrdTot)), 
+        OpeningTotal,   MAP( SEQUENCE(, Cols), LAMBDA( Col, IF( Col = 1, Opening, INDEX( ClosingTotal, Col - 1)))),
+        Result,         VSTACK(OpeningTotal, PeriodArray, ClosingTotal), 
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    )  
+);
+
+
+
+/*  FUNCTION NAME:  CorkScrewReversalλ
+    DESCRIPTION:*//**Create a corkscrew where the opening balance is reversed in the next period based on a timing parameter.*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Apr 19 2024 Craig Hatmaker  Copyright - Thank you Finomatics for the suggestion
+*/
+CorkScrewReversalλ=LAMBDA(
+//  Parameter Declarations
+    [Opening],
+    [ReversalFlags],
+    [Flow1],
+    [Flow2],
+    [Flow3],
+    [Flow4], 
+    //  Help
+    LET(Help,           TRIM(TEXTSPLIT(
+                        "FUNCTION:      →Corkscrewλ( Opening, FLow1, [Flow2], [Flow3], [Flow4])¶" & 
+                        "DESCRIPTION:   →Create a corkscrew where the opening balance is reversed in the next period based on a timing parameter¶" & 
+                        "WEBPAGE:       →<Coming Soon>¶" &
+                        "VERSION:       →18 Aug 2026¶" & 
+                        "PARAMETERS:→¶" & 
+                        "Opening        →(Required) First periods opening balance.¶" & 
+                        "ReversalFlags  →(Required) A row of ones and blanks (or zeros) indicating when to reverse period totals.¶" & 
+                        "Flow1          →(Required) First row (or array of rows) of numbers to include in period totals.¶" & 
+                        "Flow2          →(Optional) Second row (or array of rows) of numbers to include in period totals.¶" & 
+                        "Flow3          →(Optional) Third row (or array of rows) of numbers to include in period totals.¶" & 
+                        "Flow4          →(Optional) Fourth row (or array of rows) of numbers to include in period totals.¶" & 
+                        "NOTE!          →All flows are added. To subtract a flow make it negative.", 
+                        "→", "¶")), 
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Opening), 
+                            ISOMITTED( ReversalFlags), 
+                            ISOMITTED( Flow1)), 
+    //  Set defaults and constants
+        Cols,           COLUMNS(Flow1), 
+        Rows,           IF(ISOMITTED(Flow2), 1, 
+                            IF(ISOMITTED(Flow3), 2, 
+                                IF(ISOMITTED(Flow4), 3, 4)
+                            )
+                        ), 
+    //  Procedure
+        PeriodArray,    SWITCH(Rows, 
+                            1, Flow1, 
+                            2, VSTACK(Flow1, Flow2), 
+                            3, VSTACK(Flow1, Flow2, Flow3), 
+                            4, VSTACK(Flow1, Flow2, Flow3, Flow4)
+                        ), 
+        PeriodTotal,    BYCOL(PeriodArray, LAMBDA(Col, SUM(Col))), 
+        Result,         REDUCE( 0, SEQUENCE( COLUMNS( Flow1)),
+                            LAMBDA( Acc, Col,
+                                LET(
+                                    Opening,        IF(Col=1, Opening, TAKE( Acc, -1, -1)), 
+                                    Reversal,       -INDEX( ReversalFlags, 1, Col) * Opening, 
+                                    ArrayColumn,    CHOOSECOLS( PeriodArray, Col),
+                                    Stack,          VSTACK( 
+                                                        Opening, 
+                                                        REversal, 
+                                                        ArrayColumn, 
+                                                        SUM(Opening, Reversal, ArrayColumn)),
+                                    Result,         IF(Col = 1, Stack, HSTACK( Acc, Stack)),
+                                    Result
+                                )
+                            )
+                        ),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    )  
+);
+
+
+
+/*  FUNCTION NAME:  IntOnIntλ	
+    DESCRIPTION:*/ /**Calculate Interest on Interest. Use to determine amount needed to cover debt plus interest on debt*/
+/*  NOTE:           Math source from Diarmuid Early's post: https://www.youtube.com/watch?v=k5rG_MvIWWs&t=787s
+    REVISIONS:      Date        Developer       Description  	
+                    Dec 29 2023 Craig Hatmaker  Copyright on LAMBDA	
+*/
+IntOnIntλ = LAMBDA(
+    [Principal],
+    [Rate], 
+//  Help	
+    LET(Help,           TRIM(TEXTSPLIT(
+                            "FUNCTION:      →IntOnIntλ( Principal, Rate)¶" & 
+                            "DESCRIPTION:   →Calculate Interest on Interest (Interest only). Use to determine amount ¶" &
+                                           "→needed to cover borrowed interest¶" & 
+                            "WEBSITE:       →<Coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Principal     →(Required) Principal amount¶" & 
+                            "Rate          →(Required) Interest percentage rate. For years, APR. For months, APR/12¶" & 
+                            "EXAMPLES:      →¶" & 
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                            "52.63          →=nabla.f.IntOnIntλ( 1000, 5%)",
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Principal),
+                            ISOMITTED( Rate)
+                        ),
+    //  Procedure
+        Result,         Principal /(1-Rate) - Principal,
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    )  
+);
+
+
+
+/*  FUNCTION NAME:  IRRλ	
+    DESCRIPTION:*/ /**Calculates IRR, correcting for when the first investment is not in the first period */
+/*  REVISIONS:      Date        Developer       Description  	
+                    Oct 07 2023 Craig Hatmaker  Initial development	
+*/
+IRRλ = LAMBDA(
+    [Values],
+    [Dates], 
+//  Help	
+    LET(Help,           TRIM(TEXTSPLIT(
+                            "FUNCTION:      →IRRλ( Values, Dates)¶" & 
+                            "DESCRIPTION:   →Calculates IRR, correcting for when the first investment is not in the first period¶" & 
+                            "WEBSITE:       →<Coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Values         →(Required) A row of investments (negative) and distributions (positive)¶" & 
+                                           "→The first entry, whether 0 or an amount, must be for the first period in the timeline¶" & 
+                                           "→and subsequent entries must correspond to periods in the timeline; however,¶" & 
+                                           "→the timeline may extend beyond the end of values.¶" & 
+                            "Dates          →(Required) A timeline for when each investment is made¶" & 
+                            "→¶" &
+                            "EXAMPLES:      →¶" & 
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                            "Dates          →=EDATE(""1/1/23"", SEQUENCE(,24, 0))¶" &
+                            "Values         →={0,0,-150,0,-100,10,20,30,40,50,60,70}¶" & 
+                            "→¶" &
+                            "Result         →Formula¶" &
+                            "24%            →=nabla.f.IRRλ( Values, Dates)",
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Values),
+                            ISOMITTED( Dates)
+                        ),
+    //  Set Defaults
+        Values,         EXPAND(VALUES, 1, COUNTA(Dates), 0),
+    //  Procedure
+        FilterBy,       Values <> 0,
+        FilteredValues, FILTER( Values, FilterBy), 
+        FilteredDates,  FILTER( Dates, FilterBy), 
+        Result,         XIRR( FilteredValues, FilteredDates), 
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    ) 
+);
+
+
+
+/*  FUNCTION NAME:  Movementλ
+    DESCRIPTION:*//**Create a row of differences from column to column*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 21 2023 Craig Hatmaker  Copyright
+                    Apr 16 2024 Craig Hatmaker  Handles multiple rows
+*/
+Movementλ = LAMBDA(
+//  Parameter Declarations
+    [BeginningValues],
+    [Values],    
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →Movementλ( [BeginningValue], Values)¶" &
+                            "DESCRIPTION:   →Create a row of differences from column to column¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "BeginningValues→(Optional) Defaults to 0¶" & 
+                            "Values         →(Required) A row of values to compare column to column¶" & 
+                            "EXAMPLES:      →¶" & 
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                            "100,10,20,-30  →=nabla.f.Movementλ(,{100,110,130,100}, 4)",
+                            "→", "¶" )
+                    ),            
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( Values),
+    //  Set Defaults
+        BeginningValues, IF(OR(ISOMITTED(BeginningValues), BeginningValues=""), 0, BeginningValues),
+    //  Procedure
+        Rows,           ROWS( Values),
+        Cols,           Columns( Values),
+        Seq,            SEQUENCE(, Cols),
+        Result,         REDUCE(0, SEQUENCE( Rows), 
+                            LAMBDA( Acc, R, 
+                                LET(
+                                    Begin,      If( ROWS(BeginningValues) = 1, BeginningValues, INDEX( BeginningValues, R)),
+                                    Row,        CHOOSEROWS( Values, R), 
+                                    NewRow,     SCAN( Begin, Seq, 
+                                                    LAMBDA( A, C,
+                                                        INDEX( Row, C ) - IF( C = 1, A, INDEX( Row, C - 1))
+                                                    )
+                                                ),
+                                    Result,     IF( R = 1, NewRow, VSTACK(Acc, NewRow)),
+                                    Result
+                                )
+                            )
+                        ),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    )  
+);
+
+
+
+/*  FUNCTION NAME:  Reversalλ
+    DESCRIPTION:*//**Create a row that reverses input values in the next period.*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Mar 25 2024 Craig Hatmaker  Copyright
+*/
+Reversalλ = LAMBDA(
+//  Parameter Declarations
+    [OpeningValue],
+    [RowToReverse],    
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →Reversalλ( [OpeningValue], RowToReverse)¶" &
+                            "DESCRIPTION:   →Create a row that reverses input values in the next period.¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "OpeningValue   →(Optional) Defaults to 0¶" & 
+                            "RowToReverse   →(Required) A row of values to reverse the following periods¶" & 
+                            "EXAMPLES:      →¶" & 
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                            "-100,-110,-130 →=nabla.f.Reversalλ( , {100,110,130})",
+                            "→", "¶" )
+                    ),            
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( RowToReverse),
+    //  Set Defaults
+        BeginningValue, IF( ISOMITTED( OpeningValue), 0,  OpeningValue),
+    //  Procedure
+        Counter,        SEQUENCE( , COLUMNS(RowToReverse)),
+        Result,         MAP( Counter, 
+                            LAMBDA(Col,  IF(Col = 1, -OpeningValue, -CHOOSECOLS( RowToReverse, Col-1)))
+                        ),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    )  
+);
+
+
+/*  FUNCTION NAME:  Cumulativeλ
+    DESCRIPTION:*//**Creates a row or column of cumulative totals from a total row or column*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jan 05 2043 Craig Hatmaker  Original Development
+*/
+Cumulativeλ = LAMBDA(
+//  Parameter Declarations
+    [Totals],
+    [OpeningBalance],
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →Cumulativeλ( Totals, [OpeningBalance])¶" &
+                            "DESCRIPTION:   →Creates a row or column of cumulative totals from a total row or column¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Totals         →(Required) A row or column of totals from which to run cumulative totals¶" & 
+                            "OpeningBalance →(Optional) A starting balance. This defaults to 0¶" & 
+                            "EXAMPLES:      →¶" & 
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                            "1,3,6          →=nabla.f.Cumulativeλ(Sequence(,3))",
+                            "→", "¶" )
+                    ),            
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( Totals),
+    //  Procedure
+        Result,         SCAN( OpeningBalance, Totals, LAMBDA(PreviousAmount, CurrentAmount, PreviousAmount + CurrentAmount)),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    )  
+);
+
+
+
+/*  FUNCTION NAME:  RollingAvgλ
+    DESCRIPTION:*//**Creates Averages for preceding values of a set size moving from beginning to end over a row of values.*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jan 30 2024 Craig Hatmaker  Copyright
+*/
+RollingAvgλ = LAMBDA(
+//  Parameter Declarations
+    [Values], 
+    [Size],
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →RollingAvgλ( Values, Size)¶" &
+                            "DESCRIPTION:   →Creates averages for preceding values of a set size moving¶" &
+                                           "→from beginning to end over a row of values¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Values         →(Required) A row of values to be averaged.¶" & 
+                            "Size           →(Required) The number of values to average that ¶" & 
+                                           "→include and preceed the current value¶" & 
+                            "EXAMPLES:      →¶" &
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                            "1,3,6,9,12     →=nabla.f.RollingAvgλ(SEQUENCE(, 5), 3)",
+                        "→", "¶" )
+                    ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Values),
+                            ISOMITTED( Size)),
+    //  Procedure
+        Counter,        SEQUENCE(,COUNTA( Values)),
+        Result,         SCAN( 
+                            0, 
+                            Counter, 
+                            LAMBDA(
+                                Acc,
+                                Val, 
+                                LET(
+                                    Start,  IF((Val - Size) < 1, 0, Val - Size),
+                                    Right,  TAKE(Values, , Val),
+                                    Block,  IF( Start > 0, DROP( Right, , Start ), Right),
+                                    AVERAGE(Block)
+                                )
+                            )
+                        ),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  RollingMaxλ
+    DESCRIPTION:*//**Creates the maximum for preceding values of a set size moving from beginning to end over a row of values.*/
+/*  REVISIONS:      Date        Developer       Description  
+                    May 18 2024 Craig Hatmaker  Copyright w/Finomatic
+*/
+RollingMaxλ = LAMBDA(
+//  Parameter Declarations
+    [Values], 
+    [Size],
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →RollingMaxλ( Values, Size)¶" &
+                            "DESCRIPTION:   →Creates the maximum for preceding values of a set size moving from beginning to end over a row of values.¶" &
+                                           "→from beginning to end over a row of values¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Values         →(Required) A row of values to be maxed.¶" & 
+                            "Size           →(Required) The number of values to find maximum that ¶" & 
+                                           "→include and preceed the current value¶" & 
+                            "EXAMPLES:      →¶" &
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                            "5,5,5,6,6,7    →=nabla.f.RollingMaxλ({5,3,4,6,3,7}, 3)",
+                        "→", "¶" )
+                    ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Values),
+                            ISOMITTED( Size)),
+    //  Procedure
+        Counter,        SEQUENCE(,COUNTA( Values)),
+        Result,         SCAN( 
+                            0, 
+                            Counter, 
+                            LAMBDA(
+                                Acc,
+                                Val, 
+                                LET(
+                                    Start,  IF((Val - Size) < 1, 0, Val - Size),
+                                    Right,  TAKE(Values, , Val),
+                                    Block,  IF( Start > 0, DROP( Right, , Start ), Right),
+                                    MAX(Block)
+                                )
+                            )
+                        ),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  RollingMinλ
+    DESCRIPTION:*//**Creates the Minimum for preceding values of a set size moving from beginning to end over a row of values.*/
+/*  REVISIONS:      Date        Developer       Description  
+                    May 18 2024 Craig Hatmaker  Copyrightw/Finomatic
+*/
+RollingMinλ = LAMBDA(
+//  Parameter Declarations
+    [Values], 
+    [Size],
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      RollingMinλ( Values, Size)¶" &
+                            "DESCRIPTION:   →Creates the minimum for preceding values of a set size moving from beginning to end over a row of values.¶" &
+                                           "→from beginning to end over a row of values¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Values         →(Required) A row of values to be minned.¶" & 
+                            "Size           →(Required) The number of values to find maximum that ¶" & 
+                                           "→include and preceed the current value¶" & 
+                            "EXAMPLES:      →¶" &
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                            "5,3,3,3,2,2    →=nabla.f.RollingMaxλ({5,3,4,6,2,7}, 3)",
+                        "→", "¶" )
+                    ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Values),
+                            ISOMITTED( Size)),
+    //  Procedure
+        Counter,        SEQUENCE(,COUNTA( Values)),
+        Result,         SCAN( 
+                            0, 
+                            Counter, 
+                            LAMBDA(
+                                Acc,
+                                Val, 
+                                LET(
+                                    Start,  IF((Val - Size) < 1, 0, Val - Size),
+                                    Right,  TAKE(Values, , Val),
+                                    Block,  IF( Start > 0, DROP( Right, , Start ), Right),
+                                    MIN(Block)
+                                )
+                            )
+                        ),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  RollingSumλ
+    DESCRIPTION:*//**Creates totals for preceding values of a set size moving from beginning to end over a row of values.*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jan 30 2024 Craig Hatmaker  Copyright
+                    May 02 2024 Craig Hatmaker  Changed COUNTA(Values) to COLUMNS( Values)
+*/
+RollingSumλ = LAMBDA(
+//  Parameter Declarations
+    [Values], 
+    [Size],
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →RollingSumλ( Values, Size)¶" &
+                            "DESCRIPTION:   →Creates totals for preceding values of a set size moving¶" &
+                                           "→from beginning to end over a row of values¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Values         →(Required) A row of values to be totalled.¶" & 
+                            "Size           →(Required) The number of values to total that ¶" & 
+                                           "→include and preceed the current value¶" & 
+                            "EXAMPLES:      →¶" &
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                            "1,3,6,9,12     →=nabla.f.RollingMinλ(SEQUENCE(, 5), 3)",
+                        "→", "¶" )
+                    ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Values),
+                            ISOMITTED( Size)),
+    //  Procedure
+        Counter,        SEQUENCE(,COLUMNS( Values)),
+        Result,         SCAN( 
+                            0, 
+                            Counter, 
+                            LAMBDA(
+                                Acc,
+                                Val, 
+                                LET(
+                                    Start,  IF((Val - Size) < 1, 0, Val - Size),
+                                    Right,  TAKE(Values, , Val),
+                                    Block,  IF( Start > 0, DROP( Right, , Start ), Right),
+                                    SUM(Block)
+                                )
+                            )
+                        ),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  →SumContainsλ
+    DESCRIPTION:*//**→Creates a row of totals for each row in an array where 
+its labels contain a letter, word, or phrase*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jan 19 2024 Craig Hatmaker  Copyright
+                    May 28 2024 Craig Hatmaker  Added: Labels, CHOOSECOLS(ValueLabels, 1),
+*/
+SumContainsλ = LAMBDA(
+//  Parameter Declarations
+    [ValuesToFilter],
+    [ValueLabels],
+    [FilterByText],
+    [IgnoreCase?],
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →SumContainsλ(ValuesToFilter, ValueLabels, FilterByText, [IgnoreCase?])¶" &
+                            "DESCRIPTION:   →Creates a row of column totals for each row in an array where¶" & 
+                                           "→its labels contain a unique letter, word, or phrase.¶" & 
+                            "WEBPAGE:       →<Coming soon>¶" & 
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "ValuesToFilter →(Required) An array of values to be filtered¶" &                   
+                            "ValueLabels    →(Required) An array containing the values' labels¶" &                   
+                            "FilterByText   →(Required) A unique letter, word or phrase to find contained in ValueLabels¶" &                   
+                            "IgnoreCase?    →(Optional) A flag to determine if Text's case is important. Default is TRUE¶" &                   
+                            "EXAMPLES:      →¶" &
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                            "               →=nabla.f.SumContainsλ( Array, Labels, ""CAPEX"" )",
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( ValuesToFilter), 
+                            ISOMITTED( ValueLabels), 
+                            ISOMITTED( FilterByText)),
+    //  Check inputs - Set defaults
+        IgnoreCase?,    IF( ISLOGICAL( IgnoreCase?), IgnoreCase?, TRUE),
+        Labels,         CHOOSECOLS(ValueLabels, 1),
+    //  Procedure
+        Matches,        IF( IgnoreCase?, 
+                            SEARCH( FilterByText, Labels),
+                            FIND( FilterByText, Labels)
+                        ),
+        FilteredRows,   FILTER( ValuesToFilter, ISNUMBER( Matches)),
+        Result,         BYCOL(FilteredRows, LAMBDA( Col, SUM(Col))),
+    //  Return Result or help
+        CHOOSE(Help? + 1, Result, Help)
+    )  
+);
+
+
+/*  FUNCTION NAME:  SumPeriodsλ
+    DESCRIPTION:*//**Groups and totals all columns in a Values array by period resulting in one column for each period*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Mar 04 2022 Craig Hatmaker  Original Development
+                    Apr 10 2023 Craig Hatmaker  Remove SUMIFS to be compatible with arrays. Added Help.
+*/
+SumPeriodsλ = LAMBDA(
+//  Parameter Declarations
+    [Values],
+    [Dates],
+    [PeriodStarts],
+    
+//  Procedure
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →SumPeriodsλ( Values, Dates, PeriodStarts)¶" &
+                            "DESCRIPTION:   →Summarises values where each value column is for one day ¶" & 
+                                           "→into one column for each period. ¶" & 
+                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "PARAMETERS:→¶" & 
+                            "Values         →(Required) A two dimensional array/range containing values to be summed where" & 
+                                            "each column is for a specific day¶" & 
+                            "Dates          →(Required) A row of dates providing the date for each Values column¶" &
+                            "PeriodStarts   →(Required) A row of period start dates¶" &
+                            "EXAMPLES:      →¶" &
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                            "03, 07         →=nabla.f.SumPeriodsλ({1,2,3,4;4,3,2,1;10,20,30,40}, {1,2,3,4}, {1,3})¶" & 
+                            "07, 03         →¶" & 
+                            "30, 70         →",
+                            "→", "¶" )
+                    ),            
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Values),
+                            ISOMITTED( Dates),
+                            ISOMITTED( PeriodStarts)),
+    //  Procedure
+        PrdNum,         MATCH(Dates, PeriodStarts, 1),
+        Result,         MAKEARRAY(
+                            ROWS(Values),
+                            COLUMNS(PeriodStarts),
+                            LAMBDA(
+                                Row, 
+                                Col, 
+                                SUM(INDEX(Values, Row, ) * (Col = PrdNum))
+                                )
+                        ),            
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    )
+);
+
+
+
+
+
+//  Amortisation Suite
+
+/*  FUNCTION NAME:  Amortiseλ
+    DESCRIPTION:*//**Creates a corkscrew amortisation schedule*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jul 13 2023 Craig Hatmaker  Original Development
+                    Dec 20 2023 Craig Hatmaker  Payments are assumed to be paid monthly
+                    Jan 18 2024 Craig Hatmaker  Added Debt Issuance
+                    May 02 2024 Craig Hatmaker  Converted to anonymous recursion
+                    May 11 2024 Craig Hatmaker  Corrected issue with month to year aggregation
+
+*/
+Amortiseλ = LAMBDA(
+//  Parameter Declarations
+    [Principals], 
+    [APRs], 
+    [Terms], 
+    [StartDates],
+    [Timeline],
+
+    LET(
+    //  Help        
+        Help,       TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →Amortiseλ( Principals, APRs, Terms, StartDates, [Timeline])¶" &
+                        "DESCRIPTION:   →Creates an amortisation schedule array for one or more loans.¶" &
+                                       "→It assumes all payments are made monthly.¶" &
+                                       "→Use LableAmortiseλ() to apply labels to this function's results:¶" & 
+                                       "→Use SumAmortiseλ() to apply totals to this function's results:¶" & 
+                        "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
+                        "VERSION:       →18 Aug 2026¶" &
+                        "PARAMETERS:→¶" & 
+                        "Principals     →(Required) Loan/debt amounts.¶" & 
+                        "APRs           →(Required) Annual Percentage Rates for interest.¶" & 
+                        "Terms          →(Required) Number of months for loans/debts.¶" & 
+                        "StartDates     →(Required) Dates debts are issued.¶" & 
+                        "Timeline       →(Optional) An array of dates. If omitted, a row of months starting on start date will be added¶" & 
+                        "EXAMPLES:→¶" & 
+                        "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                                       "→=nabla.f.Amortiseλ(10000, 5%, 4 * 12, ""2025-01-01"")", 
+                        "→", "¶" )
+                    ),
+    //  Constants
+        MpY,                12,     //Months Per Year
+        ADpM,               30.42,  //Average Days Per Month
+    
+    //  Check inputs - Omitted required arguments
+        Help?,              OR( ISOMITTED( Principals),
+                                ISOMITTED( APRs),
+                                ISOMITTED( Terms),
+                                ISOMITTED( StartDates)
+                            ),
+    
+    //  Set defaults and apply convenience conversions
+        Timeline,           IF( ISOMITTED( Timeline), 
+                                LET(Counter,    ROWS( Principals),
+                                    MaxDate,    MAX(MAP( Counter,
+                                                        LAMBDA( n, 
+                                                            EDATE( INDEX( StartDates, n), INDEX( Terms, n) - 1)))),
+                                    MinDate,    MIN( StartDates), 
+                                    MaxTerm,    DATEDIF(MinDate, MaxDate, "M") + 1,
+                                    Result,     EDATE( MinDate, Sequence(1, MaxTerm, 0)),
+                                    Result), 
+                                Timeline
+                            ),
+    //  Determine timeline's interval (length of periods) and orientation (horizontal or vertical)
+        FirstPeriod,        INDEX( Timeline, 1),
+        SecondPeriod,       INDEX( TImeline, 2),
+        MpP,                @ROUND(( SecondPeriod - FirstPeriod) / ADpM, 0),
+        PpY,                MpY / MpP,
+
+    //  Recursive function (fn) definition
+        Recursion, 
+            LAMBDA( fn, Principals, APRs, Terms, StartDates, Timeline, Asset,
+                LET(
+                //  Create individual Values from array
+                    Principal,          INDEX( Principals, Asset), 
+                    APR,                INDEX( APRs, Asset), 
+                    Term,               INDEX( Terms, Asset),  
+                    StartDate,          INDEX( StartDates, Asset), 
+
+                //  Adjust inputs to match timeline
+                    Periods,            ROUNDUP(Term / MpP, 0),
+                    Rows,               1,
+                    Cols,               Periods,
+
+                //  Calculate for each month
+                    Rate,               APR / MpY,
+                    MonthlyPayment,     PMT( Rate, Term, Principal),    
+                    MonthlyPrincipal,   -FV(Rate, SEQUENCE( 1, Term, 0), MonthlyPayment, Principal),
+                    MonthlyInterest,    MonthlyPrincipal * Rate,
+
+                //  Convert to Timeline Periods
+                    DebtIssueArray,     EXPAND(Principal, 1, Periods, 0),
+                    PrincipalArray,     IF( MpP = 1, 
+                                            MonthlyPrincipal, 
+                                            MAKEARRAY( 1, Periods, 
+                                                LAMBDA(R, C, 
+                                                    LET(Idx, (C - 1) * MpP + 1, 
+                                                        INDEX( MonthlyPrincipal, Idx)
+                                                    )
+                                                )
+                                            )
+                                        ),    
+                    InterestArray,      IF( MpP = 1, 
+                                            MonthlyInterest,
+                                            LET( 
+                                                MoInt,  EXPAND( MonthlyInterest, 1, ROUNDUP( Term/ Mpp, 0) * Mpp, 0), 
+                                                MAKEARRAY( 1, Periods, 
+                                                    LAMBDA(R, C, 
+                                                            LET(Idx, (C - 1) * MpP + 1,
+                                                                SUM( CHOOSECOLS(MoInt, SEQUENCE(1, MpP, Idx)))
+                                                            )
+                                                    )
+                                                )
+                                            )
+                                        ),    
+                    PaymentArray,       LET(MoPmt,  EXPAND( SEQUENCE(1, Term, MonthlyPayment, 0), 1, ROUNDUP( Term/ Mpp, 0) * Mpp, 0), 
+                                            MAKEARRAY( 1, Periods, 
+                                                LAMBDA(R, C, 
+                                                        LET(Idx, (C - 1) * MpP + 1,
+                                                            SUM( CHOOSECOLS(MoPmt, SEQUENCE(1, MpP, Idx)))
+                                                        )
+                                                )
+                                            )
+
+                                        ), 
+                    ClosingArray,       PrincipalArray + InterestArray + PaymentArray,
+                    PortionArray,       -PaymentArray - InterestArray,    
+                    AmortisationSched,  VSTACK(
+                                            DebtIssueArray, 
+                                            PrincipalArray, 
+                                            InterestArray, 
+                                            PaymentArray, 
+                                            ClosingArray, 
+                                            PortionArray),
+                //  Position in timeline
+                    Offset,             TimelineOffsetλ(StartDate, Timeline),
+                    NewBlock,           TimelinePositionλ(AmortisationSched, Timeline, Offset),
+                    Result,             IF( Asset = ROWS( Principals), 
+                                            NewBlock,
+                                            VSTACK(
+                                                NewBlock,
+                                                EXPAND({" "}, 1, COUNTA(Timeline), " "),
+                                                fn( fn, Principals, APRs, Terms, StartDates, Timeline, Asset + 1)
+                                            )
+                                        ),
+                    Result
+                )   
+            ),    
+        Result,     Recursion( Recursion, Principals, APRs, Terms, StartDates, Timeline, 1),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    ) 
+);
+
+
+/*  FUNCTION NAME:  LabelAmortiseλ
+    DESCRIPTION:*//**Create labels for Amortiseλ*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Dec 19 2023 Craig Hatmaker  Original Development
+                    Jan 18 2024 Craig Hatmaker  Added Debt Issuance
+                    May 29 2024 Craig Hatmaker  Added optional parameters
+*/
+LabelAmortiseλ = LAMBDA(
+//  Parameter Declarations
+    [LoanNames],  
+    [LoanAmounts],  
+    [LoanAPRs],  
+    [LoanTerms],  
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →LabelAmortiseλ([LoanNames])¶" &
+                            "DESCRIPTION:   →Create row labels for the amortisation schedule array produced by Amortiseλ¶" & 
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "LoanNames     →(Required) Names or descriptions of each loan in the amortisation schedule produced by Amortiseλ¶" &                  
+                            "LoanAmounts   →(Optional) Amount borrowed¶" &                  
+                            "LoanAPR       →(Optional) Annual Percentage Interest Rate¶" &                  
+                            "LoanTerm      →(Optional) Number of months to repay¶" &                  
+                            "EXAMPLES:      →¶" &
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                                           "→=nabla.f.LabelAmortiseλ(tblLoans[Loan Name])", 
+                            "→", "¶"
+                            )
+                        ),
+    //  Check required inputs - Omitted required arguments
+        Help?,          ISOMITTED( LoanNames),
+    //  Check optional inputs
+        Optionals,      NOT( OR( 
+                            ISOMITTED( LoanAmounts), 
+                            ISOMITTED( LoanAPRs), 
+                            ISOMITTED( LoanTerms)
+                        )),
+    //  Procedure
+        Result,         REDUCE( "", SEQUENCE(  ROWS( LoanNames) * 7 - 1), 
+                            LAMBDA(Acc, Row, 
+                                LET(Idx,            QUOTIENT( Row - 1, 7) + 1,
+                                    Line,           MOD( Row - 1, 7) + 1, 
+                                    LoanName,       INDEX( LoanNames, Idx), 
+                                    LoanAmount,     IF(ISOMITTED( LoanAmounts), 0, INDEX( LoanAmounts, Idx)),
+                                    LoanAPR,        IF(ISOMITTED( LoanAPRs), 0, INDEX( LoanAPRs, Idx)),
+                                    LoanTerm,       IF(ISOMITTED( LoanTerms), 0, INDEX( LoanTerms, Idx)),
+                                    Description,    SWITCH( Line,
+                                                        1,  HSTACK(LoanName & " Debt Issuance", LoanAmount, ""),
+                                                        2,  HSTACK(LoanName & " Debt Balance", "",""),
+                                                        3,  HSTACK(LoanName & " Interest", Text(LoanAPR, "0.00%"), "APR"),
+                                                        4,  HSTACK(LoanName & " Debt Services", LoanTerm, "Months"),
+                                                        5,  HSTACK(LoanName & " Closing Balance","",""),
+                                                        6,  HSTACK(LoanName & " Debt Repayment", "", ""),
+                                                        7,  HSTACK("","","")
+                                                    ),
+                                    Values,         IF( Optionals, Description, TAKE( Description, , 1)),
+                                    Result,         IF( Row = 1, Values, VSTACK(Acc, Values)),
+                                    Result
+                                )
+                            )
+                        ),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    ) 
+);
+
+
+
+/*  FUNCTION NAME:  SumAmortiseλ
+    DESCRIPTION:*//**Create row totals for Amortiseλ*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Dec 19 2023 Craig Hatmaker  Original Development
+                    Jan 18 2024 Craig Hatmaker  Added Debt Issuance
+*/
+SumAmortiseλ = LAMBDA(
+//  Parameter Declarations
+    [AmortisationSchedule],
+
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →SumAmortiseλ(AmortisationSchedule)¶" &
+                            "DESCRIPTION:   →Create row totals for Amortiseλ¶" & 
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "AmortisationSchedule→(Required) An array produced by Amortiseλ¶" &                  
+                            "EXAMPLES:→¶" & 
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                                           "→=nabla.f.SumAmortiseλ(AmortisationSchedule)",
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( AmortisationSchedule),
+    //  Procedure
+        Result,         MAKEARRAY(ROWS(AmortisationSchedule), 1, 
+                            LAMBDA( R, C,
+                                SWITCH( MOD( R, 7),
+                                    3, SUM(CHOOSEROWS( AmortisationSchedule, R)),
+                                    4, SUM(CHOOSEROWS( AmortisationSchedule, R)),
+                                    6, SUM(CHOOSEROWS( AmortisationSchedule, R)),
+                                    0
+                                )
+                            )
+                        ),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    ) 
+);
+
+
+
+
+
+//  Depreciation Suite
+
+/*  FUNCTION NAME:  Depreciateλ
+    DESCRIPTION:*//**Create a block of CAPEX, Opening Balance, Depreciation Values, and Book Value for each asset*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Oct 24 2023 Craig Hatmaker  Original Development
+                    May 13 2024 Craig Hatmaker  Spring Version
+*/
+Depreciateλ = LAMBDA(
+//  Parameter Declarations
+    [InitialValues],
+    [InServiceDates], 
+    [LifeInYears], 
+    [Timeline],
+    [SalvageValues],
+    [DisposalDates],
+    [DisposalCosts],
+    [Methods],
+    [Factors],
+    LET(
+//  Help
+        Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →Depreciateλ(InitialValues, InServiceDates, LifeInYears, Timeline, ¶" &
+                            "               →[SalvageValues], [DisposalDates], [DisposalCosts], [Methods], [Factor])¶" &
+                            "DESCRIPTION:   →Creates an array of CAPEX, depreciation, and book values for a model's timeline¶" & 
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla ¶" & 
+                            "VERSION:       →18 Aug 2026¶" &
+                            "NOTES:         →The methods used here differs from Excel's functions in several ways. Please see webpage for details.¶" &
+                            "PARAMETERS:    →¶" & 
+                            "InitialValues  →(Required) The purchase values of each asset to depreciate¶" & 
+                            "InServiceDates →(Required) The dates from which to start depreciating each asset¶" & 
+                            "LifeInYears    →(Required) The number of years with which to depreciate each asset¶" & 
+                            "Timeline       →(Required) The model's timeline or a row of period start dates. ¶" & 
+                            "               →Timeline can be in Months, Quarters, or Years¶" & 
+                            "SalvageValues  →(Optional: Default = 0) The book values of each asset after fully depreciated.¶" & 
+                            "DisposalDates  →(Optional: Default = End of life) The dates on which the assets are removed from the books.¶" & 
+                            "DisposalCosts  →(Optional: Default = 0) The book values of each asset after fully depreciated.¶" & 
+                            "Methods        →(Optional: Default = SLN) The desired depreciation method. Must be one of these Excel function names: ¶" & 
+                                           "→SLN=Straight Line Depreciation¶" & 
+                                           "→SYD=Sum of Year's Digits¶" & 
+                                           "→DB =Declining Balance¶" & 
+                                           "→DDB=Double Declining Balance¶" & 
+                                           "→VDB=Variable Declining Balance¶" & 
+                                           "→MACRS=Modified Accelerated Cost Recovery System (US legacy; for ATO diminishing value use DDB with a factor of 2). Salvage value ignored¶" & 
+                            "Factors        →(Optional: Default = 2) Only applicable to DDB and VDB methods.", 
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( InitialValues),
+                            ISOMITTED( LifeInYears),
+                            ISOMITTED( InServiceDates),
+                            ISOMITTED( Timeline)
+                        ),
+    //  Set Constants
+        MethodArray,    {"SLN","SYD","DB","DDB","VDB", "MACRS"},
+        Mpy,            12, //Months Per Year
+    //  Set defaults and apply convenience conversions
+        SalvageValues,  IF( ISOMITTED( SalvageValues), 
+                            MAP( InitialValues, LAMBDA( Ele, 0)), 
+                            MAP( SalvageValues, LAMBDA(v, IFERROR( VALUE( v), 0)))),
+        CvtSrvDates,    IF( NOT( ISOMITTED( InServiceDates)), 
+                            IF( ISNUMBER( InServiceDates), 
+                                InServiceDates, 
+                                DATEVALUE( InServiceDates))),
+        DisposalDates,  IF( ISOMITTED( DisposalDates), 
+                            EDATE( +CvtSrvDates, LifeinYears * 12), 
+                            MAKEARRAY( ROWS( DisposalDates), 1, 
+                                LAMBDA(R, C, 
+                                    IF( INDEX( DisposalDates, R)  = "", 
+                                        EDATE( INDEX( CvtSrvDates, R), INDEX(LifeinYears, R) * 12), 
+                                        INDEX( DisposalDates, R)
+                                    )
+                                )
+                            )
+                        ),
+        DisposalCosts,  IF( ISOMITTED( DisposalCosts), 
+                            MAP( InitialValues, LAMBDA( Ele, 0)), 
+                            DisposalCosts),
+        Methods,        IF( ISOMITTED( Methods), 
+                            MAP( InitialValues, LAMBDA( Ele, "SLN")), 
+                            MAP( Methods, LAMBDA(v, IF( TRIM( v) = "", "SLN", v)))),
+        Factors,        IF( ISOMITTED( Factors), 
+                            MAP( InitialValues, LAMBDA( Ele, 2)), 
+                            MAP( Factors, LAMBDA(v, IF( TRIM( v) = "", 2, v)))),
+    //  Create individual Values from timeline array
+        TimelineCols,   COLUMNS( TImeline),
+        FirstPeriod,    INDEX( Timeline, 1),
+        SecondPeriod,   INDEX( TImeline, 2),
+        MpP,            @ROUND(( SecondPeriod - FirstPeriod) / 30.5, 0), //Months Per Period
+        Interval,       SWITCH( MpP, 1, "M", 3, "Q", 12, "Y"),
+        PpY,            SWITCH( MpP, 1, 12, 3, 4, 12, 1),                //Periods Per Year
+        EndDates,       HSTACK( MAP(  SEQUENCE(, TimelineCols - 1), LAMBDA( n, INDEX( Timeline, n + 1) - 1)), EDATE( MAX( Timeline), MpP) -1 ),
+    //  Process each asset
+        Result,         REDUCE( 0, SEQUENCE( ROWS( InitialValues)), 
+                            LAMBDA(Block, Asset, 
+                                LET( 
+                                //  Create individual values from arguments
+                                    Method,         @INDEX( Methods, Asset),
+                                    Years,          @INDEX( LifeInYears, Asset) + N(Method = "MACRS"),
+                                    InitialValue,   @INDEX( InitialValues, Asset), 
+                                    SalvageValue,   IF( Method = "MACRS", 0, @INDEX( SalvageValues, Asset)), 
+                                    InServiceDate,  @INDEX( CvtSrvDates, Asset), 
+                                    DisposalDate,   IF( Method = "MACRS", 
+                                                        MAX(EDATE( InserviceDate, Years * MpY), @INDEX( DisposalDates, Asset)),
+                                                        @INDEX( DisposalDates, Asset)), 
+                                    DisposalCost,   @INDEX( DisposalCosts, Asset), 
+                                    Factor,         @INDEX( Factors, Asset),
+                                    LifeInPeriods,  Years * PpY,
+                                    LifeInMonths,   PeriodDiffλ( InserviceDate, DisposalDate, "M"),
+                                    LastPeriod,     PeriodDiffλ( InserviceDate, DisposalDate, Interval),
+                                //  Procedure
+                                //  Depreciation is calculated annually then allocated equally over the next 12 months
+                                    Depreciate,     CHOOSE( MATCH( @Method, MethodArray, 0), //CHOOSE is more efficient than SWITCH
+                                                    //  1. Straight line 
+                                                        SLNλ( InitialValue, SalvageValue, Years), 
+                                                    //  2. Sum-of-years' digits
+                                                        SYDλ( InitialValue, SalvageValue, Years),
+                                                    //  3. Declining balance
+                                                        DBλ( InitialValue, SalvageValue, Years),
+                                                    //  4. Double declining balance 
+                                                        DDBλ( InitialValue, SalvageValue, Years, Factor),
+                                                    //  5. Variable declining balance 
+                                                        VDBλ( InitialValue, SalvageValue, Years, Factor), 
+                                                    //  6. Modified accelerated cost recovery system 
+                                                        MACRSλ( InitialValue, Years - 1),
+                                                    ),
+                                //  Place Disposal and Salvage in the asset's last month
+                                    Disposal,       HSTACK( SEQUENCE( 1, LifeInMonths - 1, 0, 0) , DisposalCost),
+                                    Salvage,        HSTACK( SEQUENCE( 1, LifeInMonths - 1, 0, 0) , SalvageValue),
+                                //  Allocating annual values to months
+                                    Allocate,       HSTACK( EXPAND( Allocateλ( Depreciate, "Y", "M"), 1, LifeInMonths - 1, 0), SalvageValue),
+                                    Opening,        DROP( HSTACK( InitialValue, SCAN( InitialValue, Allocate, LAMBDA( Acc, Val, Acc - Val))), 0, -1),
+                                //  Create a monthly timeline for the asset
+                                    AssetTimeline,  EDATE( InServiceDate, SEQUENCE( , LifeInMonths, 0)), 
+                                //  Aggregate monthly allocations by model's period intervals and position in timelne
+                                    Depreciation,   MAP( SEQUENCE( , TimelineCols), 
+                                                        LAMBDA( n, 
+                                                            SUM((Allocate) * ( AssetTimeline <= INDEX(EndDates, n)) * ( AssetTimeline >= INDEX( Timeline, n))))),
+                                    CAPEX,          InitialValue * (Timeline <= InServiceDate) * (EndDates >= InServiceDate), 
+                                    OpeningAmount,  MAP( SEQUENCE( , TimelineCols), 
+                                                        LAMBDA( n,
+                                                            IFERROR(INDEX( Opening, MATCH(1,(AssetTimeline >= INDEX( Timeline, n))*(AssetTimeline<=INDEX( EndDates, n)),0)),0))),
+                                    BookValue,      OpeningAmount - Depreciation,
+                                    SalesRevenue,   SalvageValue * (Timeline <= DisposalDate) * (EndDates >= DisposalDate), 
+                                    DisposalExp,    DisposalCost * (Timeline <= DisposalDate) * (EndDates >= DisposalDate), 
+                                //  Assemble this assets rows into a block
+                                    NewBlock,       VSTACK( CAPEX, OpeningAmount, Depreciation, BookValue, SalesRevenue, DisposalExp),
+                                //  Add this block to prior blocks (if any)
+                                    Result,         IF( Asset = 1, 
+                                                        NewBlock, 
+                                                        VSTACK(
+                                                            Block,
+                                                            EXPAND("", 1, TimelineCols, ""),
+                                                            NewBlock
+                                                            )
+                                                    ),
+                                    Result
+                                )
+                            )
+                        ),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    ) 
+);
+
+
+
+/*  FUNCTION NAME:  LabelDepreciateλ
+    DESCRIPTION:*//**Create labels for Depreciateλ*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Oct 24 2023 Craig Hatmaker  Original Development
+*/
+LabelDepreciateλ = LAMBDA(
+//  Parameter Declarations
+    [AssetNames],  
+
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →LabelDepreciateλ( AssetNames)¶" &
+                            "DESCRIPTION:   →Create row labels for the depreciation schedule array produced by Depreciateλ¶" & 
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "AssetNames     →(Required) The names or descriptions of each asset in teh depreciation schedule produced by Depreciateλ¶" &                   
+                            "EXAMPLES:      →¶" &
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                                           "→=nabla.f.LabelDepreciateλ(tblAssets[Asset Name])", 
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( AssetNames),
+    //  Procedure
+        Result,         MAKEARRAY( ROWS(AssetNames) * 7 - 1, 1, 
+                            LAMBDA(R, C, 
+                                LET(AssetName,   INDEX( AssetNames, QUOTIENT(R-1, 7) + 1), 
+                                    SWITCH( MOD(R-1, 7) + 1,
+                                        1,  AssetName & " CAPEX",
+                                        2,  AssetName & " Opening Value",
+                                        3,  AssetName & " Depreciation",
+                                        4,  AssetName & " Book Value",
+                                        5,  AssetName & " Revenue from Sale",
+                                        6,  AssetName & " Disposal Costs",
+                                        7,  ""
+                                    )
+                                )
+                            )
+                        ),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  SumDepreciateλ
+    DESCRIPTION:*//**Create row totals for Depreciateλ*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Dec 21 2023 Craig Hatmaker  Original Development
+*/
+SumDepreciateλ = LAMBDA(
+//  Parameter Declarations
+    [DepreciationSchedule],
+
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →SumDepreciateλ(DepreciationSchedule)¶" &
+                            "DESCRIPTION:   →Create row totals for Depreciateλ¶" & 
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "DepreciationSchedule→(Required) An array produced by Depreciateλ¶" &                 
+                            "EXAMPLES:      →¶" &
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                                           "→=nabla.f.SumDepreciateλ(DepreciationSchedule)",
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( DepreciationSchedule),
+    //  Procedure
+        Result,         MAKEARRAY(ROWS(DepreciationSchedule), 1, 
+                            LAMBDA( R, C,
+                                SWITCH( MOD( R, 7),
+                                    1, SUM(CHOOSEROWS( DepreciationSchedule, R)),
+                                    3, SUM(CHOOSEROWS( DepreciationSchedule, R)),
+                                    5, SUM(CHOOSEROWS( DepreciationSchedule, R)),
+                                    6, SUM(CHOOSEROWS( DepreciationSchedule, R)),
+                                    0
+                                )
+                            )
+                        ),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  Allocateλ
+    DESCRIPTION:*//**→Divide one or more amounts equally equally across smaller periods*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Apr 17 2024 Craig Hatmaker  Copyright
+*/
+Allocateλ = LAMBDA(
+//  Parameter Declaration
+    [Amounts],
+    [FromInterval], 
+    [ToInterval], 
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →Allocateλ(Amounts, [FromInterval], [ToInterval])¶" &
+                            "DESCRIPTION:   →Divide one or more amounts equally equally across smaller periods¶" &
+                            "WEBPAGE:       →<coming soon>¶" & 
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Amounts        →(Required) One amount or a row of amounts to allocate.¶" &                   
+                            "FromInterval   →(Optional Default=Y) The larger interval in Q=Quarters or Y=Years¶" & 
+                            "ToInterval     →(Optional Default=M) The smaller interval in W=Weeks, M=Months, or Q=Quarters¶" & 
+                            "NOTE!          →¶" & 
+                                           "→When a From Period's amount does not divide evenly to the 1/100 for all To Periods',¶" & 
+                                           "→the last To Period contains the necessary adjustment.¶" & 
+                            "EXAMPLES:      →¶" &
+                                           "→Formula (nabla.f is assumed to be the module's name)¶" &
+                                           "→=nabla.f.Allocateλ({999.99, 2000}, ""Y"", ""Q"")¶" &
+                                           "→Result¶" &
+                                           "→250,250,250,249.99,500,500,500,500", 
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( Amounts),
+    //  Set defaults for optional values
+        FromInterval,   IF( ISOMITTED( FromInterval), "Y", FromInterval),
+        ToInterval,     IF( ISOMITTED( ToInterval), "M", ToInterval),
+    //  Procedure
+        From,           SWITCH(FromInterval, "Y", 1, "Q", 4),
+        To,             SWITCH(ToInterval, "Q", 4, "M", 12, "W", 52),
+        FromCount,      COUNT( Amounts),
+        ToCount,        To / From,
+        Result,         REDUCE( 0, SEQUENCE( , FromCount),
+                            LAMBDA( Acc, n,
+                                LET( 
+                                    FromAmount,     INDEX( Amounts, n), 
+                                    ToAmount,       ROUND( FromAmount * From / To, 2),
+                                    BaseArray,      EXPAND( ToAmount, 1, ToCount, ToAmount),
+                                    ToArray,        IF( ToCount = 1, 
+                                                        BaseArray, 
+                                                        HSTACK( 
+                                                            TAKE(BaseArray, 1, ToCount - 1), 
+                                                            FromAmount - SUM( TAKE(BaseArray, 1, ToCount - 1))
+                                                        )
+                                                    ),
+                                    Result,         IF( n = 1, ToArray, HSTACK( Acc, ToArray )),
+                                    Result
+                                )
+                            )
+                        ),
+        
+    //  Return Result or Help
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  PeriodDiffλ
+    DESCRIPTION:*//**Determine the number of periods between two dates.*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Apr 15 2024 Craig Hatmaker  Copyright
+*/
+PeriodDiffλ = LAMBDA(
+//  Parameter Declaration
+    [StartDate],
+    [EndDate], 
+    [Interval], 
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      PeriodDiffλ(StartDate, EndDate, Interval)¶" &
+                            "DESCRIPTION:   →Determine the number of periods between two dates.¶" &
+                            "NOTES!         →This improves on, and corrects problems w/Excel's deprecated DATEDIF() function.¶" &
+                            "WEBPAGE:       →<coming soon>¶" & 
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "StartDate      →(Required) Start Date.¶" &                   
+                            "EndDate        →(Required) End Date¶" & 
+                            "Interval       →(Required) W=Week, M=Month, Q=Quarter, Y=Year.¶" & 
+                            "EXAMPLES:      →¶" &
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                            "1              →=nabla.f.PeriodDiffλ(""2026-01-01"", ""2026-04-15"", ""Q"")", 
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( StartDate),
+                            ISOMITTED( EndDate),
+                            ISOMITTED( Interval)
+                        ),
+    //  Constants
+        MpP,                SWITCH( Interval, "M", 1, "Q", 3, "Y", 12, 0),
+    //  Procedure
+        Months,             DATEDIF( StartDate, EndDate, "M") + 1,
+        Periods,            INT( Months / MpP),
+        PartialPeriod,      N( MOD( Months, MpP) > 0),
+        EOMCorrection,      N( AND( EndDate = EOMONTH( EndDate, 0), DAY( StartDate) > Day( EndDate))),
+        Result,             IF( Interval = "W", 
+                                INT((EndDate - StartDate + 1) / 7),
+                                Periods + OR(PartialPeriod, EOMCorrection)),
+    //  Return Result or Help
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  SLNλ
+    DESCRIPTION:*//**Straight Line depreciation method for one asset or asset class.*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Apr 17 2024 Craig Hatmaker  Copyright
+*/
+SLNλ = LAMBDA(
+//  Parameter Declaration
+    [Cost],
+    [Salvage], 
+    [Life], 
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →SLNλ(Cost, Salvage, Life)¶" &
+                            "DESCRIPTION:   →Straight Line Depreciation Method for one asset or asset class.¶" &
+                            "WEBPAGE:       →<coming soon>¶" & 
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Cost           →(Required) Asset's initial cost.¶" &                   
+                            "Salvage        →(Required) Asset's value and end of life¶" & 
+                            "Life           →(Required) Asset's useful life in years.¶" & 
+                            "EXAMPLES:      →¶" &
+                                           "→Formula (nabla.f is assumed to be the module's name)¶" &
+                                           "→=nabla.f.SLNλ(1000, 100, 5)¶" &
+                                           "→Result¶" &
+                                           "→180,180,180,180,180", 
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Cost),
+                            ISOMITTED( Salvage),
+                            ISOMITTED( Life)
+                        ),
+    //  Procedure
+        Depn,           SLN(Cost, Salvage, Life),
+        Result,         EXPAND(Depn, 1, Life, Depn),
+    //  Return Result or Help
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+/*  FUNCTION NAME:  SYDλ
+    DESCRIPTION:*//**Sum-of-years' digits depreciation method for one asset or asset class.*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Apr 17 2024 Craig Hatmaker  Copyright
+*/
+SYDλ = LAMBDA(
+//  Parameter Declaration
+    [Cost],
+    [Salvage], 
+    [Life], 
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →SYDλ(Cost, Salvage, Life)¶" &
+                            "DESCRIPTION:   →Sum-of-years' digits depreciation method for one asset or asset class.¶" &
+                            "WEBPAGE:       →<coming soon>¶" & 
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Cost           →(Required) Asset's initial cost.¶" &                   
+                            "Salvage        →(Required) Asset's value and end of life¶" & 
+                            "Life           →(Required) Asset's useful life in years.¶" & 
+                            "EXAMPLES:      →¶" &
+                                           "→Formula (nabla.f is assumed to be the module's name)¶" &
+                                           "→=nabla.f.SYDλ(1000, 100, 5)¶" &
+                                           "→Result¶" &
+                                           "→300,240,180,120,60", 
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Cost),
+                            ISOMITTED( Salvage),
+                            ISOMITTED( Life)
+                        ),
+    //  Procedure
+        Result,        SYD(Cost, Salvage, Life, SEQUENCE( , Life)),
+    //  Return Result or Help
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  DBλ
+    DESCRIPTION:*//**Fixed declining balance depreciation method for one asset or asset class.*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Apr 17 2024 Craig Hatmaker  Copyright
+*/
+DBλ = LAMBDA(
+//  Parameter Declaration
+    [Cost],
+    [Salvage], 
+    [Life], 
+    [Months],
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →DBλ(Cost, Salvage, Life, [Month])¶" &
+                            "DESCRIPTION:   →Fixed declining balance depreciation method for one asset or asset class¶" &
+                            "WEBPAGE:       →<coming soon>¶" & 
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Cost           →(Required) Asset's initial cost.¶" &                   
+                            "Salvage        →(Required) Asset's value and end of life. Salvage cannot be 0.¶" & 
+                            "Life           →(Required) Asset's useful life in years.¶" & 
+                            "Months         →(Optional) Number of months in the first year to depreciate.¶" & 
+                            "EXAMPLES:      →¶" &
+                                           "→Formula (nabla.f is assumed to be the module's name)¶" &
+                                           "→=nabla.f.DBλ(1000, 100, 5)¶" &
+                                           "→Result¶" &
+                                           "→369.00,232.84,146.92,92.71,58.53", 
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Cost),
+                            ISOMITTED( Salvage),
+                            ISOMITTED( Life)
+                        ),
+    //  Set defaults for optional values
+        Months,         IF( ISOMITTED( Months), 12, Months),
+    //  Procedure
+        Depn,           DB( Cost, Salvage, Life, SEQUENCE( , Life - 1 ), Months),   
+        Result,         HSTACK( Depn, Cost - Sum(Depn) - Salvage),
+    //  Return Result or Help
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  DDBλ
+    DESCRIPTION:*//**Double-declining balance depreciation method for one asset or asset class.*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Apr 17 2024 Craig Hatmaker  Copyright
+*/
+DDBλ = LAMBDA(
+//  Parameter Declaration
+    [Cost],
+    [Salvage], 
+    [Life], 
+    [Factor],
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →DBλ(Cost, Salvage, Life, [Factor])¶" &
+                            "DESCRIPTION:   →Double-declining balance depreciation method for one asset or asset class.¶" &
+                            "WEBPAGE:       →<coming soon>¶" & 
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Cost           →(Required) Asset's initial cost.¶" &                   
+                            "Salvage        →(Required) Asset's value and end of life. Salvage cannot be 0.¶" & 
+                            "Life           →(Required) Asset's useful life in years.¶" & 
+                            "Factor         →(Optional Default=2) Rate at which the balance declines.¶" & 
+                            "EXAMPLES:      →¶" &
+                                           "→Formula (nabla.f is assumed to be the module's name)¶" &
+                                           "→=nabla.f.DDBλ(1000, 100, 5)¶" &
+                                           "→Result¶" &
+                                           "→400.00,240.00,144.00,86.40,29.60", 
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Cost),
+                            ISOMITTED( Salvage),
+                            ISOMITTED( Life)
+                        ),
+    //  Set defaults for optional values
+        Factor,         IF( ISOMITTED( Factor), 2, Factor),
+    //  Procedure
+        Depn,           DDB( Cost, Salvage, Life, SEQUENCE( , Life -1), Factor),   
+        Result,         HSTACK( Depn, Cost - Sum(Depn) - Salvage),
+    //  Return Result or Help
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  VDBλ
+    DESCRIPTION:*//**Variable declining balance depreciation method for one asset or asset class.*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Apr 17 2024 Craig Hatmaker  Copyright
+*/
+VDBλ = LAMBDA(
+//  Parameter Declaration
+    [Cost],
+    [Salvage], 
+    [Life], 
+    [Factor],
+    [No_Switch],
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →VDBλ(Cost, Salvage, Life, [Factor], [No_Switch])¶" &
+                            "DESCRIPTION:   →Variable declining balance depreciation method for one asset or asset class.¶" &
+                            "WEBPAGE:       →<coming soon>¶" & 
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Cost           →(Required) Asset's initial cost.¶" &                   
+                            "Salvage        →(Required) Asset's value and end of life. Salvage cannot be 0.¶" & 
+                            "Life           →(Required) Asset's useful life in years.¶" & 
+                            "Factor         →(Optional Default=2) Rate at which the balance declines.¶" & 
+                            "No_Switch      →(Optional Default=FALSE) Switch to straight-line depreciation when¶" & 
+                                           "→ depreciation is greater than the declining balance calculation.¶" & 
+                            "EXAMPLES:      →¶" &
+                                           "→Formula (nabla.f is assumed to be the module's name)¶" &
+                                           "→=nabla.f.VDBλ(1000, 100, 5, 1.5, TRUE)¶" &
+                                           "→Result¶" &
+                                           "→300.00,210.00,147.00,121.50,121.50", 
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Cost),
+                            ISOMITTED( Salvage),
+                            ISOMITTED( Life)
+                        ),
+    //  Set defaults for optional values
+        Factor,         IF( ISOMITTED( Factor), 2, Factor),
+        No_Switch,      IF( ISOMITTED( No_Switch), FALSE, No_Switch),
+    //  Procedure
+        Result,         VDB( Cost, Salvage, Life, SEQUENCE( , Life, 0), SEQUENCE( , Life), Factor),   
+    //  Return Result or Help
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  MACRSλ
+    DESCRIPTION:*//**Modified Accelerated Cost Recovery System depreciation method for one asset or asset class.*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Apr 17 2024 Craig Hatmaker  Copyright
+*/
+MACRSλ = LAMBDA(
+//  Parameter Declaration
+    [Cost],
+    [Life], 
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →MACRSλ(Cost, Life)¶" &
+                            "DESCRIPTION:   →Modified Accelerated Cost Recovery System depreciation method for one asset or asset class.¶" &
+                            "WEBPAGE:       →<coming soon>¶" & 
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Cost           →(Required) Asset's initial cost.¶" &                   
+                            "Life           →(Required) Asset's useful life in years.¶" & 
+                            "EXAMPLES:      →¶" &
+                                           "→Formula (nabla.f is assumed to be the module's name)¶" &
+                                           "→=nabla.f.MACRSλ(1000, 5)" &
+                                           "→Result¶" &
+                                           "→300.00,210.00,147.00,121.50,121.50", 
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Cost),
+                            ISOMITTED( Life)
+                        ),
+    //  Set defaults for optional values
+        Percentage,     SWITCH( 
+                            Life, 
+                            03,     {33.33,44.45,14.81,7.41},
+                            05,     {20.00,32.00,19.20,11.52,11.52,5.76},
+                            07,     {14.29,24.49,17.49,12.49,8.93,8.92,8.93,4.46},
+                            10,     {10.00,18.00,14.40,11.52,9.22,7.37,6.555,6.55,6.56,6.55,3.25},
+                            15,     {5.00,9.50,8.55,7.70,6.93,6.23,5.90,5.90,5.91,5.90,5.91,5.90,5.91,5.90,5.91,2.95},
+                            20,     {3.75,7.22,6.68,6.18,5.71,5.29,4.89,4.52,4.46,4.46,4.46,4.46,4.46,4.46,4.46,4.46,4.46,2.23}
+                        )/100,
+    //  Procedure
+        Result,         Cost * INDEX(Percentage, SEQUENCE( , Life + 1)), 
+    //  Return Result or Help
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+/*  FUNCTION NAME:  DiminishingValueλ
+    DESCRIPTION:*//**Diminishing value depreciation (ATO 200% declining balance) for one asset or asset class*/
+/*  REVISIONS:      Date        Developer       Description  
+                    18 Aug 2026 nabla           Added Australian diminishing value method
+*/
+
+DiminishingValueλ = LAMBDA(
+//  Parameter Declaration
+    [Cost],
+    [Life], 
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT(
+                            "FUNCTION:      →DiminishingValueλ(Cost, Life)¶" &
+                            "DESCRIPTION:   →Diminishing value depreciation (ATO 200% method) for one asset or asset class.¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" &
+                            "Cost           →(Required) Asset's initial cost.¶" &
+                            "Life           →(Required) Asset's effective life in years.¶" &
+                            "EXAMPLES:      →¶" &
+                            "→Formula (nabla.f is assumed to be the module's name)¶" &
+                            "→=nabla.f.DiminishingValueλ(1000, 5)¶" &
+                            "→Result¶" &
+                            "→400.00,240.00,144.00,86.40,51.84",
+                            "→", "¶"
+                        )),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Cost), ISOMITTED( Life)),
+    //  Set Constants
+        Rate,           2 / Life,
+    //  Procedure
+        Result,         Cost * Rate * (1 - Rate)^(SEQUENCE( , Life) - 1), 
+    //  Return Result or Help
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+
+
+//  Diagnostic Routines
+
+
+
+/*  FUNCTION NAME:  AmortiseλDV
+    DESCRIPTION:*//**Provides extended data validation of arguments for Amortiseλ()*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Oct 24 2023 Craig Hatmaker  Original Development
+*/
+AmortiseλDV = LAMBDA(
+//  Parameter Declarations
+    [Principal],
+    [APR],
+    [Term], 
+    [StartDate],
+    [Timeline], 
+
+    LET(
+    //  Check inputs - Errors in argument values
+        ErrorsInArgs,   VSTACK( 
+                            OR( ISERROR( Principal)),
+                            OR( ISERROR( APR)),
+                            OR( ISERROR( Term)),
+                            OR( ISERROR( StartDate)),
+                            OR( ISERROR( Timeline))
+                        ),
+
+    //  Check inputs - Data validation errors
+        DVArg1,         IF( OR( ISOMITTED( Principal), ISERROR( Principal)), 
+                            FALSE, 
+                            OR( IFERROR( VALUE(Principal) < 1, TRUE))),
+        DVArg2,         IF( OR( ISOMITTED( APR), ISERROR( APR)), 
+                            FALSE, 
+                            OR( IFERROR( VALUE(APR) <= 0, TRUE))),
+        DVArg3,         IF( OR( ISOMITTED( Term), ISERROR( Term)), 
+                            FALSE, 
+                            OR( IFERROR( VALUE(Term) < 1, TRUE))),
+        DVArg4,         IF( OR( ISOMITTED( StartDate), ISERROR( StartDate)), 
+                            FALSE, 
+                            OR( IFERROR( VALUE(StartDate) < MIN( Timeline), TRUE))),
+        DVArg5,         IF( OR( ISOMITTED( Timeline), ISERROR( Timeline)), 
+                            FALSE, 
+                            OR( IFERROR( VALUE(Timeline) < 1, TRUE))),
+        DVArg6,         IF( OR( ISOMITTED( Timeline), ISERROR( Timeline), DVArg5), 
+                            FALSE, 
+                            COUNTA(Timeline) < 2),
+        DVArg7,         IF( OR( ISOMITTED( Timeline), ISERROR( Timeline), DVArg5, DVArg6), 
+                            FALSE, 
+                            (INDEX(Timeline, 2) - INDEX(Timeline, 1)) < 30 ),
+        DVErrors,       VSTACK( DVArg1, DVArg2, DVArg3, DVArg4, DVArg5, DVArg6, DVArg7),
+        
+    //  Any input errors detected?
+        AnyErrors?,     OR(ErrorsInArgs, DVErrors),
+
+    //  Assemble Error Messages Array (if errors found)
+        Errors2Show,    VSTACK( ErrorsInArgs, DVErrors), 
+        ErrMsgs,        {
+                    //  Errors in arguments
+                        "Amount contains errors in cells. Resolve errors first.";
+                        "APR contains errors in cells. Resolve errors first.";
+                        "Term contains errors in cells. Resolve errors first.";
+                        "StartDate contains errors in cells. Resolve errors first.";
+                        "Timeline contains errors in cells. Resolve errors first.";
+                    
+                    //  Data validation errors
+                        "Amount must be greater than 0";
+                        "APR must be a percentage greater than 0";
+                        "Term must be the number of timeline periods until the debt is satisfied.";
+                        "StartDate must be a valid date.";
+                        "Timeline must a row of period start dates with every period spanning a month, quarter or year.";
+                        "Timeline must a row of period start dates with more than 1 entry.";
+                        "Timeline must a row of period start dates spanning no less than a month."},
+        Messages,       FILTER(ErrMsgs, Errors2Show, ""),        
+
+    //  Handle Error
+        Return,         IF( OR( Errors2Show), 2, IF( AnyErrors?, 3, 1)),      
+    //  Return Result
+        CHOOSE(Return, TRUE, Messages, #VALUE!)
+    )    
+);
+
+
+
+/*  FUNCTION NAME:  CorkscrewλDV
+    DESCRIPTION:*//**Provides extended data validation of arguments for Depreciateλ.*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Oct 24 2023 Craig Hatmaker  Original Development
+*/
+CorkscrewλDV = LAMBDA(
+//  Parameter Declarations
+    [Opening],
+    [Flow1],
+    [Flow2],
+    [Flow3],
+    [Flow4],
+    [Diagnostics],
+
+    LET(
+    //  Check inputs - Errors in argument values
+        ErrorsInArgs,   VSTACK( 
+                            OR( ISERROR( Opening)),
+                            OR( ISERROR( Flow1)),
+                            OR( ISERROR( Flow2)),
+                            OR( ISERROR( Flow3)),
+                            OR( ISERROR( Flow4))
+                        ),
+
+    //  Check inputs - Data validation errors
+        DVArg1,         IF( OR( ISOMITTED( Opening), ISERROR( Opening)), 
+                            FALSE, 
+                            NOT( ISNUMBER( Opening ))),
+        DVArg2,         IF( OR( ISOMITTED( Flow1), ISERROR( Flow1)), 
+                            FALSE, 
+                            NOT( AND(ISNUMBER( Flow1 )))),
+        DVArg3,         IF( OR( ISOMITTED( Flow2), ISERROR( Flow2)), 
+                            FALSE, 
+                            NOT( AND(ISNUMBER( Flow2 )))),
+        DVArg4,         IF( OR( ISOMITTED( Flow3), ISERROR( Flow3)), 
+                            FALSE, 
+                            NOT( AND(ISNUMBER( Flow3 )))),
+        DVArg5,         IF( OR( ISOMITTED( Flow4), ISERROR( Flow4)), 
+                            FALSE, 
+                            NOT( AND(ISNUMBER( Flow4 )))),
+        DVErrors,       VSTACK( DVArg1, DVArg2, DVArg3, DVArg4, DVArg5),
+        
+    //  Any input errors detected?
+        AnyErrors?,     OR(ErrorsInArgs, DVErrors),
+
+    //  Assemble Error Messages Array (if errors found)
+        Errors2Show,    VSTACK( Diagnostics * ErrorsInArgs, Diagnostics * DVErrors), 
+        ErrMsgs,        {"Opening contains errors in cells. Resolve errors first.";
+                         "Flow1 contains errors in cells. Resolve errors first.";
+                         "Flow2 contains errors in cells. Resolve errors first.";
+                         "Flow3 contains errors in cells. Resolve errors first.";
+                         "Flow4 contains errors in cells. Resolve errors first.";
+                         
+                         "Set Opening must to contain only numeric values.";
+                         "Set Flow1 to contain only numeric values.";
+                         "Set Flow2 to contain only numeric values.";
+                         "Set Flow3 to contain only numeric values.";
+                         "Set Flow4 to contain only numeric values."},
+        Messages,       FILTER(ErrMsgs, Errors2Show, ""),        
+
+    //  Handle Error
+        Return,         IF( OR( Errors2Show), 2, IF( AnyErrors?, 3, 1)),        
+    //  Return Result
+        CHOOSE(Return, TRUE, Messages, #VALUE!)
+    )    
+);
+
+
+
+/*  FUNCTION NAME:  DepreciateλDV
+    DESCRIPTION:*//**Provides extended data validation of arguments for Depreciateλ*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Oct 24 2023 Craig Hatmaker  Original Development
+*/
+DepreciateλDV = LAMBDA(
+//  Parameter Declarations
+    [InitialValues],
+    [InServiceDates], 
+    [LifeInYears], 
+    [Timeline],
+    [SalvageValues],
+    [DisposalDates],
+    [DisposalCosts],
+    [Methods], 
+    [Factors], 
+
+    LET(
+    //  Check inputs - Errors in argument values
+        ErrorsInArgs,   VSTACK( 
+                            OR( ISERROR( InitialValues)),
+                            OR( ISERROR( InServiceDates)),
+                            OR( ISERROR( LifeInYears)),
+                            OR( ISERROR( Timeline)),
+                            OR( ISERROR( SalvageValues)),
+                            OR( ISERROR( DisposalDates)),
+                            OR( ISERROR( DisposalCosts)),
+                            OR( ISERROR( Methods)),
+                            OR( ISERROR( Factors))
+                        ),
+
+    //  Check inputs - Data validation errors
+        DVArg1,         IF( OR( ISERROR(InitialValues)), 
+                            FALSE, 
+                            OR( IFERROR( VALUE(InitialValues) < 1, TRUE))),
+        DVArg2,         IF( OR( ISERROR( InServiceDates), ISERROR( Timeline)), 
+                            FALSE, 
+                            OR( IFERROR( VALUE(InServiceDates) < MIN( Timeline), TRUE))),
+        DVArg3,         IF( OR( ISERROR( LifeInYears)), 
+                            FALSE, 
+                            OR( IFERROR( VALUE(LifeInYears) < 1, TRUE))),
+        DVArg4,         IF( OR( ISERROR( Timeline)), 
+                            FALSE, 
+                            COUNTA( Timeline) < 2),
+        DVArg4b,        IF( OR( OR(ErrorsInArgs), DVArg4), 
+                            FALSE, 
+                            (INDEX(Timeline, 2) - INDEX(Timeline, 1)) < 28 ),
+        DVArg5,         IF( OR( ISOMITTED( SalvageValues), OR(ISERROR(SalvageValues))), 
+                            FALSE, 
+                            OR( IFERROR( VALUE(SalvageValues) < 0, TRUE))),
+        DVArg6,         IF( OR( ISOMITTED( DisposalDates), OR(ErrorsInArgs)),
+                            FALSE, 
+                            OR( DisposalDates < InServiceDates)),
+                            //OR( IFERROR( VALUE(DisposalDates) < InServiceDates, TRUE))),
+        DVArg7,         IF( OR( ISOMITTED( DisposalCosts), OR(ISERROR(DisposalCosts))), 
+                            FALSE, 
+                            OR( IFERROR( VALUE(DisposalCosts) < 0, TRUE))),
+        DVArg8,         IF( OR( ISOMITTED( Methods),  ISERROR( Methods)), 
+                            FALSE, 
+                            OR(ISERROR( SEARCH( Methods, "SLN,SYD,DB,DDB,VDB,MACRS")))),
+        DVArg9,         IF( OR( ISOMITTED( Factors),  ISERROR( Factors)), 
+                            FALSE, 
+                            OR(IFERROR( VALUE( Factors) < 0, TRUE ))),
+        DVErrors,       VSTACK( DVArg1, DVArg2, DVArg3, DVArg4, DVArg4b, DVArg5, DVArg6, DVArg7, DVArg8, DVArg9 ),
+        
+    //  Any input errors detected?
+        AnyErrors?,     OR(ErrorsInArgs, DVErrors),
+
+    //  Assemble Error Messages Array (if errors found)
+        Errors2Show,    VSTACK( ErrorsInArgs, DVErrors), 
+        ErrMsgs,        {
+                    //  Errors in arguments
+                         "InitialValues contains errors in cells. Resolve errors first.";
+                         "InServiceDates contains errors in cells. Resolve errors first.";
+                         "LifeInYears contains errors in cells. Resolve errors first.";
+                         "Timeline contains errors in cells. Resolve errors first.";
+                         "SalvageValues contains errors in cells. Resolve errors first.";
+                         "DisposalDates contains errors in cells. Resolve errors first.";
+                         "DisposalCosts contains errors in cells. Resolve errors first.";
+                         "Methods contains errors in cells. Resolve errors first.";
+                         "Factors contains errors in cells. Resolve errors first.";
+                    
+                    //  Data validation errors
+                         "InitialValues must be an amount greater than 0";
+                         "InServiceDates must be valid dates";
+                         "LifeInYears must be a number greater than 0";
+                         "Timeline must be a row of period start dates with every period spanning one month, quarter or year.";
+                         "Each period in the timeline must span one month, quarter or year.";
+                         "SalvageValues must be an amount not less than 0 or omitted";
+                         "DisposalDates must be a date greater than InServiceDates or omitted";
+                         "DisposalCosts must be an amount not less than 0 or omitted";
+                         "Methods must be omitted or one of: SLN, SYD, DB, DDB, MACRS, or VDB.";
+                         "Factors must be a value greater than 0"},
+        Messages,       FILTER(ErrMsgs, Errors2Show, ""),        
+
+    //  Handle Error
+        Return,         IF( OR( Errors2Show), 2, IF( AnyErrors?, 3, 1)),        
+    //  Return Result
+        CHOOSE(Return, TRUE, Messages, #VALUE!)
+    )    
+);
+
+
+
+//  SubRoutines
+
+
+/*  FUNCTION NAME:  TimelineOffsetλ
+    DESCRIPTION:*//**Determines how many periods one array is offset from the timeline*/
+/*  DISCUSSION:     The possibility exists requiring calculations before a model's timeline. An example is
+                    depreciation of assets in an existing company wanting to forecast some activity. 
+                    In such cases, it can be advantageous to perform the calculations within their own timeline
+                    and then place the results properly within the model's timeline. 
+                    This routine determine where such calculation results fit within the model's timeline and 
+                    crops those results that do not belong. */
+/*  REVISIONS:      Date        Developer       Description  
+                    Dec 12 2023 Craig Hatmaker  Original Development
+                    Dec 20 2023 Craig Hatmaker  Made sure date parameter is numeric, not text.
+                    Dec 21 2023 Craig Hatmaker  Added @ to Date
+*/
+TimelineOffsetλ = LAMBDA(
+//  Parameter Declarations
+    [Date],    
+    [Timeline],      
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →TimelineOffsetλ(ArrayStart, Timeline)¶" &
+                            "DESCRIPTION:   →Determines in which period, relative to the timeline's start and interval,¶" &
+                                           "→a date falls within.¶" & 
+                            "WEBPAGE:       →<coming soon>¶" & 
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Date           →(Required) A starting date¶" & 
+                            "Timeline       →(Required) A model's timline (Row of period start dates)¶" &                   
+                            "EXAMPLES:      →¶" &
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                                           "→=nabla.f.TimelineOffsetλ(""15/2/2024"", EDATE(""1/1/2025"", SEQUENCE( , 12, 0)", 
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Date),
+                            ISOMITTED( Timeline)
+                        ),
+    //  Check inputs - If date is in text, convert to value
+        Date,           @IF( ISTEXT( Date), DATEVALUE( Date), Date),
+    /*  Premise:        Create a short timeline that is in sync with the model's timeline that spans 
+                        from the timeline start to the date in question plus one period on either side.
+                        No we can use MATCH() to find which timeline period    */
+    //  Determine timeline's interval (length of periods)
+        Period1,        INDEX( Timeline, 1),
+        Period2,        INDEX( Timeline, 2), 
+        MpP,            ROUND( (Period2 - Period1)/30.5, 0), //Months Per Period
+    //  Determine if Prior to timeline or after
+        Direction,      IF(Date < Period1, -1, 1),
+    //  Determine the number of months between timeline's start and the date's period start
+        MonthDiff,      @DATEDIF( MIN( Period1, Date), MAX( Period1, Date), "M"),
+    //  Convert to number of periods
+        PeriodDiff,     QUOTIENT( MonthDiff, MpP),
+        PeriodSeq,      SEQUENCE( 1, PeriodDiff + 2, IF( Direction = 1, 0, -( PeriodDiff + 1))),
+        SearchTimeline, EDATE( Period1, PeriodSeq * MpP),
+        Result,         MATCH( Date, SearchTimeline, 1) - IF( Direction = 1, 1, PeriodDiff + 2),        
+    //  Return Result or Help
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  TimelinePositionλ
+    DESCRIPTION:*//**Crops an array based on a model's timeline*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Dec 12 2023 Craig Hatmaker  Original Development
+                    Dec 21 2023 Craig Hatmaker  Added @ to Offset
+*/
+TimelinePositionλ = LAMBDA(
+    [Array],            
+    [Timeline],         
+    [Offset],           
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →TimelinePositionλ(Array, Timeline, Offset)¶" &
+                            "DESCRIPTION:   →Position an array relative to the model's timeline¶" &
+                            "WEBPAGE:       →<coming soon>¶" & 
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Array          →(Required) The array to be positioned relative to a model's timeline¶" & 
+                            "Timeline       →(Required) A model's timline¶" & 
+                            "Offset         →(Required) The number of rows or columns to start placing the array within the timeline¶" &                     
+                            "NOTES!         →¶" & 
+                                           "→Timelines can be vertical or horizontal. Whichever way the timeline goes, the array must match.¶" &                     
+                            "EXAMPLES:      →¶" &
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                                           "→=nabla.f.TimelinePositionλ(SEQUENCE(3,3), EDATE(""1/1/2025"", SEQUENCE( , 12, 0)), 12)", 
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Array),
+                            ISOMITTED( Timeline),
+                            ISOMITTED( Offset)
+                        ),
+    //  Check inputs - Make sure scalars are not arrays
+        Offset,         @Offset,
+    //  Precedure
+        Rows,           ROWS(Array),
+        Cols,           COLUMNS(Array),
+        Result,         IF( COLUMNS(TIMELINE) > 1, 
+                        //  Horizontal Timeline
+                            MAKEARRAY( Rows, COLUMNS( Timeline),
+                                LAMBDA(R, C,
+                                    IF( ((C - Offset) >= 1) * (( C - Offset) <= Cols) = 1,
+                                        INDEX( Array, R, C - Offset),
+                                        0)
+                                )
+                            ),
+                        //  Vertical Timeline
+                            MAKEARRAY( ROWS( Timeline), Cols,
+                                LAMBDA(R, C,
+                                    IF( ((R - Offset) >= 1) * (( R - Offset) <= Rows) = 1,
+                                        INDEX( Array, R - Offset, C),
+                                        0)
+                                )
+                            )
+                        ),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  FilterContainsλ
+    DESCRIPTION:*//**Filter an array by another array that contains specifice text*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jan 16 2024 Craig Hatmaker  Original Development
+*/
+FilterContainsλ = LAMBDA(
+//  Parameter Declarations
+    [ArrayToFilter],
+    [FilterByArray],
+    [FilterByText],
+    [IgnoreCase?],
+
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      FilterContainsλ( ArrayToFilter, FilterByArray, Text, [IgnoreCase?] )¶" &
+                            "DESCRIPTION:   →Filter an array by another array that contains specifice text.¶" & 
+                            "WEBPAGE:       →<Coming soon>¶" & 
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "ArrayToFilter  →(Required) An array to be filtered¶" &                   
+                            "FilterByArray  →(Required) An array containing text to use as a filter¶" &                   
+                            "FilterByText   →(Required) A text string to find in FilterByArray¶" &                   
+                            "IgnoreCase?    →(Optional) A flag to determine if Text's case is important. Default is TRUE¶" &                   
+                            "EXAMPLES:      →¶" &
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                            """Cat""        →=nabla.f.FilterContainsλ( {""Joe"", ""Sally"", ""Cat""}, {""H1"", ""H2"", ""A1""}, ""A"" )",
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( ArrayToFilter), 
+                            ISOMITTED( FilterByArray), 
+                            ISOMITTED( FilterByText)
+                        ),
+    //  Check inputs - Set defaults
+        IgnoreCase?,    IF( ISLOGICAL( IgnoreCase?), IgnoreCase?, TRUE),
+    //  Procedure
+        Matches,        IF( IgnoreCase?, 
+                            SEARCH( FilterByText, FilterByArray),
+                            FIND( FilterByText, FilterByArray)
+                        ),
+        Result,         FILTER( ArrayToFilter, ISNUMBER( Matches)),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    )  
+);
+
+
+
+/*  FUNCTION NAME:  RangeToDAλ
+    DESCRIPTION:*//**Create a dynamic array from a static range*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Jan 15 2024 Craig Hatmaker  Original Development
+*/
+RangeToDAλ = LAMBDA(
+//  Parameter Declarations
+    [Cell],
+    [Rows],    
+    [Columns],    
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →RangeToDAλ( Cell, [Rows], [Columns])¶" &
+                            "DESCRIPTION:   →Create a dynamic array from a static range¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Cell           →(Required) The upper left cell of a range to convert¶" & 
+                            "Rows           →(Optional) The number of rows for dynamic array. Defaults to 1.¶" & 
+                            "Columns        →(Optional) The number of columns for dynamic array. Defaults to 1.¶" & 
+                            "EXAMPLES:      →¶" & 
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                            "               →=nabla.f.RangeToDAλ( A1, , 12)",
+                            "→", "¶" )
+                    ),            
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( Cell),
+    //  Set Defaults
+        Rows,           IF(ISOMITTED(Rows), 1, IF(Rows = 0, 1, Rows)),
+        Columns,        IF(ISOMITTED(Columns), 1, IF(Columns = 0, 1, Columns)),
+    //  Procedure
+        Result,         OFFSET(Cell, 0, 0, Rows, Columns),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    )  
+);
+
+
+
+/*  FUNCTION NAME:  PeriodStartλ
+    DESCRIPTION:*//**Determine when the period containing a date of interest starts*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Apr 13 2024 Craig Hatmaker  Copyright
+*/
+PeriodStartλ = LAMBDA(
+//  Parameter Declaration
+    [AnyPeriodStart],
+    [MonthsPerPeriod], 
+    [DateOfInterest], 
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →PeriodStartλ(AnyPeriodStart, MonthsPerPeriod, DateOfInterest)¶" &
+                            "DESCRIPTION:   →Determine when the period containing a date of interest starts.¶" &
+                            "WEBPAGE:       →<coming soon>¶" & 
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "AnyPeriodStart →(Required) Any start date within a timeline.¶" &                   
+                            "MonthsPerPeriod→(Required) Number of months in each period¶" & 
+                            "DateOfInterest →(Required) A date for which we want to know the start of the period containing it.¶" & 
+                            "EXAMPLES:      →¶" &
+                            "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
+                            "2026-04-01     →=nabla.f.PeriodStartλ(""2026-01-01"", 3, ""2026-04-15"")", 
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( AnyPeriodStart),
+                            ISOMITTED( MonthsPerPeriod),
+                            ISOMITTED( DateOfInterest)
+                        ),
+    //  Constants
+        MpY,                12, //Months Per Year
+        MpP,                MonthsPerPeriod,
+    //  Procedure
+        DateDay,            DAY(DateOfInterest), 
+        PeriodDay,          Day(AnyPeriodStart),
+        DateMonth,          MONTH(DateOfInterest), 
+        PeriodMonth,        MONTH(AnyPeriodStart),
+        MonthModDifference, MOD(DateMonth - PeriodMonth, MpP),
+        NeedPriorPeriod?,   AND( MonthModDifference = 0, DateDay < PeriodDay) * - MpP,
+        NewPeriodMonth,     MOD(DateMonth - MonthModDifference + NeedPriorPeriod? -1, MpY ) + 1,
+        YearCorrection,     -((DateMonth * 100 + DateDay) < (NewPeriodMonth * 100 + PeriodDay )),
+        PeriodDate,         DATE(YEAR(DateOfInterest) + YearCorrection,  NewPeriodMonth, PeriodDay),
+        LastDayOfMonthAdj,  PeriodDate - (MONTH(PeriodDate) <> NewPeriodMonth),
+        Result,             LastDayOfMonthAdj,
+    //  Return Result or Help
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);

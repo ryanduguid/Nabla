@@ -1,0 +1,580 @@
+/*  FUNCTION NAME:  Aboutλ
+    DESCRIPTION:*//**Displays this module's repository URL and function list*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Feb 27 2024 Craig Hatmaker  Copyright
+                    Jun 05 2024 Craig Hatmaker  Code Simplification
+*/
+
+Aboutλ = TRIM(TEXTSPLIT(
+    "About:                     →Basic functions for working with dynamic arrays. Suggested module name: nabla.u¶" &
+    "Version:                   →18 Aug 2026¶" &
+    "Repository:                  →https://github.com/ryanduguid/Nabla ¶" &
+    "Website:                   →https://github.com/ryanduguid/Nabla ¶" &
+    "→¶" &
+    "Function                   →Description¶" & 
+    "Aboutλ                     →Produces this table¶" & 
+    "CountCλ                    →Count how many of one or more characters are in a text string¶" &
+    "SumColsλ                   →Get the total of each column¶" & 
+    "SumRowsλ                   →Get the total of each row¶" & 
+    "AvgColsλ                   →Get the average of each column¶" & 
+    "AvgRowsλ                   →Get the average of each row¶" & 
+    "MinColsλ                   →Get the minimum of each column¶" & 
+    "MinRowsλ                   →Get the minimum of each row¶" & 
+    "MaxColsλ                   →Get the maximum of each column¶" & 
+    "MaxRowsλ                   →Get the maximum of each row¶" & 
+    "CountColsλ                 →Get the count of numbers in each column¶" & 
+    "CountRowsλ                 →Get the count of numbers in each row¶" & 
+    "CountAColsλ                →Get the count of everything of each column¶" & 
+    "CountARowsλ                →Get the count of everything of each row¶" & 
+    "IsBetweenλ                 →Determine if a value is between a lower and upper limit.¶" & 
+    "IsInListλ                  →Determine if a value is one of a list of items.¶" &
+    "RangeToDAλ                 →Convert a range reference to a dynamic array reference",
+    "→","¶"
+    )
+);
+
+
+
+/*  FUNCTION NAME:  CountCλ
+    DESCRIPTION:*//**Count occurrences of character(s) in a string*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Feb 23 2024 Craig Hatmaker  Copyright
+*/
+CountCλ = LAMBDA(
+//  Parameter Declarations
+        [Text],
+        [Characters],
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →CountCλ( Text, Characters)¶" &
+                            "DESCRIPTION:   →Count how many of one or more characters are in a string.¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Text           →(Required) The string to interrogate¶" & 
+                            "Characters     →(Required) A single character, or CSV of characters to find in Text¶" & 
+                                           "→NOTE! Case sensitive¶" & 
+                            "EXAMPLES:      →Formula (nabla.e is assumed to be the module's name)¶" &
+                                           "→=nabla.e.CountCλ( ""Mary had a little lamb"", ""a,b"")", 
+                        "→", "¶" )
+                    ),
+    //  Check inputs - Omitted required arguments
+       Help?,           OR( ISOMITTED( Text),
+                            ISOMITTED( Characters)
+                        ),
+    //  Set defaults
+        Characters,     TEXTSPLIT( Characters, "," ),
+    //  Procedure
+        Result,         LEN(Text) - SUM(LEN(TEXTSPLIT( Text, Characters))),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)        
+    )
+);
+
+
+
+/*  FUNCTION NAME:  SumRowsλ
+    DESCRIPTION:*//**Get the total for each row*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Feb 21 2024 Craig Hatmaker  Copyright
+*/
+SumRowsλ = LAMBDA(
+//  Parameter Declarations
+    [Array],
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →SumRowsλ( Array)¶" &
+                            "DESCRIPTION:   →Get the total of each row¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Array          →(Required) A two dimensional array/range containing values to be totalled by row.¶" & 
+                            "EXAMPLES:      →Formula (nabla.e is assumed to be the module's name)¶" &
+                                           "→=nabla.e.SumRowsλ( SEQUENCE(5,5))", 
+                            "→", "¶" 
+                        )
+                    ),                    
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( Array),
+    //  Procedure
+        Result,         BYROW( Array, LAMBDA( Row, SUM(Row))),
+    //  Return Result or Help
+        CHOOSE(Help? + 1, Result, Help)
+    ) 
+);
+
+
+
+/*  FUNCTION NAME:  SumColsλ
+    DESCRIPTION:*//**Get the total for each Column*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Feb 21 2024 Craig Hatmaker  Copyright
+*/
+SumColsλ = LAMBDA(
+//  Parameter Declarations
+    [Array],
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →SumColsλ( Array)¶" &
+                            "DESCRIPTION:   →Get the total of each column¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Array          →(Required) A two dimensional array/range containing values to be totalled by column.¶" & 
+                            "EXAMPLES:      →Formula (nabla.e is assumed to be the module's name)¶" &
+                                           "→=nabla.e.SumColsλ( SEQUENCE(5,5))", 
+                            "→", "¶" 
+                        )
+                    ),                    
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( Array),
+    //  Procedure
+        Result,         BYCOL( Array, LAMBDA( Col, SUM(Col))),
+    //  Return Result or Help
+        CHOOSE(Help? + 1, Result, Help)
+    ) 
+);
+
+
+
+/*  FUNCTION NAME:  AvgRowsλ
+    DESCRIPTION:*//**Get the average for each row*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Feb 21 2024 Craig Hatmaker  Copyright
+*/
+AvgRowsλ = LAMBDA(
+//  Parameter Declarations
+    [Array],
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →AvgRowsλ( Array)¶" &
+                            "DESCRIPTION:   →Get the average of each row¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Array          →(Required) A two dimensional array/range containing values to be averaged by row.¶" & 
+                            "EXAMPLES:      →Formula (nabla.e is assumed to be the module's name)¶" &
+                                           "→=nabla.e.AvgRowsλ( SEQUENCE(5,5))", 
+                            "→", "¶" 
+                        )
+                    ),                    
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( Array),
+    //  Procedure
+        Result,         BYROW( Array, LAMBDA( Row, AVERAGE(Row))),
+    //  Return Result or Help
+        CHOOSE(Help? + 1, Result, Help)
+    ) 
+);
+
+
+
+/*  FUNCTION NAME:  AvgColsλ
+    DESCRIPTION:*//**Get the average for each Column*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Feb 21 2024 Craig Hatmaker  Copyright
+*/
+AvgColsλ = LAMBDA(
+//  Parameter Declarations
+    [Array],
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →SumColsλ( Array)¶" &
+                            "DESCRIPTION:   →Get the average for each Column¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Array          →(Required) A two dimensional array/range containing values to be averaged by column.¶" & 
+                            "EXAMPLES:      →Formula (nabla.e is assumed to be the module's name)¶" &
+                                           "→=nabla.e.AvgColsλ( SEQUENCE(5,5))", 
+                            "→", "¶" 
+                        )
+                    ),                    
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( Array),
+    //  Procedure
+        Result,         BYCOL( Array, LAMBDA( Col, AVERAGE(Col))),
+    //  Return Result or Help
+        CHOOSE(Help? + 1, Result, Help)
+    ) 
+);
+
+
+
+/*  FUNCTION NAME:  MinRowsλ
+    DESCRIPTION:*//**Get the minimum for each row*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Feb 21 2024 Craig Hatmaker  Copyright
+*/
+MinRowsλ = LAMBDA(
+//  Parameter Declarations
+    [Array],
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →MinRowsλ( Array)¶" &
+                            "DESCRIPTION:   →Get the minimum of each row¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Array          →(Required) A two dimensional array/range containing values to find the minimum by row.¶" & 
+                            "EXAMPLES:      →Formula (nabla.e is assumed to be the module's name)¶" &
+                                           "→=nabla.e.MinRowsλ( SEQUENCE(5,5))", 
+                            "→", "¶" 
+                        )
+                    ),                    
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( Array),
+    //  Procedure
+        Result,         BYROW( Array, LAMBDA( Row, MIN(Row))),
+    //  Return Result or Help
+        CHOOSE(Help? + 1, Result, Help)
+    ) 
+);
+
+
+
+/*  FUNCTION NAME:  MinColsλ
+    DESCRIPTION:*//**Get the minimum for each Column*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Feb 21 2024 Craig Hatmaker  Copyright
+*/
+MinColsλ = LAMBDA(
+//  Parameter Declarations
+    [Array],
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →MinColsλ( Array)¶" &
+                            "DESCRIPTION:   →Get the minimum for each Column¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Array          →(Required) A two dimensional array/range containing values to find the minumum by column.¶" & 
+                            "EXAMPLES:      →Formula (nabla.e is assumed to be the module's name)¶" &
+                                           "→=nabla.e.MinColsλ( SEQUENCE(5,5))", 
+                            "→", "¶" 
+                        )
+                    ),                    
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( Array),
+    //  Procedure
+        Result,         BYCOL( Array, LAMBDA( Col, MIN(Col))),
+    //  Return Result or Help
+        CHOOSE(Help? + 1, Result, Help)
+    ) 
+);
+
+
+
+/*  FUNCTION NAME:  MaxRowsλ
+    DESCRIPTION:*//**Get the maximum for each row*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Feb 21 2024 Craig Hatmaker  Copyright
+*/
+MaxRowsλ = LAMBDA(
+//  Parameter Declarations
+    [Array],
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →MaxRowsλ( Array)¶" &
+                            "DESCRIPTION:   →Get the maximum of each row¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Array          →(Required) A two dimensional array/range containing values to find the maximum by row.¶" & 
+                            "EXAMPLES:      →Formula (nabla.e is assumed to be the module's name)¶" &
+                                           "→=nabla.e.MaxRowsλ( SEQUENCE(5,5))", 
+                            "→", "¶" 
+                        )
+                    ),                    
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( Array),
+    //  Procedure
+        Result,         BYROW( Array, LAMBDA( Row, MAX(Row))),
+    //  Return Result or Help
+        CHOOSE(Help? + 1, Result, Help)
+    ) 
+);
+
+
+
+/*  FUNCTION NAME:  MaxColsλ
+    DESCRIPTION:*//**Get the maximum for each Column*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Feb 21 2024 Craig Hatmaker  Copyright
+*/
+MaxColsλ = LAMBDA(
+//  Parameter Declarations
+    [Array],
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →MaxColsλ( Array)¶" &
+                            "DESCRIPTION:   →Get the minimum for each Column¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Array          →(Required) A two dimensional array/range containing values to find the maximum by column.¶" & 
+                            "EXAMPLES:      →Formula (nabla.e is assumed to be the module's name)¶" &
+                                           "→=nabla.e.MaxColsλ( SEQUENCE(5,5))", 
+                            "→", "¶" 
+                        )
+                    ),                    
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( Array),
+    //  Procedure
+        Result,         BYCOL( Array, LAMBDA( Col, MAX(Col))),
+    //  Return Result or Help
+        CHOOSE(Help? + 1, Result, Help)
+    ) 
+);
+
+
+
+/*  FUNCTION NAME:  CountARowsλ
+    DESCRIPTION:*//**Count everything in each row*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Feb 21 2024 Craig Hatmaker  Copyright
+*/
+CountARowsλ = LAMBDA(
+//  Parameter Declarations
+    [Array],
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →CountARowsλ( Array)¶" &
+                            "DESCRIPTION:   →Count everything in each row¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Array          →(Required) A two dimensional array/range containing values to be counted.¶" & 
+                            "EXAMPLES:      →Formula (nabla.e is assumed to be the module's name)¶" &
+                                           "→=nabla.e.CountARowsλ( CHOOSE( RANDARRAY( 5, 5, 1, 5),""A"", ""B"", """", 1, 2))", 
+                            "→", "¶" 
+                        )
+                    ),                    
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( Array),
+    //  Procedure
+        Result,         BYROW( Array, LAMBDA( Row, COUNTA( Row))),
+    //  Return Result or Help
+        CHOOSE(Help? + 1, Result, Help)
+    ) 
+);
+
+
+
+/*  FUNCTION NAME:  CountAColsλ
+    DESCRIPTION:*//**Count everything in each row*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Feb 21 2024 Craig Hatmaker  Copyright
+*/
+CountAColsλ = LAMBDA(
+//  Parameter Declarations
+    [Array],
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →CountAColsλ( Array )¶" &
+                            "DESCRIPTION:   →Count everything in each column¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Array          →(Required) A two dimensional array/range containing values to be counted.¶" & 
+                            "EXAMPLES:      →Formula (nabla.e is assumed to be the module's name)¶" &
+                                           "→=nabla.e.CountAColsλ( CHOOSE( RANDARRAY( 5, 5, 1, 5),""A"", ""B"", """", 1, 2))", 
+                            "→", "¶" 
+                        )
+                    ),                    
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( Array),
+    //  Procedure
+        Result,         BYCOL( Array, LAMBDA( Col, COUNTA( Col))),
+    //  Return Result or Help
+        CHOOSE(Help? + 1, Result, Help)
+    ) 
+);
+
+
+
+/*  FUNCTION NAME:  CountRowsλ
+    DESCRIPTION:*//**Count numbers in each row*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Feb 21 2024 Craig Hatmaker  Copyright
+*/
+CountRowsλ = LAMBDA(
+//  Parameter Declarations
+    [Array],
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →CountRowsλ( Array)¶" &
+                            "DESCRIPTION:   →Count numbers in each row¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Array          →(Required) A two dimensional array/range containing numbers to be counted.¶" & 
+                            "EXAMPLES:      →Formula (nabla.e is assumed to be the module's name)¶" &
+                                           "→=nabla.e.CountRowsλ( CHOOSE( RANDARRAY( 5, 5, 1, 5),""A"", ""B"", """", 1, 2))", 
+                            "→", "¶" 
+                        )
+                    ),                    
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( Array),
+    //  Procedure
+        Result,         BYROW( Array, LAMBDA( Row, COUNT( Row))),
+    //  Return Result or Help
+        CHOOSE(Help? + 1, Result, Help)
+    ) 
+);
+
+
+
+/*  FUNCTION NAME:  CountColsλ
+    DESCRIPTION:*//**Count numbers in each row*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Feb 21 2024 Craig Hatmaker  Copyright
+*/
+CountColsλ = LAMBDA(
+//  Parameter Declarations
+    [Array],
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →CountColsλ( Array,)¶" &
+                            "DESCRIPTION:   →Count numbers in each column¶" & 
+                            "WEBPAGE:       →<coming soon>¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" & 
+                            "Array          →(Required) A two dimensional array/range containing numbers to be counted.¶" & 
+                            "EXAMPLES:      →Formula (nabla.e is assumed to be the module's name)¶" &
+                                           "→=nabla.e.CountColsλ( CHOOSE( RANDARRAY( 5, 5, 1, 5),""A"", ""B"", """", 1, 2))", 
+                            "→", "¶" 
+                        )
+                    ),                    
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( Array),
+    //  Procedure
+        Result,         BYCOL( Array, LAMBDA( Col, COUNT( Col))),
+    //  Return Result or Help
+        CHOOSE(Help? + 1, Result, Help)
+    ) 
+);
+
+
+
+/*  FUNCTION NAME:      IsBetweenλ
+    DESCRIPTION:*//**Determine if a value is between a lower and upper limit*/
+/*  REVISIONS:          Date            Developer       Description  
+                        Jun 01 2022     Craig Hatmaker  Original Development
+                        Apr 12 2023     Craig Hatmaker  Added Help
+*/
+IsBetweenλ = LAMBDA(
+//  Parameter Declarations
+    [Value],
+    [Low],
+    [Hi],
+    [Inclusive],
+//  Help
+    LET(Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →IsBetweenλ( Value, Low, Hi, [Inclusive])¶" &
+                            "DESCRIPTION:   →Determine if a value is between a lower and upper limit.¶" & 
+                            "PARAMETERS:    →¶" & 
+                            "Value          →(Required) A value or array of values to compare.¶" & 
+                            "Lo             →(Required) The lower limit that the value must be greater than¶" &
+                            "Hi             →(Required) The lower limit that the value must be less than¶" &
+                            "Inclusive      →(Optional) If set to TRUE (default) the value can be equal to Lo and/or Hi¶" &
+                            "→¶" &
+                            "EXAMPLES       :→¶" & 
+                            "Result         →Formula¶" &
+                            "FALSE          →=IsBetweenλ(1, 2, 4)¶" & 
+                            "TRUE           →=IsBetweenλ(2, 2, 4)¶" & 
+                            "FALSE          →=IsBetweenλ(2, 2, 4, FALSE)", 
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Value),
+                            ISOMITTED( Low),
+                            ISOMITTED( Hi)
+                        ),
+    //  Procedure
+        Result,         IF( Inclusive, 
+                            (Value >= Low) * (Value <= Hi) = 1, 
+                            (Value > Low) * (Value < Hi) = 1
+                        ),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:      IsInListλ
+    DESCRIPTION:*//**Determine if a value is between a lower and upper limit*/
+/*  REVISIONS:          Date        Developer       Description  
+                        Jun 18 2023 Craig Hatmaker  Copyright
+                        Feb 28 2024 Craig Hatmaker  Updated to new standards
+*/
+IsInListλ = LAMBDA(
+//  Parameter Declarations
+    [Value],
+    [LIST],
+//  Help
+    LET(Help,           TRIM(TEXTSPLIT( 
+                            "FUNCTION:      →IsInListλ( Value, List)¶" &
+                            "DESCRIPTION:   →Determine if a value is one of a list of items.¶" & 
+                            "PARAMETERS:    →¶" & 
+                            "Value          →(Required) A value or array of values to compare.¶" & 
+                            "List           →(Required) A list of values to check¶" &
+                            "→¶" &
+                            "EXAMPLES       :→¶" & 
+                            "Result         →Formula¶" &
+                            "FALSE          →=IsInListλ(1, {2,3,4})¶" & 
+                            "TRUE           →=IsInListλ(1, {1,3,5})¶" & 
+                            "→", "¶"
+                            )
+                        ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Value),
+                            ISOMITTED( LIST)
+                        ),
+    //  Procedure
+        Result,         NOT( ISNA( MATCH( Value, List, 0))),
+    //  Return Result
+        CHOOSE(Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  RangeToDAλ
+    DESCRIPTION:*//**Convert a range reference to a dynamic array reference*/
+/*  REVISIONS:      Date            Developer       Description  
+                    Aug 19,2023     Craig Hatmaker  Copyright
+*/
+RangeToDAλ = LAMBDA(
+//  Parameter Declarations
+    [Range],
+    [Rows],
+    [Columns],
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT(
+                            "FUNCTION:          →RangeToDAλ(Range, [Rows], [Columns])¶" &
+                            "DESCRIPTION:       →Convert a range reference to a dynamic array reference.¶" & 
+                            "WEBSITE:           →Coming soon¶" &
+                            "PARAMETERS:        →¶" & 
+                            "Range              →(Required) A reference to the range to be converted.¶" &
+                            "Rows               →(Optional) Number of rows for the dynamic array. Defaults to 1.¶" &
+                            "Columns            →(Optional) Number of columns for the dynamic array. Defaults to 1.¶" &
+                            "→¶" &
+                            "EXAMPLES:          →=RangeToDAλ(A1, , ModelPeriodCount)",
+                            "→", "¶"
+                            )
+                        ),  
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( Range),
+    //  Check inputs - Set optional arguments' defaults
+        Rows,           IF( ISNUMBER( Rows), Rows, 1),
+        Columns,        IF( ISNUMBER( Columns), Columns, 1),
+    //  Procedure
+        Result,         OFFSET( Range, 0, 0, Rows, Columns), 
+    //  Return Result or help
+        CHOOSE(Help? + 1, Result, Help)
+    )
+);

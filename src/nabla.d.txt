@@ -1,0 +1,789 @@
+/*  Module Contains nabla Compliant LAMBDAs that deal with dates */
+
+/*  FUNCTION NAME:  Aboutλ
+    DESCRIPTION:*//**Displays this module's repository URL and function list*/
+/*  REVISIONS:      Date        Developer       Description  
+                    Mar 17 2023 Craig Hatmaker  Original Development
+                    Mar 22 2023 Craig Hatmaker  Added About
+                    Apr 06 2023 Craig Hatmaker  Added Help to LAMBDAs
+                    Aug 28 2023 Craig Hatmaker  Conformed to new template
+                    Jan 02 2024 Craig Hatmaker  See CountDOWλ
+                    Jan 05 2024 Craig Hatmaker  Add all data validation/diagnostic routines
+                    Jun 06 2024 Craig Hatmaker  Code Simplification
+*/
+Aboutλ = TRIM(
+    TEXTSPLIT(
+        "About:                 →CBSE compliant LAMBDAs dealing with dates. Suggested module name: nabla.d¶" &
+        "Version:               →18 Aug 2026¶" &
+        "Repository:              →https://github.com/ryanduguid/Nabla ¶" &
+        "Website:               →https://github.com/ryanduguid/Nabla ¶" &
+        "→¶" & 
+        "Function               →Description¶" & 
+        "Aboutλ                 →Produces this table¶" &
+        "CountDOWλ              →Count instances of a specific day of the week between two dates¶" &
+        "IsBetweenλ             →Determine if a value is between a lower and upper limit¶" &
+        "IsOccurrenceDateλ      →Determine if a date passed is when a potentially repeating event happens¶" &
+        "OverLapDaysλ           →Return how many days overlap two period ranges.¶" &
+        "Periodsλ               →Determine the number of periods from Starts to Ends inclusive¶" &
+        "PeriodLabelλ           →Creates a label for a date based on period interval¶" &
+        "ScheduleRatesλ         →Schedule rates that persist until replaced in a timeline.¶" &
+        "ScheduleRatesByItemsλ  →Schedule rates that persist until replaced in a timeline for each item in a list.¶" &
+        "ScheduleValuesλ        →Schedules values in a timeline. ¶" &
+        "ScheduleValuesByItemsλ →Schedules values in a timeline for each item in a list.¶" &
+        "Timelineλ              →Creates a horizontal list of start or end dates for a timeline¶" & 
+        "→¶" &
+        "DIAGNOSTICS            →These functions diagnose problems in their associate function's arguments.¶" & 
+                               "→Should a function not work, it may be because there is a problem with the arguments.¶" & 
+                               "→Argument problems can include text where numbers should be, invalid dates, etc.¶" & 
+                               "→To see if you have argument problems, insert 'DV' between 'λ' and '('. ¶" & 
+                               "→Here is an example: CountDOWλDV( Start, End, 1). Hit enter to run diagnostics.¶" & 
+                               "→When finished, remove 'DV' to return the function to normal operation¶" & 
+        "CountDOWλDV            →¶" &
+        "IsBetweenλDV           →¶" &
+        "IsOccurrenceDateλDV    →¶" &
+        "OverLapDaysλDV         →¶" &
+        "PeriodsλDV             →¶" &
+        "PeriodLabelλDV         →¶" &
+        "ScheduleRatesλDV       →¶" &
+        "ScheduleRatesByItemsλDV→¶" &
+        "ScheduleValuesλDV      →¶" &
+        "ScheduleValuesByItemsλDV→¶" &
+        "Timelineλ              →",  
+        "→", "¶"
+    )
+);
+
+
+
+/*  FUNCTION NAME:  CountDOWλ
+    DESCRIPTION:*/  /**Count instances of a specific day of the week between two dates.*/
+/*  REVISIONS:      Date            Developer       Description  
+                    2010            Barry Houdini   Original Formula
+                    Aug 28 2023     Craig Hatmaker  Original Development
+                    Jan 01 2024     Craig Hatmaker  Corrected Help
+*/
+CountDOWλ = LAMBDA(   
+//  Parameter Declarations
+    [Starts],
+    [Ends],
+    [DayOfWeek],  
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →CountDOWλ(Starts, Ends, DayOfWeek)¶" & 
+                        "DESCRIPTION:   →Count instances of a specific day of the week between two dates.¶" & 
+                        "WEBSITE:       →https://github.com/ryanduguid/Nabla¶" &
+                        "PARAMETERS:    →¶" & 
+                        "Starts         →(Required) One of more start dates (text or numeric) in a row or column¶" & 
+                        "Ends           →(Required) End dates (text or numeric) for each start date¶" & 
+                        "DayOfWeek      →(Required) 1=Sunday, 7=Saturday.¶" &
+                        "EXAMPLES:      →¶" & 
+                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
+                        "2              →=nabla.d.CountDOWλ(""22/3/2012"", ""10/4/2012"",  1)", 
+                        "→", "¶"
+                        )
+                    ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Starts), 
+                            ISOMITTED( Ends),
+                            ISOMITTED( DayOfWeek)
+                        ),
+    //  Check inputs - Set optional arguments' defaults and apply convenience conversions
+        CvtStarts,      IF( ISOMITTED( Starts), 
+                            FALSE,
+                            IF( ISNUMBER( Starts), Starts, DATEVALUE( Starts))
+                        ),
+        CvtEnds,        IF( ISOMITTED( Ends), 
+                            FALSE, 
+                            IF( ISNUMBER( Ends), Ends, DATEVALUE( Ends))
+                        ),
+       //  Procedure
+       Result,          INT( ( ( CvtEnds - CvtStarts) + WeekDay( CvtStarts - DayOfWeek)) / 7),
+    //  Return Result
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  IsBetweenλ
+    DESCRIPTION:*//**Determine if a value is between a lower and upper limit*/
+/*  REVISIONS:      Date            Developer       Description  
+                    Jun 01 2022     Craig Hatmaker  Copyright
+                    Apr 12 2023     Craig Hatmaker  Added Help
+*/
+IsBetweenλ = LAMBDA(
+//  Parameter Declarations
+    [Values],
+    [Low],
+    [High],
+    [Inclusive],
+//  Help
+    LET(Help,       TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →IsBetweenλ(Values, Low, High, [Inclusive])¶" &
+                        "DESCRIPTION:   →Determine if a value is between a lower and upper limit.¶" & 
+                        "WEBSITE:       →https://github.com/ryanduguid/Nabla ¶" &
+                        "PARAMETERS:    →¶" & 
+                        "Values         →(Required) one or more values to compare.¶" & 
+                        "Low            →(Required) The lower limit that the value(s) must be greater than¶" &
+                        "High           →(Required) The higher limit that the value(s) must be less than¶" &
+                        "Inclusive      →(Optional) TRUE: Value(s) can be equal to Low and/or High (default)¶" &
+                        "EXAMPLES:      →¶" & 
+                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
+                        "FALSE          →=nabla.d.IsBetweenλ(1, 2, 4)¶" & 
+                        "TRUE           →=nabla.d.IsBetweenλ(Today(), Today(), Today()+1)¶" & 
+                        "FALSE          →=nabla.d.IsBetweenλ(""B"", ""B"", ""D"", FALSE)", 
+                        "→", "¶"
+                        )
+                    ),
+    //  Check inputs - Set optional arguments defaults
+        Inclusive,      IF( ISLOGICAL( Inclusive), Inclusive, TRUE),
+    //  Check inputs - Omitted required arguments 
+        Help?,          OR(
+                            ISOMITTED( Values), 
+                            ISOMITTED( Low),
+                            ISOMITTED( High)
+                        ),        
+    //  Procedure
+        Result,         IF(Inclusive, (Values >= Low) * (Values <= High) = 1, (Values > Low) * (Values < High) = 1),
+    //  Return Result
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  IsOccurrenceDateλ
+    DESCRIPTION:*//**Returns TRUE if Date passed is when something happens. This was developed for budgeting where we have expenses that start, and sometimes repeat at regular intervals.*/
+/*  REVISIONS:      Date            Developer       Description  
+                    Jun 01 2022     Craig Hatmaker  Copyright
+                    Apr 07 2023     Craig Hatmaker  Added Help
+*/
+
+IsOccurrenceDateλ = LAMBDA(
+//  Parameter declarations
+    [Dates],
+    [FirstOccurrence],
+    [LastOccurrence],
+    [Repeats],
+//  Help
+    LET(
+        Help,       TRIM(TEXTSPLIT(
+                        "FUNCTION:      →IsOccurrenceDateλ(Dates, FirstOccurrence, [LastOccurrence], [Repeats])¶" &
+                        "DESCRIPTION:   →Returns TRUE if a Date is when something happens.¶" &
+                        "               →This was developed for budgeting where we have expenses that start,¶" &
+                        "               →and sometimes repeat at regular intervals.¶" &  
+                        "WEBSITE:       →https://github.com/ryanduguid/Nabla¶" &
+                        "PARAMETERS:    →¶" &
+                        "Dates          →(Required) Date to test. Normally this is horizontal timeline by day¶" &
+                        "FirstOccurrence →(Required) When something that may repeat, happens for the first time.¶" &
+                        "LastOccurrence  →(Optional) When something that may repeat, happens for the last time.¶" &
+                                        "→If omitted, it is assumed repeating items repeat forever.¶" &
+                        "Repeats        →(Optional) A code that conveys how often this thing repeats. Repeat codes are¶" &
+                                        "→O=One time/never repeats (default)¶" & 
+                                        "→A=Annually¶" & 
+                                        "→S=Semi-Annually¶" &
+                                        "→Q=Quarterly¶" & 
+                                        "→M=Monthly¶" & 
+                                        "→B=BiWeekly¶" & 
+                                        "→W=Weekly¶" &
+                                        "→X=Every Workday (USA normal)¶" & 
+                                        "→D=Daily¶" &                      
+                        "EXAMPLES:      →¶" &
+                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
+                        "72             →=SUM(N(nabla.d.IsOccurrenceDateλ(SEQUENCE(,90,""1/1/2025""), ""1/1/2025"", ""13/3/2025"", ""D"")))¶" &
+                        "01             →=SUM(N(nabla.d.IsOccurrenceDateλ(SEQUENCE(,90,""1/1/2025""), ""1/1/2025"", ""13/3/2025"", ""O"")))¶" &
+                        "11             →=SUM(N(nabla.d.IsOccurrenceDateλ(SEQUENCE(,90,""1/1/2025""), ""1/1/2025"", ""13/3/2025"", ""W"")))", 
+                        "→", "¶"
+                        )
+                    ),
+    //  Named constants
+        SemiAnnually,   6,    //Months
+        Quarterly,      3,    //Months
+        Biweekly,       14,   //Days
+        Weekly,         7,    //Days
+        Mon2Sun,        2,    //WEEKDAY() Type parameter
+        Friday,         5,    //WEEKDAY()'s value for Friday when type= 2
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Dates), 
+                            ISOMITTED( FirstOccurrence)
+                        ),
+    //  Check inputs - Set optional arguments' defaults and apply convenience conversions
+        CvtDates,       IF( ISOMITTED( Dates), 
+                            FALSE,
+                            IF( ISNUMBER( Dates), Dates, DATEVALUE( Dates))
+                        ),
+        CvtFirsts,      IF( ISOMITTED( FirstOccurrence), 
+                            FALSE, 
+                            IF( ISNUMBER( FirstOccurrence), FirstOccurrence, DATEVALUE( FirstOccurrence))
+                        ),
+        CvtLasts,       IF( ISOMITTED( LastOccurrence), 
+                            FALSE, 
+                            IF( OR( ISNUMBER( LastOccurrence), TRIM( LastOccurrence) = ""), LastOccurrence, DATEVALUE( LastOccurrence))
+                        ),
+        Repeats,        IF( OR( ISOMITTED(Repeats), TRIM( Repeats) = "" ), "O", LEFT(Repeats, 1)),
+    //  Procedure
+        SameDay,        DAY( CvtDates) = DAY( CvtFirsts),
+        Test,           ( CvtFirsts <= CvtDates) * 
+                        IF(TRIM( CvtLasts) = "", 1, CvtDates <= CvtLasts) *
+                        SWITCH(
+                            Repeats,
+                            "O",    CvtDates = CvtFirsts,
+                            "A",    TEXT(CvtDates, "MMDD") = TEXT(CvtFirsts, "MMDD"),
+                            "S",    SameDay * 
+                                        (MOD( MONTH( CvtDates), SemiAnnually) = MOD( MONTH( CvtFirsts), SemiAnnually)),
+                            "Q",    SameDay *
+                                        (MOD( MONTH( CvtDates), Quarterly) = MOD( MONTH( CvtFirsts), Quarterly)),
+                            "M",    SameDay,
+                            "B",    MOD( CvtDates, Biweekly) = MOD( CvtFirsts, Biweekly),
+                            "W",    MOD( CvtDates, Weekly) = MOD( CvtFirsts, Weekly),
+                            "X",    WEEKDAY( CvtDates, Mon2Sun) <= Friday,
+                            "D",    TRUE,
+                            0
+                        ),
+        Result,         Test = 1,        
+    //  Return Result
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+
+
+/*  FUNCTION NAME:  OverLapDaysλ
+    DESCRIPTION:*//**Return how many days overlap two period ranges. */
+/*  REVISIONS:      Date        Developer       Description  
+                    Jun 01 2022 Craig Hatmaker  Copyright
+                    Apr 12 2023 Craig Hatmaker  Added Help
+                    Jan 04 2024 Craig Hatmaker  Fixed data validation bug
+*/
+OverLapDaysλ = LAMBDA(
+//  Parameter Declarations
+    [Period1Start],
+    [Period1End],
+    [Period2Start],
+    [Period2End],  
+//  Help
+    LET(
+        Help,       TRIM(TEXTSPLIT(
+                        "FUNCTION:      →OverLapDaysλ(Period1Start, Period1End, Period2Start, Period2End)¶" &
+                        "DESCRIPTION:   →Count days shared between two sets of periods.¶" & 
+                        "WEBSITE:       →https://github.com/ryanduguid/Nabla¶" &
+                        "PARAMETERS:    →¶" & 
+                        "Period1Start   →(Required) First period's start date.¶" & 
+                        "Period1End     →(Required) First period's end date.¶" & 
+                        "Period2Start   →(Required) Second period's start date.¶" & 
+                        "Period2End     →(Required) Decond period's end date.¶" & 
+                        "EXAMPLES:      →¶" & 
+                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
+                        "5              →=nabla.d.OverLapDaysλ(08, 14, 10, 17)¶" & 
+                        "8              →=nabla.d.OverLapDaysλ(10, 20, 11, 18)¶" & 
+                        "12             →=nabla.d.OverLapDaysλ(""1/17/23"", ""1/25/23"", ""1/7/23"", ""1/18/23"")", 
+                        "→", "¶"
+                        )
+                    ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Period1Start), 
+                            ISOMITTED( Period1End),
+                            ISOMITTED( Period2Start), 
+                            ISOMITTED( Period2End)
+                        ),
+    //  Check inputs - Set optional arguments' defaults and apply convenience conversions
+        CvtP1Start,     IF( ISOMITTED( Period1Start), 
+                            FALSE,
+                            IF( ISNUMBER( Period1Start), Period1Start, DATEVALUE( Period1Start))
+                        ),
+        CvtP1End,     IF( ISOMITTED( Period1End), 
+                            FALSE,
+                            IF( ISNUMBER( Period1End), Period1End, DATEVALUE( Period1End))
+                        ),
+        CvtP2Start,     IF( ISOMITTED( Period2Start), 
+                            FALSE,
+                            IF( ISNUMBER( Period2Start), Period2Start, DATEVALUE( Period2Start))
+                        ),
+        CvtP2End,     IF( ISOMITTED( Period2End), 
+                            FALSE,
+                            IF( ISNUMBER( Period2End), Period2End, DATEVALUE( Period2End))
+                        ),
+    //  Procedure
+        MinOfEnd,   IF(Period2End <= Period1End, Period2End, Period1End),
+        MaxOfStart, IF(Period2Start >= Period1Start, Period2Start, Period1Start),
+        Days,       MinOfEnd - MaxOfStart + 1,
+        Result,     IF(Days > 0, Days, 0),
+    //  Return Result
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  PeriodLabelλ
+    DESCRIPTION:*//**Creates a lable for a date based on period interval*/
+/*  REVISIONS:      Date        Developer       Description  
+                    2023-Feb-25 Craig Hatmaker  Copyright
+                    2023-Apr-14 Craig Hatmaker  Added Help
+*/
+PeriodLabelλ = LAMBDA(
+//  Parameter Declarations
+    [Date],
+    [Interval],
+    LET(
+//  Help
+        Help,       TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →PeriodLabelλ(Date, [Interval])¶" &
+                        "DESCRIPTION:   →Creates a label for a date based on period interval¶" & 
+                        "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
+                        "PARAMETERS:    →¶" & 
+                        "Date           →(Required) A single date or array of date(s) where the first date is the first date of a calendar year.¶" & 
+                        "Interval       →(Optional) Must be one of: ¶" & 
+                                       "→D=Daily¶" & 
+                                       "→W=Weekly¶" & 
+                                       "→I=Weekly (using ISO week number)¶" & 
+                                       "→M=Monthly¶" & 
+                                       "→Q=Quarterly¶" & 
+                                       "→S=Semi-Annually¶" & 
+                                       "→A or Y=Annually¶" & 
+                        "EXAMPLES:      →¶" & 
+                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
+                        "2023-Feb-26    →=nabla.d.PeriodLabelλ(DATEVALUE(""02/26/23""), ""D"")¶" &
+                        "2023-Feb       →=nabla.d.PeriodLabelλ(DATEVALUE(""02/26/23""), ""M"")¶" & 
+                        "2023:Q01       →=nabla.d.PeriodLabelλ(DATEVALUE(""02/26/23""), ""Q"")¶" & 
+                        "2023           →=nabla.d.PeriodLabelλ(DATEVALUE(""02/26/23""), ""Y"")", 
+                        "→", "¶"
+                        )
+                    ),
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( Date),
+    //  Check inputs - Set optional arguments' defaults and apply convenience conversions
+        CvtDate,        IF( ISOMITTED( Date), 
+                            FALSE,
+                            IF( ISNUMBER( Date), Date, DATEVALUE( Date))
+                        ),
+        Interval,         IF( ISOMITTED( Interval), "M", Interval),
+    //  Procedure
+        Result,     SWITCH(Interval,
+                        "D", TEXT(Date, "yyyy-mmm-dd"),
+                        "W", YEAR(Date) & ":W" & TEXT(QUOTIENT(Date - DATE(YEAR(Date), 1, 0) - 1, 7) + 1, "00"),
+                        "I", YEAR(Date) & ":W" & TEXT(ISOWEEKNUM(Date), "00"),
+                        "M", TEXT(Date, "YYYY-MMM"),
+                        "Q", YEAR(Date) & ":Q" & QUOTIENT(MONTH(Date) - 1, 3) + 1,
+                        "S", YEAR(Date) & ":S" & QUOTIENT(MONTH(Date) - 1, 6) + 1,
+                        "A", TEXT(Date, "YYYY"),
+                        "Y", TEXT(Date, "YYYY"),                            
+                        #Value!
+                    ),        
+    //  Return Result
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  Periodsλ
+    DESCRIPTION:*//**Determine the number of periods from Starts to Date2 in Days, Weeks, Months, Quarters, or Years.*/
+/*  REVISIONS:      Date            Developer       Description  
+                    Apr 06,2023     Craig Hatmaker  Copyright
+                    Aug 17,2023     Craig Hatmaker  Work with arrays of dates
+*/
+Periodsλ = LAMBDA(
+//  Parameter Declarations
+    [Starts],
+    [Ends],
+    [Intervals],
+    LET(
+//  Help
+        Help,       TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →Periodsλ(Starts, Ends, [Intervals])¶" &
+                        "DESCRIPTION:   →Determine the number of periods from date1 to date 2 inclusive.¶" &
+                                       "→Differences to Excel4.0's DateDif are:¶" & 
+                                       "→* Interval includes Weeks & Quarters¶" & 
+                                       "→* End Date is inclusive¶" & 
+                                       "→* Returns negative values if Date1 is after Date2¶" & 
+                        "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
+                        "PARAMETERS:    →¶" &
+                        "Starts         →(Required) First date (normally older). This can be a single number or array.¶" &
+                        "Ends           →(Required) Second date (normally newer). This must be the same shape (# of rows & columns) as Date1.¶" &
+                        "Intervals      →(Optional) Days, Weeks, Months (default), Quarters, or Years (D, W, M, Q, Y)¶" &
+                        "EXAMPLES:      →¶" & 
+                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
+                        "2              →=nabla.d.Periodsλ(""31/3/2025"", ""15/5/2025"")¶" &
+                        "-2             →=nabla.d.Periodsλ(""15/5/2025"", ""31/3/2025"")¶" &
+                        "-12            →=nabla.d.Periodsλ(""15/1/2026"", ""16/1/2025"", , FALSE)¶" &
+                        "-53            →=nabla.d.Periodsλ(""15/1/2026"", ""16/1/2025"", ""W"")",
+                        "→", "¶"
+                    )
+                ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( Starts),
+                            ISOMITTED( Ends)
+                        ),
+    //  Check inputs - Set optional arguments' defaults and apply convenience conversions
+        CvtStarts,      IF( ISOMITTED( Starts), 
+                            FALSE,
+                            IF( ISNUMBER( Starts), Starts, DATEVALUE( Starts))
+                        ),
+        CvtEnds,       IF( ISOMITTED( Ends), 
+                            FALSE,
+                            IF( ISNUMBER( Ends), Ends, DATEVALUE( Ends))
+                        ),
+        Intervals,      IF( ISOMITTED( Intervals), "M", Intervals),
+    //  Constant Declarations
+        MPY, 12,    //Months Per Year
+        MPQ, 3,     //Months Per Quarter
+        DPW, 7,     //Days Per Week
+    //  Procedure
+        Rows,       MAX( ROWS( CvtStarts), ROWS( CvtEnds)), 
+        Cols,       MAX( COLUMNS( CvtStarts), COLUMNS( CvtEnds)), 
+        Result,     MAKEARRAY(Rows, Cols, 
+                        LAMBDA(R, C, 
+                            LET(DateOne,    IF( COUNTA( CvtStarts) = 1, CvtStarts, INDEX( CvtStarts, R, C)), 
+                                DateTwo,    IF( COUNTA( CvtEnds) = 1, CvtEnds, INDEX( CvtEnds, R, C)),
+                                Interval,   IF( COUNTA( Intervals) = 1, Intervals, INDEX( Intervals, R, C)),
+                                Earliest,   MIN(DateOne, DateTwo),
+                                Latest,     MAX(DateOne, DateTwo) , //+ 1,
+                                Sign,       SIGN(Max(DateTwo - DateOne, 1)),
+                                Periods,    Switch(Interval,   
+                                                "D", DATEDIF(Earliest, Latest, "D"),
+                                                "W", INT(DATEDIF(Earliest, Latest, "D")/DPW),
+                                                "M", DATEDIF(Earliest, Latest, "M"),
+                                                "Q", INT(DATEDIF(Earliest, Latest, "M")/MPQ),
+                                                "Y", DATEDIF(Earliest, Latest, "Y")
+                                            ),
+                                Sign * Periods
+                            )
+                        )
+                    ),        
+    //  Return Result
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  ScheduleRatesλ
+    DESCRIPTION:*//**Schedule rates that persist until replaced in a timeline. */
+/*  REVISIONS:      Date            Developer       Description  
+                    Jun 01 2022     Craig Hatmaker  Copyright
+                    Apr 12 2023     Craig Hatmaker  Added Help
+*/
+ScheduleRatesλ = LAMBDA(
+//  Parameter Declarations
+    [PeriodEnds],
+    [RateStarts],
+    [Rates],  
+//  Help
+    LET(
+        Help,       TRIM(TEXTSPLIT(
+                        "FUNCTION:      →ScheduleRatesλ(PeriodEnds, RateStarts, Rates)¶" &
+                        "DESCRIPTION:   →Schedules rates that persist until replaced in a timeline from a schedule in a table.¶" & 
+                        "NOTE!          →If 2 rates are scheduled within the same period, only the last rate will be selected.¶" & 
+                        "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
+                        "PARAMETERS:    →¶" & 
+                        "PeriodEnds     →(Required) A row of period end dates (timeline).¶" & 
+                        "RateStarts     →(Required) A column or row of rate effective dates in any order.¶" & 
+                        "Rates          →(Required) A column or row of rates associated with RateStarts.¶" & 
+                        "EXAMPLES:      →¶" & 
+                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
+                        "_,10,20,30,30  →=nabla.d.ScheduleRatesλ(Timelineλ(""1/1/2025"",5,""W""),{45662; 45670; 45676}, {10; 20; 30})", 
+                        "→", "¶"
+                        )
+                    ),   
+    //  Check inputs - Omitted required arguments
+        s,              1,
+        Help?,          OR( ISOMITTED( PeriodEnds),
+                            ISOMITTED( RateStarts),
+                            ISOMITTED( Rates)
+                        ),
+    //  Check inputs - Set optional arguments' defaults and apply convenience conversions
+        CvtEnds,        IF( ISOMITTED( PeriodEnds), 
+                            FALSE,
+                            IF( ISNUMBER( PeriodEnds), PeriodEnds, DATEVALUE( PeriodEnds))
+                        ),
+        CvtStarts,      IF( ISOMITTED( RateStarts), 
+                            FALSE, 
+                            IF( ISNUMBER( RateStarts), RateStarts, DATEVALUE( RateStarts))
+                        ),
+    //  Procedure
+        Result,         XLOOKUP(PeriodEnds, RateStarts, Rates, "", -1),
+    //  Return Result
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  ScheduleRatesByItemsλ
+    DESCRIPTION:*//**Schedule rates that persist until replaced in a timeline for each item in a list. */
+/*  REVISIONS:      Date            Developer       Description  
+                    Aug 26 2022     Craig Hatmaker  Copyright
+*/
+ScheduleRatesByItemsλ = LAMBDA(
+//  Parameter Declarations
+    [PeriodEnds],
+    [ItemFilter],
+    [ItemList],
+    [EffectiveList],
+    [RateList],
+    [DoNotUse], 
+//  Help
+    LET(
+        Help,       TRIM(TEXTSPLIT(
+                        "FUNCTION:      →ScheduleRatesByItemsλ(PeriodEnds, ItemFilter, ItemList, EffectiveList, RateList)¶" &
+                        "DESCRIPTION:   →Schedules each item's rates by period until another rate takes effect.¶" & 
+                        "NOTE!          →If 2 rates are scheduled within the same period for the same item, .¶" & 
+                                       "→only the last rate will be selected.¶" & 
+                        "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
+                        "PARAMETERS:    →¶" & 
+                        "PeriodEnds     →(Required) A row or column of period end dates (timeline).¶" & 
+                        "ItemFilter     →(Required) 1 or more items to filter a rate schedule by. ¶" &
+                        "               →A 'rate schedule' is a table/list where each row contains a unique item/effective date pair with a rate.¶" &
+                        "ItemList       →(Required) Items in a rate schedule.¶" & 
+                        "EffectiveList  →(Required) Effective dates in the rate schedule.¶" & 
+                        "RateList       →(Required) Rates in a rate schedule for each item/effective date pair.¶" & 
+                        "DoNotUse       →This is a counter used internally. Do not make any entry.¶" & 
+                        "EXAMPLES:      →¶" & 
+                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
+                                       "→nabla.d.ScheduleRatesByItemsλ( Timelineλ( ""1/1/2025""), UNIQUE( tblRates(Unit)),¶" &
+                                       "→tblRates[Unit], tblRates[Rent], tblRates[Effective])", 
+                        "→", "¶"
+                            )
+                        ),
+                    
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( PeriodEnds), 
+                            ISOMITTED( ItemFilter),
+                            ISOMITTED( ItemList), 
+                            ISOMITTED( EffectiveList),
+                            ISOMITTED( RateList)
+                        ),
+    //  Check inputs - Set optional arguments' defaults and apply convenience conversions
+        DoNotUse,       IF( ISOMITTED( DoNotUse), 1, DoNotUse),
+        CvtPrdEnds,     IF( ISOMITTED( PeriodEnds), 
+                            FALSE,
+                            IF( ISNUMBER( PeriodEnds), PeriodEnds, DATEVALUE( PeriodEnds))
+                        ),
+        CvtEffDates,    IF( ISOMITTED( EffectiveList), 
+                            FALSE,
+                            IF( ISNUMBER( EffectiveList), EffectiveList, DATEVALUE( EffectiveList))
+                        ),
+    //  Procedure
+        Counts,         COUNTA( ItemFilter),
+        Item,           INDEX( ItemFilter, DoNotUse),
+        ItemDates,      FILTER( CvtEffDates, ItemList = Item), 
+        ItemRates,      FILTER( RateList, ItemList = Item), 
+        NewRow,         XLOOKUP( PeriodEnds, ItemDates, ItemRates, 0, -1),
+        Result,         IF( DoNotUse >= Counts, 
+                            NewRow, 
+                            VSTACK( 
+                                NewRow, 
+                                ScheduleRatesByItemsλ( CvtPrdEnds, ItemFilter, ItemList, CvtEffDates, RateList, DoNotUse + 1 )
+                            )
+                        ),
+    //  Return Result
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  ScheduleValuesλ
+    DESCRIPTION:*//**Schedules values in a timeline from a schedule in a table. */
+/*  REVISIONS:      Date            Developer       Description  
+                    Apr 12 2023     Craig Hatmaker  Copyright
+*/
+ScheduleValuesλ = LAMBDA(
+//  Parameter Declarations
+    [PeriodStarts],
+    [PeriodEnds],
+    [Values],
+    [EffectiveDates],
+    LET(
+//  Help
+        Help,       TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →ScheduleValuesλ(PeriodStarts, PeriodEnds, Values, EffectiveDates)¶" &
+                        "DESCRIPTION:   →Place values from a table into a timeline's appropriate period.¶" & 
+                        "WEBSITE:       →https://github.com/ryanduguid/Nabla ¶" &
+                        "PARAMETERS:    →¶" & 
+                        "PeriodStarts   →(Required) A column or row of period start dates (timeline).¶" & 
+                        "PeriodEnds     →(Required) A column or row of period ends dates (timeline).¶" & 
+                        "Values         →(Required) A column or row of values to be scheduled.¶" & 
+                        "EffectiveDates →(Required) A column or row of when a value is scheduled.¶" &                   
+                        "EXAMPLES:→¶" &
+                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
+                                       "→=nabla.d.ScheduleValuesλ(Timelineλ(""1/1/23""), Timelineλ(""1/1/23"",,,FALSE), {1;3}, {""1/1/23""; ""2/15/23""})", 
+                        "→", "¶"
+                        )
+                    ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( PeriodStarts), 
+                            ISOMITTED( PeriodEnds),
+                            ISOMITTED( Values), 
+                            ISOMITTED( EffectiveDates)
+                        ),
+    //  Check inputs - Set optional arguments' defaults and apply convenience conversions
+        CvtPrdStarts,   IF( ISOMITTED( PeriodStarts), 
+                            FALSE,
+                            IF( ISNUMBER( PeriodStarts), PeriodStarts, DATEVALUE( PeriodStarts))
+                        ),
+        CvtPrdEnds,     IF( ISOMITTED( PeriodEnds), 
+                            FALSE,
+                            IF( ISNUMBER( PeriodEnds), PeriodEnds, DATEVALUE( PeriodEnds))
+                        ),
+        CvtEffDates,    IF( ISOMITTED( EffectiveDates), 
+                            FALSE,
+                            IF( ISNUMBER( EffectiveDates), EffectiveDates, DATEVALUE( EffectiveDates))
+                        ),
+    //  Procedure
+        Result,         BYCOL(
+                            SEQUENCE(, COLUMNS(PeriodStarts)), 
+                            LAMBDA(Period, 
+                                LET(StartDate,  INDEX(PeriodStarts, Period), 
+                                    EndDate,    INDEX(PeriodEnds, Period),
+                                    SUM(Values * (CvtEffDates >= StartDate) * (CvtEffDates <= EndDate))
+                                )
+                            )
+                        ),
+    //  Return Result
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  ScheduleValuesByItemsλ
+    DESCRIPTION:*//**Schedule and sum values in a timeline for each item.*/
+/*  REVISIONS:      Date            Developer       Description  
+                    Aug 28 2022     Craig Hatmaker  Copyright
+*/
+ScheduleValuesByItemsλ = LAMBDA(
+//  Parameter Declarations
+    [PeriodStarts],
+    [PeriodEnds],
+    [ItemFilter],
+    [ItemList],
+    [EffectiveList],
+    [ValueList],
+    [DoNotUse],
+    LET(
+//  Help
+        Help,       TRIM(TEXTSPLIT( 
+                        "FUNCTION:      →ScheduleValuesByItemsλ(PeriodStarts, PeriodEnds, ItemFilter, ItemList, EffectiveList, ValueList)¶" &
+                        "DESCRIPTION:   →Schedule and sum values in a timeline for each item.¶" & 
+                        "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
+                        "PARAMETERS:    →¶" & 
+                        "PeriodStarts   →(Required) A row of period start dates (timeline).¶" & 
+                        "PeriodEnds     →(Required) A row of period end dates (timeline).¶" & 
+                        "ItemFilter     →(Required) A column of 1 or more items to filter a value schedule by. ¶" &
+                        "               →A 'value schedule' is a table/list where each row contains a unique item/effective date pair with a value.¶" &
+                        "ItemList       →(Required) Items in a value schedule.¶" & 
+                        "EffectiveList  →(Required) Effective dates in the value schedule.¶" & 
+                        "ValueList      →(Required) Values in a value schedule for each item/effective date pair.¶" & 
+                        "DoNotUse       →This is a counter used internally. Do not make any entry.¶" & 
+                        "EXAMPLES:      →¶" & 
+                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
+                                       "→nabla.d.ScheduleRatesByItemsλ( Timelineλ( ""1/1/2025""),  Timelineλ( ""1/1/2025"",,,FALSE), ¶" & 
+                                       "→UNIQUE( tblExp(Items)), tblExp[Items], tblExp[Dates], tblExp[Amount])", 
+                        "→", "¶"
+                        )
+                    ),
+    //  Check inputs - Omitted required arguments
+        Help?,          OR( ISOMITTED( PeriodStarts), 
+                            ISOMITTED( PeriodEnds), 
+                            ISOMITTED( ItemFilter),
+                            ISOMITTED( ItemList), 
+                            ISOMITTED( EffectiveList),
+                            ISOMITTED( ValueList)
+                        ),
+    //  Check inputs - Set optional arguments' defaults and apply convenience conversions
+        Counter,        IF( ISOMITTED( DoNotUse), 1, DoNotUse),
+        CvtPrdStarts,   IF( ISOMITTED( PeriodStarts), 
+                            FALSE,
+                            IF( ISNUMBER( PeriodStarts), PeriodStarts, DATEVALUE( PeriodStarts))
+                        ),
+        CvtPrdEnds,     IF( ISOMITTED( PeriodEnds), 
+                            FALSE,
+                            IF( ISNUMBER( PeriodEnds), PeriodEnds, DATEVALUE( PeriodEnds))
+                        ),
+        CvtEffDates,    IF( ISOMITTED( EffectiveList), 
+                            FALSE,
+                            IF( ISNUMBER( EffectiveList), EffectiveList, DATEVALUE( EffectiveList))
+                        ),   
+    //  Procedure
+        Counts,         COUNTA( ItemFilter),
+        Item,           INDEX( ItemFilter, Counter),
+        ItemDates,      FILTER( CvtEffDates, ItemList = Item), 
+        ItemValues,     FILTER( ValueList, ItemList = Item), 
+        Array,          (ItemDates >= PeriodStarts) * (ItemDates <= PeriodEnds) * ItemValues,
+        NewRow,         BYCOL( Array, LAMBDA( Column, SUM( Column))),
+        Result,         IF( Counter >= Counts, 
+                            NewRow, 
+                            VSTACK( 
+                                NewRow, 
+                                ScheduleValuesByItemsλ( CvtPrdStarts, CvtPrdEnds, 
+                                    ItemFilter, ItemList, CvtEffDates, ValueList, Counter + 1 )
+                            )
+                        ),
+    //  Return Result
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
+
+
+
+/*  FUNCTION NAME:  Timelineλ
+    DESCRIPTION:*//**Create a horizontal list of period dates*/
+/*  REVISIONS:      Date            Developer       Description  
+                    Aug 19,2023     Craig Hatmaker  Copyright
+*/
+Timelineλ = LAMBDA(
+//  Parameter Declarations
+    [StartDate],
+    [Periods],
+    [Interval],
+    [PeriodStarts?],    
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT(
+                            "FUNCTION:      →Timelineλ(StartDate, Periods, Interval, PeriodStarts?)¶" &
+                            "DESCRIPTION:   →Creates a horizontal list of period dates.¶" & 
+                            "WEBSITE:       →https://github.com/ryanduguid/Nabla¶" & 
+                            "PARAMETERS:        →¶" & 
+                            "StartDate      →(Required) First period's start date. May be entered as text.¶" &
+                            "Periods        →(Optional) The number of period in the timeline. Defaults to 12.¶" &
+                            "Interval       →(Optional) Period interval: D, W, M, Q or Y (Day, Week, Month <default>, Quarter, or Year)¶" &
+                            "PeriodStarts?  →(Optional) TRUE=Display period start dates <default>. FALSE=Period end dates¶" &
+                            "EXAMPLES:      →¶" & 
+                            "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
+                            "12 mo, starts  →=nabla.d.Timelineλ(TODAY())¶" &
+                            "12 qtr, ends   →=nabla.d.Timelineλ(TODAY(), , ""Q"", FALSE)",
+                            "→", "¶"
+                            )
+                        ),      
+    //  Named Constants
+        MPY, 12,        //Months Per Year
+        MPQ, 3,         //Months Per Quarter
+        DPW, 7,         //Days Per Week
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( StartDate), 
+    //  Check inputs - Set optional arguments' defaults and apply convenience conversions
+        CvtStart,       IF( ISOMITTED( StartDate), 
+                            FALSE,
+                            IF( ISNUMBER( StartDate), StartDate, DATEVALUE( StartDate))
+                        ),
+        Periods,        IF( ISOMITTED( Periods), 12, Periods),
+        Interval,       IF( ISOMITTED( Interval), "M", Interval),
+        PeriodStarts?,  IF( ISLOGICAL( PeriodStarts?), PeriodStarts?, TRUE),
+    //  Procedure
+        EndDates,       N(NOT(PeriodStarts?)),
+        Result,         SWITCH(
+                            Interval,
+                            "Y", EDATE(StartDate, SEQUENCE(1, Periods, EndDates * MPY, MPY)) - EndDates,
+                            "Q", EDATE(StartDate, SEQUENCE(1, Periods, EndDates * MPQ, MPQ)) - EndDates,
+                            "M", EDATE(StartDate, SEQUENCE(1, Periods, EndDates, 1)) - EndDates,
+                            "W", SEQUENCE(1, Periods, StartDate + IF(PeriodStarts?, 0, DPW - 1), DPW),
+                            "D", SEQUENCE(1, Periods, StartDate, 1),
+                            #Value!
+                        ),
+    //  Return Result
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);
