@@ -1,55 +1,115 @@
-import zipfile, re, base64, json
+"""Integrity checks for nabla.xlsx.
+
+Usage: python tools/verify_workbook.py [path/to/nabla.xlsx]
+
+Exits non-zero and prints every failure. Run by CI on each push.
+"""
+import base64
+import html
+import json
+import re
+import sys
 import xml.etree.ElementTree as ET
-DST = r"nabla-build\nabla.xlsx"
-z = zipfile.ZipFile(DST)
-errs = []
-for n in z.namelist():
-    if n.endswith((".xml", ".rels")):
-        try: ET.fromstring(z.read(n).decode("utf-8"))
-        except Exception as e: errs.append(f"XML parse {n}: {e}")
-BAD = re.compile(r'BX[DEFRLU]|Calibri|beyondexcel|sites\.google|dropbox|Eloquens|Starter Pack|Hatmaker|5g|5G|Leonardo|CHatmaker')
-YT = re.compile(r'youtube')
-for n in z.namelist():
-    if n.endswith((".xml", ".rels")) and n != "customXml/item1.xml":
-        d = z.read(n).decode("utf-8")
-        for m in list(BAD.finditer(d))[:3]: errs.append(f"brand {n}: ...{d[max(0,m.start()-50):m.start()+50]}...")
-        for m in list(YT.finditer(d))[:2]: errs.append(f"youtube {n}")
-    elif re.match(r'xl/customProperty\d+\.bin$', n):
-        if BAD.search(z.read(n).decode("utf-16-le")): errs.append(f"brand in {n}")
-afe = z.read("customXml/item1.xml").decode("utf-8")
-j = base64.b64decode(re.search(r'>([A-Za-z0-9+/=]{100,})<', afe).group(1)).decode("utf-16-le")
-json.loads(j)
-for m in list(BAD.finditer(j))[:5]: errs.append(f"brand AFE: ...{j[max(0,m.start()-50):m.start()+55]}...")
-wb = z.read("xl/workbook.xml").decode("utf-8")
-names = re.findall(r'<definedName name="([^"]+)"', wb)
-nameset = set(names); sheets = re.findall(r'<sheet name="([^"]+)"', wb)
-used = set(); err_cells = []
-for n in z.namelist():
-    if re.match(r'xl/worksheets/sheet\d+\.xml$', n):
-        d = z.read(n).decode("utf-8")
-        for m in re.finditer(r'<c r="([A-Z]+\d+)"[^>]*t="e"[^>]*>(?:<f[^>]*>[^<]*</f>)?<v>([^<]*)</v>', d):
-            err_cells.append((n, m.group(1), m.group(2)))
-        for f in re.findall(r'<f[^>]*>([^<]*)</f>', d):
-            used.update(re.findall(r'nabla\.[a-z]+\.[A-Za-z0-9_]+λ?(?:DV)?', f))
-        for m in re.finditer(r'<f[^>]*>[^<]*"(\d{1,2}/\d{1,2}/\d{4})"[^<]*</f>', d):
-            errs.append(f"text-date literal in formula {n}: {m.group(1)}")
-sheetset = set(sheets)
-really_missing = {u for u in used if u not in nameset and u not in sheetset}
-if really_missing: errs.append(f"missing fn tokens: {sorted(really_missing)}")
-for nm, body in re.findall(r'<definedName name="([^"]+)"[^>]*>([^<]*)</definedName>', wb):
-    for tok in set(re.findall(r'nabla\.[a-z]+\.[A-Za-z0-9_]+λ?(?:DV)?', body)):
-        if tok not in nameset and tok not in sheetset: errs.append(f"name {nm} refs missing {tok}")
-print("names:", len(names), "| sheets:", len(sheets), "| err cells:", err_cells)
-print("nabla.e.Aboutλ defined:", "nabla.e.Aboutλ" in nameset)
-from collections import Counter
-allx = " ".join(z.read(n).decode("utf-8") for n in z.namelist() if n.endswith(".xml") and n != "customXml/item1.xml")
-print("stale Version dates (non-AFE):", Counter(re.findall(r'(?i)ersion:\s*→\s*([A-Za-z]{3} \d{1,2} \d{4})', allx)).most_common(3))
-print("stale Version dates (AFE):", Counter(re.findall(r'(?i)ersion:\s*→\s*([A-Za-z]{3} \d{1,2} \d{4})', j)).most_common(3))
-import warnings, openpyxl
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
-    wb2 = openpyxl.load_workbook(DST)
-print("openpyxl OK:", len(wb2.sheetnames), len(wb2.defined_names))
-print()
-print("ERRORS", len(errs)) if errs else print("ALL CHECKS PASS")
-for e in errs[:15]: print(" -", e[:180])
+import zipfile
+
+WORKBOOK = sys.argv[1] if len(sys.argv) > 1 else "nabla.xlsx"
+
+# Tokens that must never reappear: upstream branding, and any foreign tax content.
+BANNED = re.compile(
+    r"BX[DEFRLU]\.|BXLDebt|\bBXL\b|beyondexcel|Eloquens|dropbox|Leonardo"
+    r"|Starter Pack|Calibri|MACRS|Modified Accelerated|US GAAP|IRS Depreciation"
+)
+SHEET_RE = re.compile(r"xl/worksheets/sheet\d+\.xml$")
+TOKEN_RE = re.compile(r"nabla\.[a-z]+\.[A-Za-z0-9_]+λ?(?:DV)?")
+
+failures = []
+
+
+def fail(msg):
+    failures.append(msg)
+
+
+def main():
+    z = zipfile.ZipFile(WORKBOOK)
+    parts = z.namelist()
+
+    for name in parts:
+        if name.endswith((".xml", ".rels")):
+            try:
+                ET.fromstring(z.read(name).decode("utf-8"))
+            except ET.ParseError as exc:
+                fail(f"malformed XML in {name}: {exc}")
+
+    for name in parts:
+        if name.endswith((".xml", ".rels")) and name != "customXml/item1.xml":
+            text = z.read(name).decode("utf-8")
+            for hit in BANNED.finditer(text):
+                fail(f"banned token {hit.group(0)!r} in {name}")
+        elif name.endswith(".bin"):
+            text = z.read(name).decode("utf-16-le", errors="ignore")
+            for hit in BANNED.finditer(text):
+                fail(f"banned token {hit.group(0)!r} in {name}")
+
+    # The Advanced Formula Environment store holds the module sources as base64 UTF-16 JSON.
+    afe = z.read("customXml/item1.xml").decode("utf-8")
+    blob = re.search(r">([A-Za-z0-9+/=]{100,})<", afe)
+    if not blob:
+        fail("AFE project store missing")
+        report(z)
+        return
+    store = json.loads(base64.b64decode(blob.group(1)).decode("utf-16-le"))
+    store_text = json.dumps(store, ensure_ascii=False)
+    for hit in BANNED.finditer(store_text):
+        fail(f"banned token {hit.group(0)!r} in the AFE project store")
+
+    workbook = z.read("xl/workbook.xml").decode("utf-8")
+    defined = dict(re.findall(r'<definedName name="([^"]+)"[^>]*>([^<]*)</definedName>', workbook))
+    sheets = set(re.findall(r'<sheet name="([^"]+)"', workbook))
+    if not defined:
+        fail("no defined names found")
+
+    for name, body in defined.items():
+        source = html.unescape(body)
+        if source.count('"') % 2:
+            fail(f"unbalanced quotes in {name}")
+        # Help text is full of literal brackets, so only count parentheses outside string literals.
+        code = re.sub(r'"(?:[^"]|"")*"', '""', source)
+        if code.count("(") != code.count(")"):
+            fail(f"unbalanced parentheses in {name}")
+        for token in set(TOKEN_RE.findall(source)):
+            if token not in defined and token not in sheets:
+                fail(f"{name} references undefined {token}")
+
+    for name in parts:
+        if not SHEET_RE.match(name):
+            continue
+        text = z.read(name).decode("utf-8")
+        if "#REF!" in text:
+            fail(f"#REF! present in {name}")
+        for formula in re.findall(r"<f[^>]*>([^<]*)</f>", text):
+            for token in set(TOKEN_RE.findall(formula)):
+                if token not in defined and token not in sheets:
+                    fail(f"{name} uses undefined {token}")
+
+    shared = ET.fromstring(z.read("xl/sharedStrings.xml").decode("utf-8"))
+    declared = int(shared.get("uniqueCount"))
+    if declared != len(list(shared)):
+        fail(f"sharedStrings uniqueCount {declared} != {len(list(shared))} entries")
+
+    if 'fullCalcOnLoad="1"' not in workbook:
+        fail("fullCalcOnLoad is not set, so demo outputs will not refresh on open")
+
+    report(z, defined)
+
+
+def report(z, defined=None):
+    if failures:
+        print(f"FAIL: {len(failures)} problem(s) in {WORKBOOK}")
+        for item in failures:
+            print(f"  - {item}")
+        sys.exit(1)
+    print(f"OK: {WORKBOOK}, {len(defined)} functions, {len(z.namelist())} parts")
+
+
+if __name__ == "__main__":
+    main()

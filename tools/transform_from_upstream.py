@@ -1,10 +1,11 @@
-# Transform Craig Hatmaker's 5g Financial Starter Pack (2024-07-06.xlsx) into nabla.xlsx
+# Build nabla.xlsx from the upstream Financial Starter Pack workbook.
 # Pure zip/XML surgery. Never resaves via openpyxl (preserves cached values, extensions, rich parts).
 import zipfile, re, shutil, io, sys, datetime
 import base64, json
 
-SRC = r"C:\Users\-\Downloads\2024-07-06.xlsx"
-DST = r"C:\Users\-\AppData\Local\Temp\claude\C--\fea021f8-8627-4730-bcc8-53de478d7f07\scratchpad\nabla-build\nabla.xlsx"
+# Usage: python tools/transform_from_upstream.py [upstream.xlsx] [output.xlsx]
+SRC = sys.argv[1] if len(sys.argv) > 1 else "2024-07-06.xlsx"
+DST = sys.argv[2] if len(sys.argv) > 2 else "nabla.xlsx"
 REPO_URL = "https://github.com/ryanduguid/Nabla"
 TODAY_AU = "18 Aug 2026"
 NOW_ISO = "2026-08-18T00:00:00Z"
@@ -146,6 +147,9 @@ BRAND = [
 ]
 BRAND_BARE = [("BXD", "nabla.d"), ("BXE", "nabla.e"), ("BXF", "nabla.f"),
               ("BXR", "nabla.r"), ("BXU", "nabla.u"), ("5g", "nabla"), ("5G", "nabla")]
+TYPOS = [("equally equally", "equally"), ("specifice text", "specific text"),
+         ("dynamice", "dynamic"), ("Sum-of-years' digits", "Sum-of-years' digits")]
+
 AMORT = [("Amoritization", "Amortisation"), ("amoritization", "amortisation"),
          ("Amoritize", "Amortise"), ("amoritize", "amortise"),
          ("Amortization", "Amortisation"), ("amortization", "amortisation"),
@@ -154,9 +158,9 @@ AMORT = [("Amoritization", "Amortisation"), ("amoritization", "amortisation"),
          ("Occurence", "Occurrence"), ("occurence", "occurrence")]
 # Americanisms -> Australian equivalents (content, not just spelling)
 AMERICAN = [
-    ("MACRS=Modified Accelerated Cost Recovery System. NOTE: Salvage value ignored",
-     "MACRS=Modified Accelerated Cost Recovery System (US legacy; for ATO diminishing value use DDB with a factor of 2). Salvage value ignored"),
-    ("IRS Depreciation", "US IRS depreciation (legacy)"),
+    # the MACRS row on the Data Validation sheet becomes the ATO diminishing value row
+    ("IRS Depreciation", "Diminishing value (ATO)"),
+    ("Some of Years", "Sum of Years"),
     ("Wal*Art", "Wool*Art"),
     ("Apt. ", "Unit "),
     ("Apartment", "Unit"),
@@ -216,6 +220,8 @@ def transform_text(s):
         s = s.replace(old, new)
     for old, new in BRAND_BARE:
         s = re.sub(r'\b%s\b' % old, new, s)
+    for old, new in TYPOS:
+        s = s.replace(old, new)
     for old, new in AMORT:
         s = s.replace(old, new)
     for old, new in AMERICAN:
@@ -234,82 +240,215 @@ def transform_text(s):
     s = re.sub(r'\{[\d;\s]+\}', _arr_shift, s)
     return s
 
-# New AU function: nabla.f.DiminishingValueλ (ATO 200% diminishing value)
-DV_HELP_LINES = [
-    'FUNCTION:      →DiminishingValueλ(Cost, Life)¶',
-    'DESCRIPTION:   →Diminishing value depreciation (ATO 200% method) for one asset or asset class.¶',
-    'WEBPAGE:       →%s¶' % REPO_URL,
-    'VERSION:       →%s¶' % TODAY_AU,
-    'PARAMETERS:    →¶',
-    "Cost           →(Required) Asset's initial cost.¶",
-    "Life           →(Required) Asset's effective life in years.¶",
-    'EXAMPLES:      →¶',
-    "→Formula (nabla.f is assumed to be the module's name)¶",
-    '→=nabla.f.DiminishingValueλ(1000, 5)¶',
-    '→Result¶',
-    '→400.00,240.00,144.00,86.40,51.84',
+# ---------- Australian additions: function specs ----------
+# Each spec generates both the compiled defined-name body and the readable AFE module source
+# from one description, so the two representations cannot drift apart.
+
+def xesc(s):
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+def help_lines(spec):
+    out = ['FUNCTION:      →%s¶' % spec["sig"],
+           'DESCRIPTION:   →%s¶' % spec["desc"],
+           'WEBPAGE:       →%s¶' % REPO_URL,
+           'VERSION:       →%s¶' % TODAY_AU,
+           'PARAMETERS:    →¶']
+    out += ['%-15s→%s¶' % (p, d) for p, d in spec["params"]]
+    out += ['EXAMPLES:      →¶',
+            "→Formula (%s is assumed to be the module's name)¶" % spec["module"],
+            '→=%s¶' % spec["example"], '→Result¶', '→%s' % spec["result"]]
+    return out
+
+def build_xml(spec):
+    hl = help_lines(spec)
+    help_expr = ('TRIM(_xlfn.TEXTSPLIT(' + " &amp; ".join('"%s"' % xesc(l) for l in hl) + ', "→", "¶"))')
+    lets = ['_xlpm.Help, ' + help_expr] + [xesc(x) for x in spec["xml_lets"]]
+    return '_xlfn.LAMBDA(%s, _xlfn.LET(%s, CHOOSE(_xlpm.Help? + 1, _xlpm.Result, _xlpm.Help)))' % (
+        spec["xml_decl"], ', '.join(lets))
+
+def build_afe(spec):
+    hl = help_lines(spec)
+    body = "".join('                            "%s"%s\n' % (l, ' &' if i < len(hl) - 1 else ',')
+                   for i, l in enumerate(hl))
+    lets = "".join("    //  %s\n        %-16s%s\n" % (c, n + ",", e) for c, n, e in spec["afe_lets"])
+    return (
+        "/*  FUNCTION NAME:  %s\n" % spec["name"]
+        + "    DESCRIPTION:*//**%s*/\n" % spec["desc"].rstrip(".")
+        + "/*  REVISIONS:      Date        Developer       Description  \n"
+        + "                    %s nabla           Original development\n" % TODAY_AU
+        + "*/\n\n"
+        + "%s = LAMBDA(\n" % spec["name"]
+        + "//  Parameter Declaration\n"
+        + "".join("    [%s],\n" % p for p, _ in spec["params"])
+        + "    LET(\n"
+        + "    //  Help\n"
+        + "        Help,           TRIM(TEXTSPLIT(\n" + body
+        + '                            "→", "¶"\n'
+        + "                        )),\n"
+        + "    //  Check inputs - Omitted required arguments\n"
+        + "        Help?,          %s,\n" % spec["afe_help_test"]
+        + lets
+        + "    //  Return Result or Help\n"
+        + "        CHOOSE( Help? + 1, Result, Help)\n"
+        + "    )\n"
+        + ");\n")
+
+FUNCS = [
+    {
+        "module": "nabla.f", "name": "DiminishingValueλ",
+        "sig": "DiminishingValueλ(Cost, Life)",
+        "desc": "Diminishing value depreciation (ATO 200% method) for one asset or asset class.",
+        "params": [("Cost", "(Required) Asset's cost."),
+                   ("Life", "(Required) Asset's effective life in years.")],
+        "example": "nabla.f.DiminishingValueλ(1000, 5)",
+        "result": "400.00,240.00,144.00,86.40,51.84",
+        "xml_decl": "_xlop.Cost,_xlop.Life",
+        "xml_lets": ["_xlpm.Help?, OR(_xlfn.ISOMITTED(_xlpm.Cost), _xlfn.ISOMITTED(_xlpm.Life))",
+                     "_xlpm.Rate, 2/_xlpm.Life",
+                     "_xlpm.Result, _xlpm.Cost * _xlpm.Rate * (1-_xlpm.Rate)^(_xlfn.SEQUENCE(, _xlpm.Life)-1)"],
+        "afe_help_test": "OR( ISOMITTED( Cost), ISOMITTED( Life))",
+        "afe_lets": [("Set Constants", "Rate", "2 / Life,"),
+                     ("Procedure", "Result", "Cost * Rate * (1 - Rate)^(SEQUENCE( , Life) - 1), ")],
+    },
+    {
+        "module": "nabla.f", "name": "PrimeCostλ",
+        "sig": "PrimeCostλ(Cost, Life)",
+        "desc": "Prime cost (straight line) depreciation, ATO method, for one asset or asset class.",
+        "params": [("Cost", "(Required) Asset's cost."),
+                   ("Life", "(Required) Asset's effective life in years.")],
+        "example": "nabla.f.PrimeCostλ(1000, 5)",
+        "result": "200.00,200.00,200.00,200.00,200.00",
+        "xml_decl": "_xlop.Cost,_xlop.Life",
+        "xml_lets": ["_xlpm.Help?, OR(_xlfn.ISOMITTED(_xlpm.Cost), _xlfn.ISOMITTED(_xlpm.Life))",
+                     "_xlpm.Annual, _xlpm.Cost/_xlpm.Life",
+                     "_xlpm.Result, _xlfn.EXPAND(_xlpm.Annual, 1, _xlpm.Life, _xlpm.Annual)"],
+        "afe_help_test": "OR( ISOMITTED( Cost), ISOMITTED( Life))",
+        "afe_lets": [("Set Constants", "Annual", "Cost / Life,"),
+                     ("Procedure", "Result", "EXPAND( Annual, 1, Life, Annual), ")],
+    },
+    {
+        "module": "nabla.f", "name": "GSTAddλ",
+        "sig": "GSTAddλ(Amounts, [Rate])",
+        "desc": "Adds GST to one or more GST-exclusive amounts.",
+        "params": [("Amounts", "(Required) One or more GST-exclusive amounts."),
+                   ("Rate", "(Optional: Default = 0.1) GST rate as a fraction.")],
+        "example": "nabla.f.GSTAddλ(100)",
+        "result": "110",
+        "xml_decl": "_xlop.Amounts,_xlop.Rate",
+        "xml_lets": ["_xlpm.Help?, _xlfn.ISOMITTED(_xlpm.Amounts)",
+                     "_xlpm.GSTRate, IF(_xlfn.ISOMITTED(_xlpm.Rate), 0.1, _xlpm.Rate)",
+                     "_xlpm.Result, _xlpm.Amounts * (1 + _xlpm.GSTRate)"],
+        "afe_help_test": "ISOMITTED( Amounts)",
+        "afe_lets": [("Set defaults", "GSTRate", "IF( ISOMITTED( Rate), 0.1, Rate),"),
+                     ("Procedure", "Result", "Amounts * (1 + GSTRate), ")],
+    },
+    {
+        "module": "nabla.f", "name": "GSTExtractλ",
+        "sig": "GSTExtractλ(Amounts, [Rate])",
+        "desc": "Returns the GST contained in one or more GST-inclusive amounts.",
+        "params": [("Amounts", "(Required) One or more GST-inclusive amounts."),
+                   ("Rate", "(Optional: Default = 0.1) GST rate as a fraction.")],
+        "example": "nabla.f.GSTExtractλ(110)",
+        "result": "10",
+        "xml_decl": "_xlop.Amounts,_xlop.Rate",
+        "xml_lets": ["_xlpm.Help?, _xlfn.ISOMITTED(_xlpm.Amounts)",
+                     "_xlpm.GSTRate, IF(_xlfn.ISOMITTED(_xlpm.Rate), 0.1, _xlpm.Rate)",
+                     "_xlpm.Result, _xlpm.Amounts * _xlpm.GSTRate / (1 + _xlpm.GSTRate)"],
+        "afe_help_test": "ISOMITTED( Amounts)",
+        "afe_lets": [("Set defaults", "GSTRate", "IF( ISOMITTED( Rate), 0.1, Rate),"),
+                     ("Procedure", "Result", "Amounts * GSTRate / (1 + GSTRate), ")],
+    },
+    {
+        "module": "nabla.d", "name": "FinancialYearλ",
+        "sig": "FinancialYearλ(Dates, [StartMonth])",
+        "desc": "Labels dates with their Australian financial year, which starts on 1 July.",
+        "params": [("Dates", "(Required) One or more dates."),
+                   ("StartMonth", "(Optional: Default = 7) Month the financial year starts.")],
+        "example": 'nabla.d.FinancialYearλ(DATE(2026,8,15))',
+        "result": "FY2027",
+        "xml_decl": "_xlop.Dates,_xlop.StartMonth",
+        "xml_lets": ["_xlpm.Help?, _xlfn.ISOMITTED(_xlpm.Dates)",
+                     "_xlpm.FYStart, IF(_xlfn.ISOMITTED(_xlpm.StartMonth), 7, _xlpm.StartMonth)",
+                     '_xlpm.Result, "FY" & TEXT(YEAR(_xlpm.Dates) + N(MONTH(_xlpm.Dates) >= _xlpm.FYStart), "0000")'],
+        "afe_help_test": "ISOMITTED( Dates)",
+        "afe_lets": [("Set defaults", "FYStart", "IF( ISOMITTED( StartMonth), 7, StartMonth),"),
+                     ("Procedure", "Result", '"FY" & TEXT( YEAR( Dates) + N( MONTH( Dates) >= FYStart), "0000"), ')],
+    },
 ]
-DV_XML = (
-    '_xlfn.LAMBDA(_xlop.Cost,_xlop.Life, _xlfn.LET(_xlpm.Help, TRIM(_xlfn.TEXTSPLIT('
-    + " &amp; ".join('"%s"' % l for l in DV_HELP_LINES)
-    + ', "→", "¶")), _xlpm.Help?, OR(_xlfn.ISOMITTED(_xlpm.Cost), _xlfn.ISOMITTED(_xlpm.Life)), '
-    '_xlpm.Rate, 2/_xlpm.Life, '
-    '_xlpm.Result, _xlpm.Cost * _xlpm.Rate * (1-_xlpm.Rate)^(_xlfn.SEQUENCE(, _xlpm.Life)-1), '
-    'CHOOSE(_xlpm.Help? + 1, _xlpm.Result, _xlpm.Help)))'
-)
-DV_AFE = (
-    "/*  FUNCTION NAME:  DiminishingValueλ\n"
-    "    DESCRIPTION:*//**Diminishing value depreciation (ATO 200% declining balance) for one asset or asset class*/\n"
-    "/*  REVISIONS:      Date        Developer       Description  \n"
-    "                    18 Aug 2026 nabla           Added Australian diminishing value method\n"
-    "*/\n\n"
-    "DiminishingValueλ = LAMBDA(\n"
-    "//  Parameter Declaration\n"
-    "    [Cost],\n"
-    "    [Life], \n"
-    "    LET(\n"
-    "    //  Help\n"
-    "        Help,           TRIM(TEXTSPLIT(\n"
-    + "".join('                            "%s"%s\n' % (l, ' &' if i < len(DV_HELP_LINES) - 1 else ',')
-              for i, l in enumerate(DV_HELP_LINES))
-    + '                            "→", "¶"\n'
-    "                        )),\n"
-    "    //  Check inputs - Omitted required arguments\n"
-    "        Help?,          OR( ISOMITTED( Cost), ISOMITTED( Life)),\n"
-    "    //  Set Constants\n"
-    "        Rate,           2 / Life,\n"
-    "    //  Procedure\n"
-    "        Result,         Cost * Rate * (1 - Rate)^(SEQUENCE( , Life) - 1), \n"
-    "    //  Return Result or Help\n"
-    "        CHOOSE( Help? + 1, Result, Help)\n"
-    "    )\n"
-    ");\n"
-)
+
+# MACRS (US Modified Accelerated Cost Recovery System) is removed outright: the library is
+# Australian-only. Depreciation method slot 6 becomes the ATO diminishing value method and a
+# seventh slot adds ATO prime cost.
+AFE_MACRS = [
+    ('{"SLN","SYD","DB","DDB","VDB", "MACRS"}', '{"SLN","SYD","DB","DDB","VDB","DV","PC"}'),
+    ('@INDEX( LifeInYears, Asset) + N(Method = "MACRS")', '@INDEX( LifeInYears, Asset)'),
+    ('IF( Method = "MACRS", 0, @INDEX( SalvageValues, Asset))',
+     'IF( OR( Method = "DV", Method = "PC"), 0, @INDEX( SalvageValues, Asset))'),
+    ('"SLN,SYD,DB,DDB,VDB,MACRS"', '"SLN,SYD,DB,DDB,VDB,DV,PC"'),
+    ('Methods must be omitted or one of: SLN, SYD, DB, DDB, MACRS, or VDB.',
+     'Methods must be omitted or one of: SLN, SYD, DB, DDB, VDB, DV, or PC.'),
+    ('Must be one of these Excel function names: ', 'Must be one of these method codes: '),
+    ('"→MACRS=Modified Accelerated Cost Recovery System. NOTE: Salvage value ignored¶" & ',
+     '"→DV =Diminishing value (ATO 200% method). Salvage value ignored¶" & \n'
+     '                                           "→PC =Prime cost (ATO straight line). Salvage value ignored¶" & '),
+]
+AFE_MACRS_RE = [
+    (r'DisposalDate,   IF\( Method = "MACRS", \s*\n\s*MAX\(EDATE\( InserviceDate, Years \* MpY\), '
+     r'@INDEX\( DisposalDates, Asset\)\),\s*\n\s*@INDEX\( DisposalDates, Asset\)\), ',
+     'DisposalDate,   @INDEX( DisposalDates, Asset), '),
+    (r'//  6\. Modified accelerated cost recovery system \s*\n\s*MACRSλ\( InitialValue, Years - 1\),',
+     '//  6. Diminishing value (ATO 200% method)\n'
+     + ' ' * 56 + 'DiminishingValueλ( InitialValue, Years),\n'
+     + ' ' * 52 + '//  7. Prime cost (ATO straight line)\n'
+     + ' ' * 56 + 'PrimeCostλ( InitialValue, Years),'),
+]
 
 # AFE (Excel Labs) project store: base64-wrapped UTF-16 JSON holding LAMBDA source
 afe = get("customXml/item1.xml")
 m = re.search(r'>([A-Za-z0-9+/=]{100,})<', afe)
 assert m
 j = base64.b64decode(m.group(1)).decode("utf-16-le")
-j2 = transform_text(j)
-json.loads(j2)  # must stay valid JSON
-# insert DV source into the nabla.f module, after the MACRSλ block
-esc = json.dumps(DV_AFE, ensure_ascii=False)[1:-1]
-i_mac = j2.find("MACRSλ = LAMBDA")
-assert i_mac > 0
-anchor = ");\\n\\n\\n\\n\\n//  Diagnostic Routines"
-i_end = j2.find(anchor, i_mac)
-assert i_end > 0
-j2 = j2[:i_end + 4] + "\\n\\n" + esc + j2[i_end + 4:]
-# register in AFE projectNames
-assert '"nabla.f.MACRSλ",' in j2
-j2 = j2.replace('"nabla.f.MACRSλ",', '"nabla.f.MACRSλ","nabla.f.DiminishingValueλ",', 1)
+obj_afe = json.loads(transform_text(j))
+mods = {f["path"].rsplit("/", 1)[1]: f for f in obj_afe["files"]}
+
+ftext = mods["nabla.f"]["text"]
+for old, new in AFE_MACRS:
+    assert ftext.count(old) == 1, old[:60]
+    ftext = ftext.replace(old, new)
+for pat, new in AFE_MACRS_RE:
+    ftext, n = re.subn(pat, new, ftext)
+    assert n == 1, pat[:60]
+# excise the whole MACRSλ definition
+i_mac = ftext.index("/*  FUNCTION NAME:  MACRSλ")
+i_next = ftext.index("/*  FUNCTION NAME:", i_mac + 10)
+ftext = ftext[:i_mac] + ftext[i_next:]
+assert "MACRS" not in ftext
+mods["nabla.f"]["text"] = ftext
+
 # fix upstream copy-paste bug: the u module's About suggested "nabla.e" (was BXE) as its own name
-obj_afe = json.loads(j2)
-for f in obj_afe["files"]:
-    if f["path"] == "/projects/nabla.u":
-        assert "Suggested module name: nabla.e" in f["text"]
-        f["text"] = f["text"].replace("Suggested module name: nabla.e", "Suggested module name: nabla.u")
+assert "Suggested module name: nabla.e" in mods["nabla.u"]["text"]
+mods["nabla.u"]["text"] = mods["nabla.u"]["text"].replace(
+    "Suggested module name: nabla.e", "Suggested module name: nabla.u")
+
+# append the Australian additions to their modules and list them in the f module's About table
+for spec in FUNCS:
+    mod = spec["module"].split(".", 1)[1]
+    mods["nabla." + mod]["text"] = mods["nabla." + mod]["text"].rstrip() + "\n\n\n\n" + build_afe(spec)
+about_add = "".join(
+    '"%-19s→%s¶" & \n%s' % (s["name"], s["desc"], " " * 43)
+    for s in FUNCS if s["module"] == "nabla.f")
+anchor = '"VDBλ               →Variable declining balance depreciation method for one asset or asset class.¶" & '
+assert mods["nabla.f"]["text"].count(anchor) == 1
+mods["nabla.f"]["text"] = mods["nabla.f"]["text"].replace(anchor, anchor + "\n" + " " * 43 + about_add)
+
+names = obj_afe["projectNames"]
+assert "nabla.f.MACRSλ" in names
+names.remove("nabla.f.MACRSλ")
+for spec in FUNCS:
+    full = spec["module"] + "." + spec["name"]
+    if full not in names:
+        names.append(full)
+
 j2 = json.dumps(obj_afe, ensure_ascii=False, separators=(",", ":"))
 afe = afe.replace(m.group(1), base64.b64encode(j2.encode("utf-16-le")).decode("ascii"))
 put("customXml/item1.xml", afe)
@@ -385,11 +524,14 @@ s32b = s32.replace('nabla.d.Timelineλ( E23, D23, "Y",#REF!)', 'nabla.d.Timeline
 assert s32b != s32
 put("xl/worksheets/sheet32.xml", s32b)
 
-# ---------- 8a6. drawing18: label the US GAAP note as legacy ----------
+# ---------- 8a6. drawing18: drop the US GAAP framing ----------
 d18 = get("xl/drawings/drawing18.xml")
 d18b = d18.replace(
-    "US GAAP allows companies",
-    "US GAAP (a US-legacy convention; for the ATO method see nabla.f.DiminishingValueλ) allows companies")
+    "US GAAP allows companies to, in the last period, depreciate all remaining book value down to "
+    "the salvage value. Excel's DB() and DDB() functions do not, thus, they deprive companies of "
+    "some of the tax benefits of offsetting income with depreciation.",
+    "In the final period it writes the remaining book value down to the salvage value. "
+    "Excel's DB() and DDB() functions stop short of that, understating the deduction in the last period.")
 assert d18b != d18
 put("xl/drawings/drawing18.xml", d18b)
 
@@ -484,13 +626,118 @@ wb = re.sub(r'(<definedName name="nabla\.u\.Aboutλ"[^>]*>[^<]*?)Suggested modul
 put("xl/workbook.xml", wb)
 print("nabla.e.Aboutλ defined,", len(body), "chars")
 
-# ---------- 9c. Register nabla.f.DiminishingValueλ defined name ----------
+# ---------- 9c. Remove MACRS from the compiled workbook and register the new functions ----------
+WB_MACRS = [
+    ('{"SLN","SYD","DB","DDB","VDB","MACRS"}', '{"SLN","SYD","DB","DDB","VDB","DV","PC"}'),
+    (' + N(_xlpm.Method = "MACRS")', ''),
+    ('IF(_xlpm.Method = "MACRS", 0, ', 'IF(OR(_xlpm.Method = "DV", _xlpm.Method = "PC"), 0, '),
+    ('_xlpm.DisposalDate, IF(_xlpm.Method = "MACRS", MAX(EDATE(_xlpm.InServiceDate, '
+     '_xlpm.Years * _xlpm.Mpy), _xlfn.SINGLE(INDEX(_xlpm.DisposalDates, _xlpm.Asset))), '
+     '_xlfn.SINGLE(INDEX(_xlpm.DisposalDates, _xlpm.Asset)))',
+     '_xlpm.DisposalDate, _xlfn.SINGLE(INDEX(_xlpm.DisposalDates, _xlpm.Asset))'),
+    ('nabla.f.MACRSλ(_xlpm.InitialValue, _xlpm.Years - 1)',
+     'nabla.f.DiminishingValueλ(_xlpm.InitialValue, _xlpm.Years), '
+     'nabla.f.PrimeCostλ(_xlpm.InitialValue, _xlpm.Years)'),
+    ('"SLN,SYD,DB,DDB,VDB,MACRS"', '"SLN,SYD,DB,DDB,VDB,DV,PC"'),
+    ('Methods must be omitted or one of: SLN, SYD, DB, DDB, MACRS, or VDB.',
+     'Methods must be omitted or one of: SLN, SYD, DB, DDB, VDB, DV, or PC.'),
+    ('Must be one of these Excel function names: ', 'Must be one of these method codes: '),
+    ('"→MACRS=Modified Accelerated Cost Recovery System. NOTE: Salvage value ignored¶" &amp; ',
+     '"→DV =Diminishing value (ATO 200% method). Salvage value ignored¶" &amp; '
+     '"→PC =Prime cost (ATO straight line). Salvage value ignored¶" &amp; '),
+]
 wb = get("xl/workbook.xml")
-assert '<definedName name="nabla.f.DiminishingValueλ"' not in wb
-wb = wb.replace("</definedNames>",
-                '<definedName name="nabla.f.DiminishingValueλ" comment="Diminishing value depreciation (ATO 200%% method) for one asset or asset class.">%s</definedName></definedNames>' % DV_XML)
+for old, new in WB_MACRS:
+    assert wb.count(old) == 1, old[:70]
+    wb = wb.replace(old, new)
+wb, n = re.subn(r'<definedName name="nabla\.f\.MACRSλ"[^>]*>[^<]*</definedName>', "", wb)
+assert n == 1
+# list the new f-module functions in its About table
+anchor = ('"VDBλ               →Variable declining balance depreciation method for one asset '
+          'or asset class.¶" &amp; ')
+assert wb.count(anchor) == 1
+wb = wb.replace(anchor, anchor + "".join(
+    '"%-19s→%s¶" &amp; ' % (s["name"], xesc(s["desc"])) for s in FUNCS if s["module"] == "nabla.f"))
+# register every new function as a defined name
+for spec in FUNCS:
+    full = spec["module"] + "." + spec["name"]
+    assert '<definedName name="%s"' % full not in wb, full
+    wb = wb.replace("</definedNames>", '<definedName name="%s" comment="%s">%s</definedName></definedNames>'
+                    % (full, xesc(spec["desc"]), build_xml(spec)))
+assert "MACRS" not in wb
 put("xl/workbook.xml", wb)
-print("nabla.f.DiminishingValueλ defined")
+print("MACRS removed;", len(FUNCS), "Australian functions registered")
+
+# ---------- 9d. Clear MACRS out of cached help spills on worksheets ----------
+cache_fixes = 0
+for n in list(parts):
+    if re.match(r'xl/worksheets/sheet\d+\.xml$', n):
+        d = get(n)
+        d2 = d.replace("MACRS=Modified Accelerated Cost Recovery System. NOTE: Salvage value ignored",
+                       "DV =Diminishing value (ATO 200% method). Salvage value ignored")
+        d2 = d2.replace("Must be one of these Excel function names: ",
+                        "Must be one of these method codes: ")
+        d2 = d2.replace("<v>MACRS</v>", "<v>DV</v>")
+        if d2 != d:
+            cache_fixes += 1
+            put(n, d2)
+ss0 = get("xl/sharedStrings.xml")
+ss1 = re.sub(r'<si><t[^>]*>MACRS</t></si>', '<si><t>DV</t></si>', ss0)
+assert ss1 != ss0
+put("xl/sharedStrings.xml", ss1)
+for n in list(parts):
+    if n.endswith(".xml"):
+        assert "MACRS" not in get(n), n
+print("cleared cached MACRS text on", cache_fixes, "sheets")
+
+# ---------- 9e. Data Validation sheet: add the prime cost method row ----------
+ss = get("xl/sharedStrings.xml")
+cnt = int(re.search(r'count="(\d+)"', ss).group(1))
+uniq = int(re.search(r'uniqueCount="(\d+)"', ss).group(1))
+new_si = ["PC", "Prime cost (ATO)"]
+ss = ss.replace("</sst>", "".join("<si><t>%s</t></si>" % v for v in new_si) + "</sst>")
+ss = ss.replace('count="%d" uniqueCount="%d"' % (cnt, uniq),
+                'count="%d" uniqueCount="%d"' % (cnt + 2, uniq + 2), 1)
+put("xl/sharedStrings.xml", ss)
+s3 = get("xl/worksheets/sheet3.xml")
+row12 = re.search(r'<row r="12"[^>]*>.*?</row>', s3, re.S)
+assert row12
+style = re.search(r'<c r="A12" s="(\d+)"', row12.group(0))
+style_b = re.search(r'<c r="B12" s="(\d+)"', row12.group(0))
+sa = ' s="%s"' % style.group(1) if style else ""
+sb = ' s="%s"' % style_b.group(1) if style_b else ""
+row13 = ('<row r="13" spans="1:13">'
+         '<c r="A13"%s t="s"><v>%d</v></c><c r="B13"%s t="s"><v>%d</v></c></row>'
+         % (sa, uniq, sb, uniq + 1))
+s3 = s3.replace(row12.group(0), row12.group(0) + row13)
+s3 = s3.replace('<dimension ref="A1:M12"/>', '<dimension ref="A1:M13"/>')
+put("xl/worksheets/sheet3.xml", s3)
+print("Data Validation sheet: PC row added")
+
+# ---------- 9f. Drop the upstream printer configuration; print on A4 ----------
+# The printerSettings parts embed the original author's printer name and US Letter paper.
+for i in (1, 2, 3):
+    p = "xl/printerSettings/printerSettings%d.bin" % i
+    assert p in parts
+    del parts[p]
+ct = get("[Content_Types].xml")
+ct2 = re.sub(r'<Default Extension="bin"[^>]*printerSettings[^>]*/>', "", ct)
+assert ct2 != ct
+assert len(re.findall(r'<Override PartName="/xl/customProperty\d+\.bin"', ct2)) == 38
+put("[Content_Types].xml", ct2)
+for sheet, rid in [("sheet1", "rId4"), ("sheet2", "rId1"), ("sheet6", "rId1")]:
+    rp = "xl/worksheets/_rels/%s.xml.rels" % sheet
+    d = get(rp)
+    d2 = re.sub(r'<Relationship Id="%s"[^>]*printerSettings[^>]*/>' % rid, "", d)
+    assert d2 != d, rp
+    put(rp, d2)
+    sp = "xl/worksheets/%s.xml" % sheet
+    d = get(sp)
+    d2 = re.sub(r'<pageSetup([^>]*) r:id="%s"/>' % rid, r'<pageSetup paperSize="9"\1/>', d)
+    assert d2 != d, sp
+    put(sp, d2)
+assert not [n for n in parts if "printerSettings" in n]
+print("printer configuration removed; A4 set on 3 sheets")
 
 # ---------- 10. core.xml: title + modified ----------
 core = get("docProps/core.xml")
@@ -505,7 +752,7 @@ put("docProps/core.xml", core)
 import os
 os.makedirs(os.path.dirname(DST), exist_ok=True)
 order = [n for n in zin.namelist() if n in parts]
-with zipfile.ZipFile(DST, "w", zipfile.ZIP_DEFLATED) as zout:
+with zipfile.ZipFile(DST, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zout:
     for n in order:
         zout.writestr(n, parts[n])
 zin.close()

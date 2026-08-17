@@ -787,3 +787,43 @@ Timelineλ = LAMBDA(
         CHOOSE( Help? + 1, Result, Help)
     )
 );
+
+
+
+/*  FUNCTION NAME:  FinancialYearλ
+    DESCRIPTION:*//**Labels dates with their Australian financial year, which starts on 1 July*/
+/*  REVISIONS:      Date        Developer       Description  
+                    18 Aug 2026 nabla           Original development
+*/
+
+FinancialYearλ = LAMBDA(
+//  Parameter Declaration
+    [Dates],
+    [StartMonth],
+    LET(
+    //  Help
+        Help,           TRIM(TEXTSPLIT(
+                            "FUNCTION:      →FinancialYearλ(Dates, [StartMonth])¶" &
+                            "DESCRIPTION:   →Labels dates with their Australian financial year, which starts on 1 July.¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
+                            "VERSION:       →18 Aug 2026¶" &
+                            "PARAMETERS:    →¶" &
+                            "Dates          →(Required) One or more dates.¶" &
+                            "StartMonth     →(Optional: Default = 7) Month the financial year starts.¶" &
+                            "EXAMPLES:      →¶" &
+                            "→Formula (nabla.d is assumed to be the module's name)¶" &
+                            "→=nabla.d.FinancialYearλ(DATE(2026,8,15))¶" &
+                            "→Result¶" &
+                            "→FY2027",
+                            "→", "¶"
+                        )),
+    //  Check inputs - Omitted required arguments
+        Help?,          ISOMITTED( Dates),
+    //  Set defaults
+        FYStart,        IF( ISOMITTED( StartMonth), 7, StartMonth),
+    //  Procedure
+        Result,         "FY" & TEXT( YEAR( Dates) + N( MONTH( Dates) >= FYStart), "0000"), 
+    //  Return Result or Help
+        CHOOSE( Help? + 1, Result, Help)
+    )
+);

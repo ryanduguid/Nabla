@@ -4,7 +4,7 @@
 
 A LAMBDA function library for building dynamic-array financial models in Excel.
 
-`nabla.xlsx` ships 126 named functions across six modules. Every function carries inline help, and the core functions each have a demonstration worksheet with live, editable examples. Every function is built from native Excel functions only, so models assembled with nabla save as ordinary `.xlsx` workbooks with no add-ins and no macros.
+`nabla.xlsx` ships 129 named functions across six modules. Every function carries inline help, and the core functions each have a demonstration worksheet with live, editable examples. Every function is built from native Excel functions only, so models assembled with nabla save as ordinary `.xlsx` workbooks with no add-ins and no macros.
 
 **Version: 18 August 2026**
 
@@ -16,9 +16,9 @@ Excel with LAMBDA and dynamic arrays (Microsoft 365, or Excel 2024 and later). L
 
 | Module | Functions | Covers |
 |---|---|---|
-| `nabla.d` | 11 | Dates and timelines: periods, schedules, overlaps, occurrence tests |
+| `nabla.d` | 12 | Dates and timelines: periods, schedules, overlaps, occurrence tests, financial-year labels |
 | `nabla.e` | 17 | Array essentials: row and column totals, averages, counts, range conversion |
-| `nabla.f` | 37 | Financial building blocks: amortisation, depreciation, corkscrews, IRR, rolling sums |
+| `nabla.f` | 39 | Financial building blocks: amortisation, depreciation, corkscrews, IRR, rolling sums, GST |
 | `nabla.r` | 39 | Financial ratios: liquidity, leverage, margins, returns, market multiples |
 | `nabla.u` | 17 | Utilities mirroring `nabla.e` for standalone use |
 | `nabla.debt` | 5 | Debt sculpting: amortisation schedule, fixed and variable DSCR sculpting, sculpting interest |
@@ -37,10 +37,24 @@ Functions with a data-validation companion (named with a `DV` suffix, such as `n
 
 ## Australian conventions
 
+The library is Australian-only. Tax content follows ATO practice, and the foreign tax regimes and references the upstream library carried have been removed rather than relabelled.
+
 - Australian English throughout (amortise, modelling, and so on), including function names.
-- Dates are day-first, in text examples and in cell formats.
+- Dates are day-first, in text examples and in cell formats. Worksheets print on A4.
 - Sample data uses AUD.
-- `nabla.f.DiminishingValueλ(Cost, Life)` implements the ATO 200% diminishing value method. The US MACRS method remains available as a documented legacy option inside `nabla.f.Depreciateλ`.
+- Australian tax helpers:
+
+| Function | Purpose |
+|---|---|
+| `nabla.f.DiminishingValueλ(Cost, Life)` | ATO diminishing value method (200% declining balance) |
+| `nabla.f.PrimeCostλ(Cost, Life)` | ATO prime cost method (straight line) |
+| `nabla.f.GSTAddλ(Amounts, [Rate])` | Adds GST to GST-exclusive amounts, 10% by default |
+| `nabla.f.GSTExtractλ(Amounts, [Rate])` | Returns the GST inside GST-inclusive amounts |
+| `nabla.d.FinancialYearλ(Dates, [StartMonth])` | Labels dates with their financial year, starting 1 July |
+
+`nabla.f.Depreciateλ` accepts the method codes `SLN`, `SYD`, `DB`, `DDB`, `VDB`, `DV` (diminishing value) and `PC` (prime cost).
+
+The depreciation helpers return full-year amounts. Apportion the first year yourself if the asset was held for part of it.
 
 ## Repository layout
 
@@ -49,6 +63,7 @@ Functions with a data-validation companion (named with a `DV` suffix, such as `n
 | `nabla.xlsx` | The library and its documentation workbook |
 | `src/nabla.*.txt` | Plain-text LAMBDA source per module, diffable and importable |
 | `ATTRIBUTION.md` | Provenance and upstream copyright |
+| `functions.csv` | Machine-readable index of every function |
 | `CHANGELOG.md` | What changed in this release |
 | `assets/` | Logo |
 
@@ -102,7 +117,7 @@ Functions with a data-validation companion (named with a `DV` suffix, such as `n
 | `nabla.e.RangeToDAλ` | Convert a static range into a dynamic array |
 | `nabla.r.FinancialRatios` | Three dozen financial Ratios |
 
-The remaining functions (all of `nabla.r`, `nabla.u` and `nabla.debt`, the depreciation-method and rolling-statistic helpers in `nabla.f`, and the module `Aboutλ` tables) have no dedicated worksheet; call any of them with no arguments for inline help, and `nabla.r.FinancialRatios` demonstrates the ratio suite on one worksheet.
+The other 84 functions (all of `nabla.r`, `nabla.u` and `nabla.debt`, the depreciation-method, GST and rolling-statistic helpers in `nabla.f`, `nabla.d.FinancialYearλ`, and the module `Aboutλ` tables) have no dedicated worksheet; call any of them with no arguments for inline help, `nabla.r.FinancialRatios` demonstrates the ratio suite on one worksheet, and [functions.csv](functions.csv) lists every function with its signature.
 
 ## Attribution
 
