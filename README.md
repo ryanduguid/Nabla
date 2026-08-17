@@ -4,19 +4,21 @@
 
 A LAMBDA function library for building dynamic-array financial models in Excel.
 
-`nabla.xlsx` ships 129 named functions across six modules. Every function carries inline help, and the core functions each have a demonstration worksheet with live, editable examples. Every function is built from native Excel functions only, so models assembled with nabla save as ordinary `.xlsx` workbooks with no add-ins and no macros.
+`nabla.xlsx` ships 130 named functions across six modules. Every function carries inline help, and the core functions each have a demonstration worksheet with live, editable examples. Every function is built from native Excel functions only, so models assembled with nabla save as ordinary `.xlsx` workbooks with no add-ins and no macros.
 
 **Version: 18 August 2026**
 
 ## Requirements
 
-Excel with LAMBDA and dynamic arrays (Microsoft 365, or Excel 2024 and later). LibreOffice and older Excel versions will not evaluate the functions.
+Excel with LAMBDA and dynamic arrays: Microsoft 365, or Excel 2024 and later. LibreOffice and older Excel versions will not evaluate the functions.
+
+Everything in the library is built from functions that shipped with Excel 2024, so the whole library works on that baseline. Nothing here depends on a preview feature.
 
 ## Modules
 
 | Module | Functions | Covers |
 |---|---|---|
-| `nabla.d` | 12 | Dates and timelines: periods, schedules, overlaps, occurrence tests, financial-year labels |
+| `nabla.d` | 13 | Dates and timelines: periods, schedules, overlaps, occurrence tests, financial-year labels |
 | `nabla.e` | 17 | Array essentials: row and column totals, averages, counts, range conversion |
 | `nabla.f` | 39 | Financial building blocks: amortisation, depreciation, corkscrews, IRR, rolling sums, GST |
 | `nabla.r` | 39 | Financial ratios: liquidity, leverage, margins, returns, market multiples |
@@ -56,6 +58,18 @@ The library is Australian-only. Tax content follows ATO practice, and the foreig
 
 The depreciation helpers return full-year amounts. Apportion the first year yourself if the asset was held for part of it.
 
+## Modern Excel
+
+Excel 365 has gained functions since this library's upstream release in July 2024, and a few of them do natively what some helpers here were written to work around. Where that is the case the function's own inline help carries a `SEE ALSO` line, so you find out while you are using it rather than after:
+
+| Helper | Native equivalent in Excel 365 |
+|---|---|
+| `RangeToDAλ` (in `nabla.e`, `nabla.f`, `nabla.u`) | `TRIMRANGE`, or trim references (`.:.`) |
+| `FilterContainsλ` | `REGEXTEST`, `REGEXEXTRACT` |
+| `SumPeriodsλ`, `SumContainsλ` | `GROUPBY`, `PIVOTBY` |
+
+The helpers are kept because they still work on the Excel 2024 baseline and inside the library's own composition, and because the native functions are Microsoft 365 only. Prefer the native function when your audience is on 365. Checked against Microsoft's documentation in August 2026.
+
 ## Repository layout
 
 | Path | Contents |
@@ -64,6 +78,7 @@ The depreciation helpers return full-year amounts. Apportion the first year your
 | `src/nabla.*.txt` | Plain-text LAMBDA source per module, diffable and importable |
 | `ATTRIBUTION.md` | Provenance and upstream copyright |
 | `functions.csv` | Machine-readable index of every function |
+| `tools/` | The build pipeline: rebuilds the workbook from upstream and verifies it |
 | `CHANGELOG.md` | What changed in this release |
 | `assets/` | Logo |
 
@@ -117,7 +132,7 @@ The depreciation helpers return full-year amounts. Apportion the first year your
 | `nabla.e.RangeToDAλ` | Convert a static range into a dynamic array |
 | `nabla.r.FinancialRatios` | Three dozen financial Ratios |
 
-The other 84 functions (all of `nabla.r`, `nabla.u` and `nabla.debt`, the depreciation-method, GST and rolling-statistic helpers in `nabla.f`, `nabla.d.FinancialYearλ`, and the module `Aboutλ` tables) have no dedicated worksheet; call any of them with no arguments for inline help, `nabla.r.FinancialRatios` demonstrates the ratio suite on one worksheet, and [functions.csv](functions.csv) lists every function with its signature.
+The other 85 functions (all of `nabla.r`, `nabla.u` and `nabla.debt`, the depreciation-method, GST and rolling-statistic helpers in `nabla.f`, `nabla.d.FinancialYearλ`, and the module `Aboutλ` tables) have no dedicated worksheet; call any of them with no arguments for inline help, `nabla.r.FinancialRatios` demonstrates the ratio suite on one worksheet, and [functions.csv](functions.csv) lists every function with its signature.
 
 ## Attribution
 

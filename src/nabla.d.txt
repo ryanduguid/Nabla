@@ -16,7 +16,6 @@ Aboutλ = TRIM(
         "About:                 →CBSE compliant LAMBDAs dealing with dates. Suggested module name: nabla.d¶" &
         "Version:               →18 Aug 2026¶" &
         "Repository:              →https://github.com/ryanduguid/Nabla ¶" &
-        "Website:               →https://github.com/ryanduguid/Nabla ¶" &
         "→¶" & 
         "Function               →Description¶" & 
         "Aboutλ                 →Produces this table¶" &
@@ -31,6 +30,7 @@ Aboutλ = TRIM(
         "ScheduleValuesλ        →Schedules values in a timeline. ¶" &
         "ScheduleValuesByItemsλ →Schedules values in a timeline for each item in a list.¶" &
         "Timelineλ              →Creates a horizontal list of start or end dates for a timeline¶" & 
+        "FinancialYearλ         →Labels dates with their Australian financial year, starting 1 July¶" &
         "→¶" &
         "DIAGNOSTICS            →These functions diagnose problems in their associate function's arguments.¶" & 
                                "→Should a function not work, it may be because there is a problem with the arguments.¶" & 
@@ -186,7 +186,7 @@ IsOccurrenceDateλ = LAMBDA(
                                         "→M=Monthly¶" & 
                                         "→B=BiWeekly¶" & 
                                         "→W=Weekly¶" &
-                                        "→X=Every Workday (USA normal)¶" & 
+                                        "→X=Every Workday (Monday to Friday)¶" & 
                                         "→D=Daily¶" &                      
                         "EXAMPLES:      →¶" &
                         "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
@@ -277,7 +277,7 @@ OverLapDaysλ = LAMBDA(
                         "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
                         "5              →=nabla.d.OverLapDaysλ(08, 14, 10, 17)¶" & 
                         "8              →=nabla.d.OverLapDaysλ(10, 20, 11, 18)¶" & 
-                        "12             →=nabla.d.OverLapDaysλ(""1/17/23"", ""1/25/23"", ""1/7/23"", ""1/18/23"")", 
+                        "12             →=nabla.d.OverLapDaysλ(""17/1/2025"", ""25/1/2025"", ""7/1/2025"", ""18/1/2025"")", 
                         "→", "¶"
                         )
                     ),
@@ -317,7 +317,7 @@ OverLapDaysλ = LAMBDA(
 
 
 /*  FUNCTION NAME:  PeriodLabelλ
-    DESCRIPTION:*//**Creates a lable for a date based on period interval*/
+    DESCRIPTION:*//**Creates a label for a date based on period interval*/
 /*  REVISIONS:      Date        Developer       Description  
                     2023-Feb-25 Craig Hatmaker  Copyright
                     2023-Apr-14 Craig Hatmaker  Added Help
@@ -344,10 +344,10 @@ PeriodLabelλ = LAMBDA(
                                        "→A or Y=Annually¶" & 
                         "EXAMPLES:      →¶" & 
                         "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
-                        "2023-Feb-26    →=nabla.d.PeriodLabelλ(DATEVALUE(""02/26/23""), ""D"")¶" &
-                        "2023-Feb       →=nabla.d.PeriodLabelλ(DATEVALUE(""02/26/23""), ""M"")¶" & 
-                        "2023:Q01       →=nabla.d.PeriodLabelλ(DATEVALUE(""02/26/23""), ""Q"")¶" & 
-                        "2023           →=nabla.d.PeriodLabelλ(DATEVALUE(""02/26/23""), ""Y"")", 
+                        "2023-Feb-26    →=nabla.d.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""D"")¶" &
+                        "2023-Feb       →=nabla.d.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""M"")¶" & 
+                        "2023:Q01       →=nabla.d.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""Q"")¶" & 
+                        "2023           →=nabla.d.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""Y"")", 
                         "→", "¶"
                         )
                     ),
@@ -609,7 +609,7 @@ ScheduleValuesλ = LAMBDA(
                         "EffectiveDates →(Required) A column or row of when a value is scheduled.¶" &                   
                         "EXAMPLES:→¶" &
                         "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
-                                       "→=nabla.d.ScheduleValuesλ(Timelineλ(""1/1/23""), Timelineλ(""1/1/23"",,,FALSE), {1;3}, {""1/1/23""; ""2/15/23""})", 
+                                       "→=nabla.d.ScheduleValuesλ(Timelineλ(""1/1/2025""), Timelineλ(""1/1/2025"",,,FALSE), {1;3}, {""1/1/2025""; ""15/2/2025""})", 
                         "→", "¶"
                         )
                     ),

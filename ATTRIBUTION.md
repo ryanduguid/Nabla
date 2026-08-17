@@ -14,7 +14,7 @@ Absent a licence, the upstream author retains all rights in the original materia
 
 ## What changed from the upstream workbook
 
-- All namespaces renamed: `BXD`/`BXE`/`BXF`/`BXR`/`BXU`/`BXLDebt` became `nabla.d`/`nabla.e`/`nabla.f`/`nabla.r`/`nabla.u`/`nabla.debt`; 5g and BXL branding, branded artwork, the cover video thumbnails and their YouTube link, and Dropbox file links removed. One maths-citation link (a Diarmuid Early video, credited in an IRRλ source comment) was retained deliberately.
+- All namespaces renamed: `BXD`/`BXE`/`BXF`/`BXR`/`BXU`/`BXLDebt` became `nabla.d`/`nabla.e`/`nabla.f`/`nabla.r`/`nabla.u`/`nabla.debt`; 5g and BXL branding, branded artwork, the cover video thumbnails and their YouTube link, and Dropbox file links removed. One maths-citation link (a Diarmuid Early video, credited in an IntOnIntλ source comment) was retained deliberately.
 - Help-block links that pointed at the upstream author's gists and site now point at this repository, relabelled from "Gist URL" to "Repository".
 - The author's name is preserved in the revision histories inside the module sources (one upstream misspelling, "Hatmaekr", corrected), and the workbook's creator metadata credits him. Branding was removed; authorship records were not.
 - American English converted to Australian English throughout, including function renames (`Amortizeλ` family to `Amortiseλ`).

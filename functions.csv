@@ -1,10 +1,11 @@
 function,module,signature,description
+nabla.d.Aboutλ,nabla.d,Aboutλ,Displays this module's repository URL and function list
 nabla.d.CountDOWλ,nabla.d,"CountDOWλ(Starts, Ends, DayOfWeek)",Count instances of a specific day of the week between two dates.
 nabla.d.FinancialYearλ,nabla.d,"FinancialYearλ(Dates, [StartMonth])","Labels dates with their Australian financial year, which starts on 1 July."
 nabla.d.IsBetweenλ,nabla.d,"IsBetweenλ(Values, Low, High, [Inclusive])",Determine if a value is between a lower and upper limit
 nabla.d.IsOccurrenceDateλ,nabla.d,"IsOccurrenceDateλ(Dates, FirstOccurrence, [LastOccurrence], [Repeats])","Returns TRUE if Date passed is when something happens. This was developed for budgeting where we have expenses that start, and sometimes repeat at regular intervals."
 nabla.d.OverLapDaysλ,nabla.d,"OverLapDaysλ(Period1Start, Period1End, Period2Start, Period2End)",Return how many days overlap two period ranges.
-nabla.d.PeriodLabelλ,nabla.d,"PeriodLabelλ(Date, [Interval])",Creates a lable for a date based on period interval
+nabla.d.PeriodLabelλ,nabla.d,"PeriodLabelλ(Date, [Interval])",Creates a label for a date based on period interval
 nabla.d.Periodsλ,nabla.d,"Periodsλ(Starts, Ends, [Intervals])","Determine the number of periods from Starts to Date2 in Days, Weeks, Months, Quarters, or Years."
 nabla.d.ScheduleRatesByItemsλ,nabla.d,"ScheduleRatesByItemsλ(PeriodEnds, ItemFilter, ItemList, EffectiveList, RateList)",Schedule rates that persist until replaced in a timeline for each item in a list.
 nabla.d.ScheduleRatesλ,nabla.d,"ScheduleRatesλ(PeriodEnds, RateStarts, Rates)",Schedule rates that persist until replaced in a timeline.

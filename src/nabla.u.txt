@@ -9,7 +9,6 @@ Aboutλ = TRIM(TEXTSPLIT(
     "About:                     →Basic functions for working with dynamic arrays. Suggested module name: nabla.u¶" &
     "Version:                   →18 Aug 2026¶" &
     "Repository:                  →https://github.com/ryanduguid/Nabla ¶" &
-    "Website:                   →https://github.com/ryanduguid/Nabla ¶" &
     "→¶" &
     "Function                   →Description¶" & 
     "Aboutλ                     →Produces this table¶" & 
@@ -48,7 +47,7 @@ CountCλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →CountCλ( Text, Characters)¶" &
                             "DESCRIPTION:   →Count how many of one or more characters are in a string.¶" & 
-                            "WEBPAGE:       →<coming soon>¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Text           →(Required) The string to interrogate¶" & 
@@ -85,7 +84,7 @@ SumRowsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →SumRowsλ( Array)¶" &
                             "DESCRIPTION:   →Get the total of each row¶" & 
-                            "WEBPAGE:       →<coming soon>¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to be totalled by row.¶" & 
@@ -117,7 +116,7 @@ SumColsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →SumColsλ( Array)¶" &
                             "DESCRIPTION:   →Get the total of each column¶" & 
-                            "WEBPAGE:       →<coming soon>¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to be totalled by column.¶" & 
@@ -149,7 +148,7 @@ AvgRowsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →AvgRowsλ( Array)¶" &
                             "DESCRIPTION:   →Get the average of each row¶" & 
-                            "WEBPAGE:       →<coming soon>¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to be averaged by row.¶" & 
@@ -181,7 +180,7 @@ AvgColsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →SumColsλ( Array)¶" &
                             "DESCRIPTION:   →Get the average for each Column¶" & 
-                            "WEBPAGE:       →<coming soon>¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to be averaged by column.¶" & 
@@ -213,7 +212,7 @@ MinRowsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →MinRowsλ( Array)¶" &
                             "DESCRIPTION:   →Get the minimum of each row¶" & 
-                            "WEBPAGE:       →<coming soon>¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to find the minimum by row.¶" & 
@@ -245,7 +244,7 @@ MinColsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →MinColsλ( Array)¶" &
                             "DESCRIPTION:   →Get the minimum for each Column¶" & 
-                            "WEBPAGE:       →<coming soon>¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to find the minumum by column.¶" & 
@@ -277,7 +276,7 @@ MaxRowsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →MaxRowsλ( Array)¶" &
                             "DESCRIPTION:   →Get the maximum of each row¶" & 
-                            "WEBPAGE:       →<coming soon>¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to find the maximum by row.¶" & 
@@ -309,7 +308,7 @@ MaxColsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →MaxColsλ( Array)¶" &
                             "DESCRIPTION:   →Get the minimum for each Column¶" & 
-                            "WEBPAGE:       →<coming soon>¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to find the maximum by column.¶" & 
@@ -341,7 +340,7 @@ CountARowsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →CountARowsλ( Array)¶" &
                             "DESCRIPTION:   →Count everything in each row¶" & 
-                            "WEBPAGE:       →<coming soon>¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to be counted.¶" & 
@@ -373,7 +372,7 @@ CountAColsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →CountAColsλ( Array )¶" &
                             "DESCRIPTION:   →Count everything in each column¶" & 
-                            "WEBPAGE:       →<coming soon>¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to be counted.¶" & 
@@ -405,7 +404,7 @@ CountRowsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →CountRowsλ( Array)¶" &
                             "DESCRIPTION:   →Count numbers in each row¶" & 
-                            "WEBPAGE:       →<coming soon>¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing numbers to be counted.¶" & 
@@ -437,7 +436,7 @@ CountColsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →CountColsλ( Array,)¶" &
                             "DESCRIPTION:   →Count numbers in each column¶" & 
-                            "WEBPAGE:       →<coming soon>¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing numbers to be counted.¶" & 
@@ -557,7 +556,7 @@ RangeToDAλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT(
                             "FUNCTION:          →RangeToDAλ(Range, [Rows], [Columns])¶" &
                             "DESCRIPTION:       →Convert a range reference to a dynamic array reference.¶" & 
-                            "WEBSITE:           →Coming soon¶" &
+                            "WEBSITE:           →https://github.com/ryanduguid/Nabla¶" &
                             "PARAMETERS:        →¶" & 
                             "Range              →(Required) A reference to the range to be converted.¶" &
                             "Rows               →(Optional) Number of rows for the dynamic array. Defaults to 1.¶" &

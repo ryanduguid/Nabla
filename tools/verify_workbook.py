@@ -99,6 +99,14 @@ def main():
     if 'fullCalcOnLoad="1"' not in workbook:
         fail("fullCalcOnLoad is not set, so demo outputs will not refresh on open")
 
+    # [MS-XLSX] requires each slicer cache to have a #N/A defined name of the same name.
+    for part in parts:
+        if not part.startswith("xl/slicerCaches/"):
+            continue
+        for cache in re.findall(r'<slicerCacheDefinition[^>]*name="([^"]+)"', z.read(part).decode("utf-8")):
+            if f'<definedName name="{cache}">#N/A</definedName>' not in workbook:
+                fail(f"slicer cache {cache} has no backing defined name")
+
     report(z, defined)
 
 

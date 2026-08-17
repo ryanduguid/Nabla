@@ -3,7 +3,6 @@
 import zipfile, re, shutil, io, sys, datetime
 import base64, json
 
-# Usage: python tools/transform_from_upstream.py [upstream.xlsx] [output.xlsx]
 SRC = sys.argv[1] if len(sys.argv) > 1 else "2024-07-06.xlsx"
 DST = sys.argv[2] if len(sys.argv) > 2 else "nabla.xlsx"
 REPO_URL = "https://github.com/ryanduguid/Nabla"
@@ -112,6 +111,14 @@ rewrites = [
      "This workbook contains six nabla modules: dates (nabla.d), array essentials (nabla.e), "
      "financial functions (nabla.f), financial ratios (nabla.r), utilities (nabla.u) and debt (nabla.debt). "),
     ("click and worksheet name", "click any worksheet name"),
+    # matched before the brand sweep runs, so this is the upstream wording
+    ("This is a library of 5g functions for simplifying financial model development, "
+     "especially models using dynamic arrays, and especially for Excel novices.",
+     "This is a library of nabla functions for simplifying financial model development, "
+     "especially models using dynamic arrays, and especially for Excel novices. "
+     "It needs Excel with LAMBDA and dynamic arrays: Microsoft 365, or Excel 2024 and later. "
+     "Where Excel 365 has since gained a native equivalent, the function's inline help says so "
+     "on a SEE ALSO line (checked August 2026)."),
 ]
 for old, new in rewrites:
     assert old in ss, old[:40]
@@ -148,7 +155,18 @@ BRAND = [
 BRAND_BARE = [("BXD", "nabla.d"), ("BXE", "nabla.e"), ("BXF", "nabla.f"),
               ("BXR", "nabla.r"), ("BXU", "nabla.u"), ("5g", "nabla"), ("5G", "nabla")]
 TYPOS = [("equally equally", "equally"), ("specifice text", "specific text"),
-         ("dynamice", "dynamic"), ("Sum-of-years' digits", "Sum-of-years' digits")]
+         ("dynamice", "dynamic"), ("a lable for", "a label for"),
+         # double substitution artefact: upstream read "every BXL 5g Library"
+         ("nabla nabla Library", "nabla library"),
+         ("Every Workday (USA normal)", "Every Workday (Monday to Friday)"),
+         ('lang="en-US"', 'lang="en-AU"'),
+         # unfulfilled upstream placeholder in 46 help blocks
+         ("&lt;coming soon&gt;", REPO_URL), ("<coming soon>", REPO_URL),
+         ("&lt;Coming soon&gt;", REPO_URL), ("<Coming soon>", REPO_URL),
+         ("→Coming soon¶", "→" + REPO_URL + "¶"),
+         # the +2 year shift left explanatory prose quoting the old years
+         ("That loan starts in 2020.", "That loan starts in 2022."),
+         ("Our model starts in 2024.", "Our model starts in 2026.")]
 
 AMORT = [("Amoritization", "Amortisation"), ("amoritization", "amortisation"),
          ("Amoritize", "Amortise"), ("amoritize", "amortise"),
@@ -201,6 +219,8 @@ def _shift_serial(v):
 
 def _mdy_to_au(mo):
     m_, d_, y_ = int(mo.group(1)), int(mo.group(2)), int(mo.group(3))
+    if y_ < 100:  # upstream also wrote two-digit years, e.g. 02/26/23
+        y_ += 2000
     y2, mm, dd = _shift_ymd(y_, m_, d_)
     return "%d/%d/%d" % (dd, mm, y2)
 
@@ -236,6 +256,11 @@ def transform_text(s):
     # sample dates: quoted or cell-value m/d/yyyy -> +2y, AU day-first
     # (trailing char may be a backslash inside JSON-escaped AFE text)
     s = re.sub(r'(?<=["">])(\d{1,2})/(\d{1,2})/(20\d\d)(?=["<\\])', _mdy_to_au, s)
+    s = re.sub(r'(?<=["">])(\d{1,2})/(\d{1,2})/(\d{2})(?=["<\\])', _mdy_to_au, s)
+    # The About tables carry the same URL twice, as "Repository:" and "Website:". Drop the
+    # second in the XML form only; the AFE module sources are de-duplicated after parsing,
+    # where the quotes are real rather than JSON-escaped.
+    s = re.sub(r'"Website:\s*→%s\s*¶" &amp; ' % re.escape(REPO_URL), "", s)
     s = re.sub(r'\b(20\d\d)-(\d\d)-(\d\d)\b', _iso_shift, s)
     s = re.sub(r'\{[\d;\s]+\}', _arr_shift, s)
     return s
@@ -410,6 +435,12 @@ assert m
 j = base64.b64decode(m.group(1)).decode("utf-16-le")
 obj_afe = json.loads(transform_text(j))
 mods = {f["path"].rsplit("/", 1)[1]: f for f in obj_afe["files"]}
+# drop the duplicated "Website:" About line now that the text is unescaped
+dropped = 0
+for f in obj_afe["files"]:
+    f["text"], k = re.subn(r'\n\s*"Website:\s*→%s\s*¶" &' % re.escape(REPO_URL), "", f["text"])
+    dropped += k
+assert dropped >= 4, dropped
 
 ftext = mods["nabla.f"]["text"]
 for old, new in AFE_MACRS:
@@ -441,9 +472,22 @@ anchor = '"VDBλ               →Variable declining balance depreciation method
 assert mods["nabla.f"]["text"].count(anchor) == 1
 mods["nabla.f"]["text"] = mods["nabla.f"]["text"].replace(anchor, anchor + "\n" + " " * 43 + about_add)
 
+# list the new dates function in its module's About table
+d_anchor = '"Timelineλ              →Creates a horizontal list of start or end dates for a timeline¶" & '
+assert mods["nabla.d"]["text"].count(d_anchor) == 1
+mods["nabla.d"]["text"] = mods["nabla.d"]["text"].replace(
+    d_anchor,
+    d_anchor + '\n        "%-23s→%s¶" &' % ("FinancialYearλ", "Labels dates with their Australian financial year, starting 1 July"))
+
+# the store still declared the upstream authoring locale
+obj_afe["locale"]["localeName"] = "en-au"
+obj_afe["locale"]["dateOrder"] = "DMY"
+
 names = obj_afe["projectNames"]
 assert "nabla.f.MACRSλ" in names
 names.remove("nabla.f.MACRSλ")
+if "nabla.f.SumDepreciateλ" not in names:  # upstream omitted it from the index
+    names.append("nabla.f.SumDepreciateλ")
 for spec in FUNCS:
     full = spec["module"] + "." + spec["name"]
     if full not in names:
@@ -486,7 +530,7 @@ for n in list(parts):
         def _cell(mo):
             global shifted_cells
             sid = int(mo.group("s") or 0)
-            if sid in date_styles and 20000 <= float(mo.group("v")) <= 60000:
+            if sid in date_styles and 20000 <= float(mo.group("v")) <= 80000:
                 v = float(mo.group("v"))
                 nv = _shift_serial(v)
                 out = str(int(nv)) if nv == int(nv) else repr(nv)
@@ -556,10 +600,16 @@ for path, old, new, cnt_want in [
      'RANDBETWEEN(DATE(2026,1,1), DATE(2028,12,31))', 3),
     ("xl/worksheets/sheet13.xml", 'RANDBETWEEN("1/1/2026", "1/6/2026")',
      'RANDBETWEEN(DATE(2026,1,1), DATE(2026,6,1))', 1),
+    # the table definition carries its own copy of the column formula
+    ("xl/tables/table10.xml", 'RANDBETWEEN("1/1/2026", "1/6/2026")',
+     'RANDBETWEEN(DATE(2026,1,1), DATE(2026,6,1))', 1),
 ]:
     d = get(path)
     assert d.count(old) == cnt_want, (path, d.count(old))
     put(path, d.replace(old, new))
+for path in parts:
+    if path.startswith("xl/tables/"):
+        assert 'RANDBETWEEN("' not in get(path), path
 
 # ---------- 8a3. Remove dead TOC hyperlink (row points at a worksheet that never existed) ----------
 toc = get("xl/worksheets/sheet2.xml")
@@ -591,9 +641,9 @@ print("fixed", fixed_titles, "Sheetλ title cells")
 
 # ---------- 9. workbook.xml: drop Slicer_Type, force full recalc ----------
 wb = get("xl/workbook.xml")
-wb2 = re.sub(r'<definedName name="Slicer_Type"[^>]*>[^<]*</definedName>', "", wb)
-assert wb2 != wb
-wb = wb2
+# Slicer_Type is NOT stale: [MS-XLSX] requires a #N/A defined name for each slicer cache,
+# and the TOC sheet's Type slicer is live. It must survive the transform.
+assert '<definedName name="Slicer_Type">#N/A</definedName>' in wb
 m = re.search(r'<calcPr[^>]*/>', wb)
 assert m, "calcPr not found"
 if "fullCalcOnLoad" not in m.group(0):
@@ -601,30 +651,33 @@ if "fullCalcOnLoad" not in m.group(0):
 put("xl/workbook.xml", wb)
 
 # ---------- 9b. Define nabla.e.Aboutλ (original defect: called on its sheet, never defined; source in AFE) ----------
-etext = next(f["text"] for f in json.loads(j2)["files"] if f["path"] == "/projects/nabla.e")
-i = etext.index("Aboutλ = ")
-expr = etext[i + len("Aboutλ = "):]
-depth = 0; in_str = False; end = None
-for k, ch in enumerate(expr):
-    if ch == '"': in_str = not in_str
-    elif not in_str and ch == '(': depth += 1
-    elif not in_str and ch == ')':
-        depth -= 1
-        if depth == 0: end = k + 1; break
-assert end, "Aboutλ body not parsed"
-body = " ".join(expr[:end].split())
-assert body.startswith("TRIM(TEXTSPLIT(") and body.count('"') % 2 == 0
-body = body.replace("TEXTSPLIT(", "_xlfn.TEXTSPLIT(")
-body_xml = body.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+store = json.loads(j2)
 wb = get("xl/workbook.xml")
-assert '<definedName name="nabla.e.Aboutλ"' not in wb
-wb = wb.replace("</definedNames>",
-                '<definedName name="nabla.e.Aboutλ" comment="Displays this module\'s repository URL and function list">%s</definedName></definedNames>' % body_xml)
+for mod in ("e", "d"):  # both modules ship an Aboutλ source that was never installed
+    text = next(f["text"] for f in store["files"] if f["path"] == "/projects/nabla." + mod)
+    i = text.index("Aboutλ = ")
+    expr = text[i + len("Aboutλ = "):]
+    depth = 0; in_str = False; end = None
+    for k, ch in enumerate(expr):
+        if ch == '"': in_str = not in_str
+        elif not in_str and ch == '(': depth += 1
+        elif not in_str and ch == ')':
+            depth -= 1
+            if depth == 0: end = k + 1; break
+    assert end, "Aboutλ body not parsed for " + mod
+    body = " ".join(expr[:end].split())
+    assert re.match(r'TRIM\(\s*TEXTSPLIT\(', body) and body.count('"') % 2 == 0
+    body = body.replace("TEXTSPLIT(", "_xlfn.TEXTSPLIT(")
+    full = "nabla.%s.Aboutλ" % mod
+    assert '<definedName name="%s"' % full not in wb
+    wb = wb.replace("</definedNames>",
+                    '<definedName name="%s" comment="Displays this module\'s repository URL and function list">%s</definedName></definedNames>'
+                    % (full, xesc(body)))
+    print("%s defined, %d chars" % (full, len(body)))
 # same upstream copy-paste bug in the installed u-module About
 wb = re.sub(r'(<definedName name="nabla\.u\.Aboutλ"[^>]*>[^<]*?)Suggested module name: nabla\.e',
             r'\g<1>Suggested module name: nabla.u', wb)
 put("xl/workbook.xml", wb)
-print("nabla.e.Aboutλ defined,", len(body), "chars")
 
 # ---------- 9c. Remove MACRS from the compiled workbook and register the new functions ----------
 WB_MACRS = [
@@ -712,7 +765,60 @@ row13 = ('<row r="13" spans="1:13">'
 s3 = s3.replace(row12.group(0), row12.group(0) + row13)
 s3 = s3.replace('<dimension ref="A1:M12"/>', '<dimension ref="A1:M13"/>')
 put("xl/worksheets/sheet3.xml", s3)
-print("Data Validation sheet: PC row added")
+t2 = get("xl/tables/table2.xml")  # tblMethods must cover the new row
+assert 'ref="A6:B12"' in t2
+put("xl/tables/table2.xml", t2.replace('ref="A6:B12"', 'ref="A6:B13"'))
+print("Data Validation sheet: PC row added, tblMethods extended")
+
+# ---------- 9e1. Current-Excel guidance: point at the natives that now overlap ----------
+# Excel 365 has gained functions since the upstream release that do natively what a few of
+# these helpers were written to work around. Checked against Microsoft's documentation on
+# 18 August 2026.
+SEE_ALSO = {
+    "nabla.e.RangeToDAλ": "Excel 365 now has TRIMRANGE and trim references (.:.) for this.",
+    "nabla.u.RangeToDAλ": "Excel 365 now has TRIMRANGE and trim references (.:.) for this.",
+    "nabla.f.RangeToDAλ": "Excel 365 now has TRIMRANGE and trim references (.:.) for this.",
+    "nabla.f.FilterContainsλ": "Excel 365 now has REGEXTEST and REGEXEXTRACT for pattern matching.",
+    "nabla.f.SumPeriodsλ": "Excel 365 now has GROUPBY and PIVOTBY for formula-driven aggregation.",
+    "nabla.f.SumContainsλ": "Excel 365 now has GROUPBY and PIVOTBY for formula-driven aggregation.",
+}
+wb = get("xl/workbook.xml")
+added = 0
+for fname, note in SEE_ALSO.items():
+    # anchor on the label after the description, which may run over several lines
+    pat = (r'(<definedName name="%s"[^>]*>.*?"DESCRIPTION:.*?)("(?:VERSION|WEBPAGE|WEBSITE|PARAMETERS):)'
+           % re.escape(fname))
+    wb, k = re.subn(pat, r'\g<1>"SEE ALSO:      →%s¶" &amp; \g<2>' % note, wb, count=1)
+    assert k == 1, fname
+    added += k
+put("xl/workbook.xml", wb)
+print("current-Excel notes added to", added, "functions")
+
+# ---------- 9e2. TOC: the Aboutλ row is a function, not a worksheet ----------
+s2 = get("xl/worksheets/sheet2.xml")
+assert '<c r="B28" s="108" t="s"><v>134</v></c>' in s2   # 134 = "Worksheet"
+put("xl/worksheets/sheet2.xml",
+    s2.replace('<c r="B28" s="108" t="s"><v>134</v></c>',
+               '<c r="B28" s="108" t="s"><v>459</v></c>'))  # 459 = "Function"
+
+# ---------- 9e3. Cover: drop the merge left behind by the removed section ----------
+cov = get("xl/worksheets/sheet1.xml")
+m_cnt = re.search(r'<mergeCells count="(\d+)">', cov)
+cov2 = cov.replace('<mergeCell ref="A29:B29"/>', "")
+assert cov2 != cov
+cov2 = cov2.replace(m_cnt.group(0), '<mergeCells count="%d">' % (int(m_cnt.group(1)) - 1))
+put("xl/worksheets/sheet1.xml", cov2)
+
+# ---------- 9e4. Drop calcChain: a pure calculation-order cache Excel rebuilds ----------
+del parts["xl/calcChain.xml"]
+rels = get("xl/_rels/workbook.xml.rels")
+rels2 = re.sub(r'<Relationship Id="rId\d+"[^>]*calcChain[^>]*/>', "", rels)
+assert rels2 != rels
+put("xl/_rels/workbook.xml.rels", rels2)
+ct = get("[Content_Types].xml")
+ct2 = re.sub(r'<Override PartName="/xl/calcChain\.xml"[^>]*/>', "", ct)
+assert ct2 != ct
+put("[Content_Types].xml", ct2)
 
 # ---------- 9f. Drop the upstream printer configuration; print on A4 ----------
 # The printerSettings parts embed the original author's printer name and US Letter paper.

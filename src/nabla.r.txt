@@ -10,7 +10,6 @@ Aboutλ = TRIM(
         "About:                     →A library of Financial Ratios¶" &
         "Version:                   →18 Aug 2026¶" &
         "Repository:                  →https://github.com/ryanduguid/Nabla ¶" &
-        "Website:                   →<coming soon> ¶" &
         "Notes:                     →Sources include Investopedia.com, Corporate Finance and WallStreetPrep.com.¶" &
                                    "→Copyright applies to LAMBDA coding¶" &
         "→¶" & 
