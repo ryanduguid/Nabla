@@ -142,7 +142,8 @@ def report(z, defined=None):
         for item in failures:
             print(f"  - {item}")
         sys.exit(1)
-    print(f"OK: {WORKBOOK}, {len(defined)} functions, {len(z.namelist())} parts")
+    functions = sum(1 for name in defined if TOKEN_RE.fullmatch(name))
+    print(f"OK: {WORKBOOK}, {functions} functions, {len(z.namelist())} parts")
 
 
 if __name__ == "__main__":

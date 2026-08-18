@@ -10,7 +10,7 @@ Six module prefixes became one. The gain is five fewer characters on every call 
 to the point, autocomplete that works: typing `=nb.` narrows to this library instead of
 requiring you to remember which of six modules a function lived in first.
 
-Of the 130 functions, 89 change prefix and nothing else. Seventeen bare names existed in
+Of the 130 functions, 106 change prefix and nothing else. Seventeen bare names existed in
 more than one module: the fuller implementation keeps the plain name and the other 19 take
 a one-letter tag, `B` for debt, `E` for essentials, `U` for utilities. The five About
 tables take words, so `nabla.f.Aboutλ` is now `nb.AboutFinancialλ` and the bare name
@@ -79,7 +79,7 @@ Every function's help opens with a signature, and repeats the same parameters as
 
 Three parameter tables disagreed with their own LAMBDA too, and were corrected the same way: `LoanAPR` and `LoanTerm` in `LabelAmortiseλ`, and `TotaldebtService` in `DSCRλ`.
 
-`nb.IsInListλ` and `nb.IsInListλ` were the one case where the declaration was the odd one out. It shouts `LIST`, while the signature, the parameter table and one of the function's own two references all write `List`. Excel resolves identifiers case-insensitively, so the parameter is renamed to match the rest of the library rather than the help being made to shout back. Both functions were exercised in Excel afterwards, including the branch that calls `ISOMITTED()` on the renamed parameter.
+`nb.IsInListλ` and `nb.IsInListUλ` were the one case where the declaration was the odd one out. It shouts `LIST`, while the signature, the parameter table and one of the function's own two references all write `List`. Excel resolves identifiers case-insensitively, so the parameter is renamed to match the rest of the library rather than the help being made to shout back. Both functions were exercised in Excel afterwards, including the branch that calls `ISOMITTED()` on the renamed parameter.
 
 Each correction is applied in three places: the module source `src/` is exported from, the defined name Excel installs, and the help already spilled and cached on the demonstration sheets. Five sheets carried a stale copy. Every corrected signature was then read back out of a running Excel rather than trusted from the file.
 
@@ -129,7 +129,9 @@ Also in this release:
 
 Verified by rebuilding from upstream and comparing every cell against the previous build:
 85,647 cells, no numeric change, and the only text differences are the renamed functions,
-the rewritten cover paragraph and the corrected About tables.
+the rewritten cover paragraph, the corrected About tables, and the product name capitalised
+from `nabla` to `Nabla` in 29 places across worksheet strings, drawing callouts and the
+document title.
 
 ## 2026-08-18, help that names itself
 

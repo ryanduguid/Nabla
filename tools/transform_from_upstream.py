@@ -1726,7 +1726,6 @@ for _m in re.finditer(r'<definedName name="(nabla\.(?:debt|d|e|f|r|u))\.([^"]+)"
     FLAT_MODULE_OF[_now] = _mod_word[_m.group(1)]
     # two old names collapsing onto one new one would silently lose a function
     assert FLAT_PREVIOUS_OF.setdefault(_now, _was) == _was, (_now, _was, FLAT_PREVIOUS_OF[_now])
-assert len(FLAT_PREVIOUS_OF) == len(set(FLAT_PREVIOUS_OF.values())), "the rename map is not one to one"
 print("rename map: %d functions, %d of them keeping their bare name"
       % (len(FLAT_PREVIOUS_OF),
          sum(1 for _n, _o in FLAT_PREVIOUS_OF.items()

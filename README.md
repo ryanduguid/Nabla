@@ -186,7 +186,7 @@ Arithmetic: opens the workbook in a real Excel, forces a full rebuild, fails on 
 | `nb.RangeToDAEλ` | Convert a static range into a dynamic array |
 | `nb.FinancialRatios` | Three dozen financial Ratios |
 
-The other 85 functions (all of `nb`, `nb` and `nb`, the depreciation-method, GST and rolling-statistic helpers in `nb`, `nb.FinancialYearλ`, and the module `Aboutλ` tables) have no dedicated worksheet; call any of them with no arguments for inline help, `nb.FinancialRatios` demonstrates the ratio suite on one worksheet, and [functions.csv](functions.csv) lists every function with its signature.
+The other 85 functions (all of Ratios, Utilities and Debt, the depreciation-method, GST and rolling-statistic helpers in Financial, `nb.FinancialYearλ`, and the module About tables) have no dedicated worksheet; call any of them with no arguments for inline help, `nb.FinancialRatios` demonstrates the ratio suite on one worksheet, and [functions.csv](functions.csv) lists every function with its signature.
 
 ## Attribution
 
