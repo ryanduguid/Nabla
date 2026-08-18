@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v2.4.0, 19 August 2026, period starts that exist
 
 - **`nb.PeriodStartλ` returned a date that is not a period start whenever the anchor is a
   month end.** It walked the calendar to the period's month, rebuilt the date with the
