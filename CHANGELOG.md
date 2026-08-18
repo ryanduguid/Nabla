@@ -1,5 +1,64 @@
 # Changelog
 
+## Unreleased
+
+- **`nb.Periodsλ` returned one period fewer than its own examples claim.** It counted whole
+  intervals, which is what `DATEDIF` returns, while every one of its four worked examples
+  counts the period starts crossed between the two dates. Its description says as much: it
+  lists "End Date is inclusive" as one of its differences from `DATEDIF`, and then the
+  procedure called `DATEDIF`. From 31 March to 15 May is one whole month and two month
+  starts, and the help says 2. It now counts ordinals, the same way for all five intervals,
+  so a part period at the end counts once and a whole one does not count twice.
+
+  `D` is unchanged, because a day ordinal is the serial number itself. `W` follows
+  `nb.PeriodLabelλ`'s own week numbering, which restarts each 1 January and so labels every
+  year with 53 weeks, the last of them one or two days long. That is what makes the help's
+  fourth example -53 rather than the 52 whole weeks its two dates are apart. All four
+  examples now hold: 2, -2, -12 and -53.
+
+  This changes results. Anything measured in months, quarters, weeks or years returns one
+  more than it did wherever the end date falls part way through a period, which is most of
+  the time. The two demonstration cells that move are the quarters row, 4 to 5, and the
+  weeks row, 52 to 53. If you were relying on whole-interval counts, `DATEDIF` is still
+  there and still does that.
+
+  The third example was also the one line in this help that could not be copied: it passed
+  four arguments to a function that takes three. The `-12` it claims is right without the
+  fourth.
+
+- **Four more functions threw away their date conversions,** the defect `nb.OverLapDaysλ`
+  carried until v2.1.0. Two of them gave wrong answers for it:
+
+  - `nb.ScheduleValuesλ` compared text period starts against converted effective dates, so
+    nothing ever fell inside a period. It returned 0 where it should return 100.
+  - `nb.ScheduleRatesλ` looked up text dates in a text array, so `XLOOKUP` matched them in
+    dictionary order. Asked for the rate in force on `"5/1/2026"` against starts of
+    `"1/1/2026"` and `"10/1/2026"`, it returned the January 10 rate, because `"5/1/2026"`
+    sorts after `"10/1/2026"` as text.
+  - `nb.PeriodLabelλ` and `nb.Timelineλ` were saved by Excel: both feed the date straight
+    into `TEXT`, `YEAR`, `EDATE` or `SEQUENCE`, all of which coerce a text date themselves.
+    Checked against every case tried, they returned the right answer before and after. The
+    fix is a guard, not a repair.
+
+- **The workbook stopped shipping cached errors it does not reproduce.** Five cells on the
+  Periods demonstration sheet were saved holding `#VALUE!`. They come from the upstream
+  workbook, which carries 65 such cells, and they have been in every tagged release from
+  v1.2.0 on. Excel replaces them with the right answers as soon as the file opens, so no
+  reader ever saw them and no recalculation reproduces them, but a file that disagrees with
+  itself is a file nobody can check. They now hold the answers the formula gives. One
+  cached error is left, `#NAME?` on the Essentials About sheet, which resolves on open the
+  same way; its cell holds a spilled table rather than a number, so it needs the table
+  built rather than a value written.
+
+### Added
+
+- `tools/verify_sources.py` now requires that a function which converts a date argument
+  goes on to read the conversion. It is the check that would have caught all five of these,
+  and it could not be added before they were fixed, because it fails on them. Run against
+  v2.1.0 it names all six bindings and the function each belongs to. A general unused-value
+  check would need a real parser and would report a great deal more; this one asks a
+  narrower question and gets a clean answer.
+
 ## v2.1.0, 18 August 2026, functions that do what they say
 
 v2.0.0 renamed every function. This one fixes what three of them compute, and stops two
@@ -42,9 +101,13 @@ as text to `nb.OverLapDaysλ`, a start date after the end date in `nb.Periodsλ`
   Three defects in the same functions are **not** fixed here, because each changes results
   for anyone already relying on them and none is a one-line correction. `nb.Periodsλ`
   counts complete intervals where its examples count boundaries crossed, so its forward
-  example returns 1 against the 2 it claims, and its `W` example 52 against 53. It also
-  returns `#VALUE!` for the range arguments its help says it takes, which is what the
-  demonstration sheet has been caching. And four more functions ignore their date
+  example returns 1 against the 2 it claims, and its `W` example 52 against 53. Its
+  demonstration sheet also ships five cached `#VALUE!` cells, which Excel replaces with
+  the right answers the moment the file opens. (This entry first said the function returns
+  `#VALUE!` for range arguments. It does not; that claim came from a probe that named a
+  worksheet which does not exist. The cached errors are stale, not live. Corrected the
+  same day, here and in the published release notes.) And four more functions ignore their
+  date
   conversions the way `nb.OverLapDaysλ` did: `nb.PeriodLabelλ`, `nb.ScheduleRatesλ`,
   `nb.ScheduleValuesλ` and `nb.Timelineλ`, six dead conversions between them, all in Dates.
 

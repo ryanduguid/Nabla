@@ -757,11 +757,11 @@ for _mod in ISINLIST:
 print("corrected %d help signatures in the module sources, renamed IsInListλ's LIST "
       "parameter and restored its help's column delimiter" % len(HELP_SIGNATURES))
 
-# ---------- three defects in the functions themselves ----------
-# Everything above corrects what a function says about itself. These three change what a
-# function computes. All three were reported by an outside review of v1.2.6 and confirmed
-# in Excel, and in two of them the workbook's own worked example is the evidence: the
-# printed answer is the answer the bug produces.
+# ---------- defects in the functions themselves ----------
+# Everything above corrects what a function says about itself. These change what a function
+# computes. All were reported by an outside review of v1.2.6 and confirmed in Excel, and in
+# several the workbook's own worked example is the evidence: the printed answer is the
+# answer the bug produces.
 #
 # They take the same shape as the table above, so they run through the same two passes:
 # the module source here, the defined name Excel installs further down. The entries that
@@ -808,6 +808,150 @@ LOGIC_FIXES = [
      "_xlfn.SEQUENCE(, _xlpm.Life), _xlpm.Factor, _xlpm.No_Switch)"),
     ("nabla.f", "VDBλ",
      "→300.00,210.00,147.00,121.50,121.50", "→300.00,210.00,147.00,102.90,72.03"),
+    # Periodsλ counted complete intervals where every one of its four worked examples counts
+    # the period starts crossed between the two dates. It says so itself: the description
+    # lists "End Date is inclusive" as a difference from DATEDIF, and then the procedure
+    # calls DATEDIF. From 31 March to 15 May is one complete month and two month starts, and
+    # the help says 2. Count ordinals instead, the same way for all five intervals, so a part
+    # period at the end counts and a whole one does not count twice. "D" is unchanged, since
+    # a day ordinal is the serial number itself. The week ordinal follows PeriodLabelλ's own
+    # week numbering, which restarts each 1 January and therefore labels every year with 53
+    # weeks, the last of them one or two days long. That is what makes the help's fourth
+    # example 53 rather than the 52 whole weeks the two dates are apart.
+    ("nabla.d", "Periodsλ",
+     "        DPW, 7,     //Days Per Week\n",
+     "        DPW, 7,     //Days Per Week\n"
+     "        WPY, 53,    //Week labels Per Year: the last one runs 1 or 2 days\n"
+     "        QPY, 4,     //Quarters Per Year\n",
+     "_xlpm.DPW, 7, ",
+     "_xlpm.DPW, 7, _xlpm.WPY, 53, _xlpm.QPY, 4, "),
+    ("nabla.d", "Periodsλ",
+     '                                Latest,     MAX(DateOne, DateTwo) , //+ 1,\n'
+     '                                Sign,       SIGN(DateTwo - DateOne),\n'
+     '                                Periods,    Switch(Interval,   \n'
+     '                                                "D", DATEDIF(Earliest, Latest, "D"),\n'
+     '                                                "W", INT(DATEDIF(Earliest, Latest, "D")/DPW),\n'
+     '                                                "M", DATEDIF(Earliest, Latest, "M"),\n'
+     '                                                "Q", INT(DATEDIF(Earliest, Latest, "M")/MPQ),\n'
+     '                                                "Y", DATEDIF(Earliest, Latest, "Y")\n'
+     '                                            ),\n',
+     '                                Latest,     MAX(DateOne, DateTwo),\n'
+     '                                Sign,       SIGN(DateTwo - DateOne),\n'
+     '                                Periods,    Switch(Interval,   \n'
+     '                                                "D", Latest - Earliest,\n'
+     '                                                "W", WPY * (YEAR(Latest) - YEAR(Earliest))\n'
+     '                                                     + QUOTIENT(Latest   - DATE(YEAR(Latest),   1, 0) - 1, DPW)\n'
+     '                                                     - QUOTIENT(Earliest - DATE(YEAR(Earliest), 1, 0) - 1, DPW),\n'
+     '                                                "M", MPY * (YEAR(Latest) - YEAR(Earliest))\n'
+     '                                                     + MONTH(Latest) - MONTH(Earliest),\n'
+     '                                                "Q", QPY * (YEAR(Latest) - YEAR(Earliest))\n'
+     '                                                     + QUOTIENT(MONTH(Latest)   - 1, MPQ)\n'
+     '                                                     - QUOTIENT(MONTH(Earliest) - 1, MPQ),\n'
+     '                                                "Y", YEAR(Latest) - YEAR(Earliest)\n'
+     '                                            ),\n',
+     '_xlpm.Latest, MAX(_xlpm.DateOne, _xlpm.DateTwo), _xlpm.Sign, '
+     'SIGN(_xlpm.DateTwo - _xlpm.DateOne), _xlpm.Periods, _xlfn.SWITCH(_xlpm.Interval, '
+     '"D", DATEDIF(_xlpm.Earliest, _xlpm.Latest, "D"), '
+     '"W", INT(DATEDIF(_xlpm.Earliest, _xlpm.Latest, "D") / _xlpm.DPW), '
+     '"M", DATEDIF(_xlpm.Earliest, _xlpm.Latest, "M"), '
+     '"Q", INT(DATEDIF(_xlpm.Earliest, _xlpm.Latest, "M") / _xlpm.MPQ), '
+     '"Y", DATEDIF(_xlpm.Earliest, _xlpm.Latest, "Y")), ',
+     '_xlpm.Latest, MAX(_xlpm.DateOne, _xlpm.DateTwo), _xlpm.Sign, '
+     'SIGN(_xlpm.DateTwo - _xlpm.DateOne), _xlpm.Periods, _xlfn.SWITCH(_xlpm.Interval, '
+     '"D", _xlpm.Latest - _xlpm.Earliest, '
+     '"W", _xlpm.WPY * (YEAR(_xlpm.Latest) - YEAR(_xlpm.Earliest)) '
+     '+ QUOTIENT(_xlpm.Latest - DATE(YEAR(_xlpm.Latest), 1, 0) - 1, _xlpm.DPW) '
+     '- QUOTIENT(_xlpm.Earliest - DATE(YEAR(_xlpm.Earliest), 1, 0) - 1, _xlpm.DPW), '
+     '"M", _xlpm.MPY * (YEAR(_xlpm.Latest) - YEAR(_xlpm.Earliest)) '
+     '+ MONTH(_xlpm.Latest) - MONTH(_xlpm.Earliest), '
+     '"Q", _xlpm.QPY * (YEAR(_xlpm.Latest) - YEAR(_xlpm.Earliest)) '
+     '+ QUOTIENT(MONTH(_xlpm.Latest) - 1, _xlpm.MPQ) '
+     '- QUOTIENT(MONTH(_xlpm.Earliest) - 1, _xlpm.MPQ), '
+     '"Y", YEAR(_xlpm.Latest) - YEAR(_xlpm.Earliest)), '),
+    # and the third example passes four arguments to a function that takes three, so it is
+    # the one line in this help a reader cannot copy. The -12 it claims is right without it.
+    ("nabla.d", "Periodsλ", '", , FALSE)', '")'),
+    # the description's shorthand for what changed, in the row that already carried it
+    ("nabla.d", "Periodsλ", "* End Date is inclusive",
+     "* Counts the period starts crossed, so a part period at the end counts"),
+    # Four more functions convert a date argument and then use the raw one, the same defect
+    # OverLapDaysλ had. None is reachable through a demonstration sheet, because every one of
+    # them is called there with real dates, and converting a date returns it unchanged. Pass
+    # any of them a date written as text and the conversion is still thrown away.
+    ("nabla.d", "PeriodLabelλ",
+     '        Result,     SWITCH(Interval,\n'
+     '                        "D", TEXT(Date, "yyyy-mmm-dd"),\n'
+     '                        "W", YEAR(Date) & ":W" & TEXT(QUOTIENT(Date - DATE(YEAR(Date), 1, 0) - 1, 7) + 1, "00"),\n'
+     '                        "I", YEAR(Date) & ":W" & TEXT(ISOWEEKNUM(Date), "00"),\n'
+     '                        "M", TEXT(Date, "YYYY-MMM"),\n'
+     '                        "Q", YEAR(Date) & ":Q" & QUOTIENT(MONTH(Date) - 1, 3) + 1,\n'
+     '                        "S", YEAR(Date) & ":S" & QUOTIENT(MONTH(Date) - 1, 6) + 1,\n'
+     '                        "A", TEXT(Date, "YYYY"),\n'
+     '                        "Y", TEXT(Date, "YYYY"),',
+     '        Result,     SWITCH(Interval,\n'
+     '                        "D", TEXT(CvtDate, "yyyy-mmm-dd"),\n'
+     '                        "W", YEAR(CvtDate) & ":W" & TEXT(QUOTIENT(CvtDate - DATE(YEAR(CvtDate), 1, 0) - 1, 7) + 1, "00"),\n'
+     '                        "I", YEAR(CvtDate) & ":W" & TEXT(ISOWEEKNUM(CvtDate), "00"),\n'
+     '                        "M", TEXT(CvtDate, "YYYY-MMM"),\n'
+     '                        "Q", YEAR(CvtDate) & ":Q" & QUOTIENT(MONTH(CvtDate) - 1, 3) + 1,\n'
+     '                        "S", YEAR(CvtDate) & ":S" & QUOTIENT(MONTH(CvtDate) - 1, 6) + 1,\n'
+     '                        "A", TEXT(CvtDate, "YYYY"),\n'
+     '                        "Y", TEXT(CvtDate, "YYYY"),',
+     '_xlfn.SWITCH(_xlpm.Interval, "D", TEXT(_xlpm.Date, "yyyy-mmm-dd"), '
+     '"W", YEAR(_xlpm.Date) &amp; ":W" &amp; TEXT(QUOTIENT(_xlpm.Date - DATE(YEAR(_xlpm.Date), 1, 0) - 1, 7) + 1, "00"), '
+     '"I", YEAR(_xlpm.Date) &amp; ":W" &amp; TEXT(_xlfn.ISOWEEKNUM(_xlpm.Date), "00"), '
+     '"M", TEXT(_xlpm.Date, "YYYY-MMM"), '
+     '"Q", YEAR(_xlpm.Date) &amp; ":Q" &amp; QUOTIENT(MONTH(_xlpm.Date) - 1, 3) + 1, '
+     '"S", YEAR(_xlpm.Date) &amp; ":S" &amp; QUOTIENT(MONTH(_xlpm.Date) - 1, 6) + 1, '
+     '"A", TEXT(_xlpm.Date, "YYYY"), "Y", TEXT(_xlpm.Date, "YYYY"), #VALUE!',
+     '_xlfn.SWITCH(_xlpm.Interval, "D", TEXT(_xlpm.CvtDate, "yyyy-mmm-dd"), '
+     '"W", YEAR(_xlpm.CvtDate) &amp; ":W" &amp; TEXT(QUOTIENT(_xlpm.CvtDate - DATE(YEAR(_xlpm.CvtDate), 1, 0) - 1, 7) + 1, "00"), '
+     '"I", YEAR(_xlpm.CvtDate) &amp; ":W" &amp; TEXT(_xlfn.ISOWEEKNUM(_xlpm.CvtDate), "00"), '
+     '"M", TEXT(_xlpm.CvtDate, "YYYY-MMM"), '
+     '"Q", YEAR(_xlpm.CvtDate) &amp; ":Q" &amp; QUOTIENT(MONTH(_xlpm.CvtDate) - 1, 3) + 1, '
+     '"S", YEAR(_xlpm.CvtDate) &amp; ":S" &amp; QUOTIENT(MONTH(_xlpm.CvtDate) - 1, 6) + 1, '
+     '"A", TEXT(_xlpm.CvtDate, "YYYY"), "Y", TEXT(_xlpm.CvtDate, "YYYY"), #VALUE!'),
+    ("nabla.d", "ScheduleRatesλ",
+     'XLOOKUP(PeriodEnds, RateStarts, Rates, "", -1)',
+     'XLOOKUP(CvtEnds, CvtStarts, Rates, "", -1)',
+     '_xlfn.XLOOKUP(_xlpm.PeriodEnds, _xlpm.RateStarts, _xlpm.Rates, "", -1)',
+     '_xlfn.XLOOKUP(_xlpm.CvtEnds, _xlpm.CvtStarts, _xlpm.Rates, "", -1)'),
+    ("nabla.d", "ScheduleValuesλ",
+     '                            SEQUENCE(, COLUMNS(PeriodStarts)), \n'
+     '                            LAMBDA(Period, \n'
+     '                                LET(StartDate,  INDEX(PeriodStarts, Period), \n'
+     '                                    EndDate,    INDEX(PeriodEnds, Period),',
+     '                            SEQUENCE(, COLUMNS(CvtPrdStarts)), \n'
+     '                            LAMBDA(Period, \n'
+     '                                LET(StartDate,  INDEX(CvtPrdStarts, Period), \n'
+     '                                    EndDate,    INDEX(CvtPrdEnds, Period),',
+     '_xlfn.SEQUENCE(, COLUMNS(_xlpm.PeriodStarts)), _xlfn.LAMBDA(_xlpm.Period, '
+     '_xlfn.LET(_xlpm.StartDate, INDEX(_xlpm.PeriodStarts, _xlpm.Period), '
+     '_xlpm.EndDate, INDEX(_xlpm.PeriodEnds, _xlpm.Period),',
+     '_xlfn.SEQUENCE(, COLUMNS(_xlpm.CvtPrdStarts)), _xlfn.LAMBDA(_xlpm.Period, '
+     '_xlfn.LET(_xlpm.StartDate, INDEX(_xlpm.CvtPrdStarts, _xlpm.Period), '
+     '_xlpm.EndDate, INDEX(_xlpm.CvtPrdEnds, _xlpm.Period),'),
+    ("nabla.d", "Timelineλ",
+     '                            "Y", EDATE(StartDate, SEQUENCE(1, Periods, EndDates * MPY, MPY)) - EndDates,\n'
+     '                            "Q", EDATE(StartDate, SEQUENCE(1, Periods, EndDates * MPQ, MPQ)) - EndDates,\n'
+     '                            "M", EDATE(StartDate, SEQUENCE(1, Periods, EndDates, 1)) - EndDates,\n'
+     '                            "W", SEQUENCE(1, Periods, StartDate + IF(PeriodStarts?, 0, DPW - 1), DPW),\n'
+     '                            "D", SEQUENCE(1, Periods, StartDate, 1),',
+     '                            "Y", EDATE(CvtStart, SEQUENCE(1, Periods, EndDates * MPY, MPY)) - EndDates,\n'
+     '                            "Q", EDATE(CvtStart, SEQUENCE(1, Periods, EndDates * MPQ, MPQ)) - EndDates,\n'
+     '                            "M", EDATE(CvtStart, SEQUENCE(1, Periods, EndDates, 1)) - EndDates,\n'
+     '                            "W", SEQUENCE(1, Periods, CvtStart + IF(PeriodStarts?, 0, DPW - 1), DPW),\n'
+     '                            "D", SEQUENCE(1, Periods, CvtStart, 1),',
+     '"Y", EDATE(_xlpm.StartDate, _xlfn.SEQUENCE(1, _xlpm.Periods, _xlpm.EndDates * _xlpm.MPY, _xlpm.MPY)) - _xlpm.EndDates, '
+     '"Q", EDATE(_xlpm.StartDate, _xlfn.SEQUENCE(1, _xlpm.Periods, _xlpm.EndDates * _xlpm.MPQ, _xlpm.MPQ)) - _xlpm.EndDates, '
+     '"M", EDATE(_xlpm.StartDate, _xlfn.SEQUENCE(1, _xlpm.Periods, _xlpm.EndDates, 1)) - _xlpm.EndDates, '
+     '"W", _xlfn.SEQUENCE(1, _xlpm.Periods, _xlpm.StartDate + IF(_xlpm.PeriodStarts?, 0, _xlpm.DPW - 1), _xlpm.DPW), '
+     '"D", _xlfn.SEQUENCE(1, _xlpm.Periods, _xlpm.StartDate, 1),',
+     '"Y", EDATE(_xlpm.CvtStart, _xlfn.SEQUENCE(1, _xlpm.Periods, _xlpm.EndDates * _xlpm.MPY, _xlpm.MPY)) - _xlpm.EndDates, '
+     '"Q", EDATE(_xlpm.CvtStart, _xlfn.SEQUENCE(1, _xlpm.Periods, _xlpm.EndDates * _xlpm.MPQ, _xlpm.MPQ)) - _xlpm.EndDates, '
+     '"M", EDATE(_xlpm.CvtStart, _xlfn.SEQUENCE(1, _xlpm.Periods, _xlpm.EndDates, 1)) - _xlpm.EndDates, '
+     '"W", _xlfn.SEQUENCE(1, _xlpm.Periods, _xlpm.CvtStart + IF(_xlpm.PeriodStarts?, 0, _xlpm.DPW - 1), _xlpm.DPW), '
+     '"D", _xlfn.SEQUENCE(1, _xlpm.Periods, _xlpm.CvtStart, 1),'),
 ]
 
 for _entry in LOGIC_FIXES:
@@ -818,8 +962,8 @@ for _entry in LOGIC_FIXES:
     assert _blk.count(_old) == 1, (_fn, _mod, "source", _old, _blk.count(_old))
     mods[_mod]["text"] = _text[:_a] + _blk.replace(_old, _new) + _text[_b:]
 
-print("fixed %d defects in the module sources: OverLapDaysλ's ignored date conversions, "
-      "Periodsλ's unreachable sign and VDBλ's ignored No_Switch" % len(LOGIC_FIXES))
+print("fixed %d defects in the module sources across %d functions"
+      % (len(LOGIC_FIXES), len({(e[0], e[1]) for e in LOGIC_FIXES})))
 
 # fix upstream copy-paste bug: the u module's About suggested "nabla.e" (was BXE) as its own name
 assert "Suggested module name: nabla.e" in mods["nabla.u"]["text"]
@@ -1032,6 +1176,50 @@ for _marker, _was, _now in CACHED_EXAMPLES:
         _found.append("%s!%s" % (_sheet.rsplit("/", 1)[1], _label))
     assert len(_found) == 1, (_marker, _found)
     print("refreshed the cached example result at %s: %s -> %s" % (_found[0], _was, _now))
+
+# Periodsλ counts differently now, so the sheet that demonstrates it caches answers that no
+# longer match its own formula, and two of the five have moved. The same sheet is where the
+# workbook's cached #VALUE! cells live: the demonstration spills through a LAMBDA that Excel
+# evaluates correctly on open but that something once saved in an error state, so the file
+# has been shipping five errors that the reader never sees and a recalculation never
+# reproduces. Correcting them here means the file agrees with itself before Excel is opened.
+# Cells are named outright rather than searched for, because a cached number is not
+# distinctive enough to find, and each one carries the value it must be replacing.
+CACHED_SHEET_CELLS = [
+    ("Periodsλ(A25:A29,B25:B29,C25:C29)", [
+        ("B8", "* End Date is inclusive",
+         "* Counts the period starts crossed, so a part period at the end counts"),
+        ("B19", '=nabla.d.Periodsλ("15/1/2026", "16/1/2025", , FALSE)',
+         '=nabla.d.Periodsλ("15/1/2026", "16/1/2025")'),
+        ("D25", "#VALUE!", "9"),      # 28 Feb 2026 to 30 Nov 2026, months
+        ("D26", "#VALUE!", "5"),      # 30 Jun 2026 to 1 Aug 2027, quarters
+        ("D27", "#VALUE!", "3"),      # 1 Jan 2026 to 1 Jan 2029, years
+        ("D28", "#VALUE!", "53"),     # 30 Apr 2026 to 1 May 2027, weeks
+        ("D29", "#VALUE!", "365"),    # 31 Aug 2026 to 31 Aug 2027, days
+    ]),
+]
+
+for _marker, _cells in CACHED_SHEET_CELLS:
+    _sheets = [n for n in list(parts) if re.match(r"xl/worksheets/sheet\d+\.xml$", n)
+               and _marker in get(n)]
+    assert len(_sheets) == 1, (_marker, _sheets)
+    _sheet = _sheets[0]
+    _text = get(_sheet)
+    for _ref, _was, _now in _cells:
+        _m = re.search(r'<c r="%s"([^>]*)>((?:(?!<c[ /]).)*?)</c>' % _ref, _text, re.S)
+        assert _m, (_sheet, _ref, "no such cell")
+        _attrs, _inner = _m.group(1), _m.group(2)
+        assert "<v>%s</v>" % _was in _inner, (_sheet, _ref, _inner[:80])
+        # an error cell carries t="e"; a number carries no type at all
+        if _was.startswith("#") and not _now.startswith("#"):
+            assert ' t="e"' in _attrs, (_sheet, _ref, _attrs)
+            _attrs = _attrs.replace(' t="e"', "")
+        _text = (_text[:_m.start()] + '<c r="%s"%s>%s</c>' % (_ref, _attrs,
+                 _inner.replace("<v>%s</v>" % _was, "<v>%s</v>" % _now))
+                 + _text[_m.end():])
+    put(_sheet, _text)
+    print("refreshed %d cached cells on %s"
+          % (len(_cells), _sheet.rsplit("/", 1)[1]))
 
 # cached spill copies of help version lines in worksheets -> today
 for n in list(parts):

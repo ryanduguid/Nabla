@@ -361,14 +361,14 @@ PeriodLabelλ = LAMBDA(
         Interval,         IF( ISOMITTED( Interval), "M", Interval),
     //  Procedure
         Result,     SWITCH(Interval,
-                        "D", TEXT(Date, "yyyy-mmm-dd"),
-                        "W", YEAR(Date) & ":W" & TEXT(QUOTIENT(Date - DATE(YEAR(Date), 1, 0) - 1, 7) + 1, "00"),
-                        "I", YEAR(Date) & ":W" & TEXT(ISOWEEKNUM(Date), "00"),
-                        "M", TEXT(Date, "YYYY-MMM"),
-                        "Q", YEAR(Date) & ":Q" & QUOTIENT(MONTH(Date) - 1, 3) + 1,
-                        "S", YEAR(Date) & ":S" & QUOTIENT(MONTH(Date) - 1, 6) + 1,
-                        "A", TEXT(Date, "YYYY"),
-                        "Y", TEXT(Date, "YYYY"),                            
+                        "D", TEXT(CvtDate, "yyyy-mmm-dd"),
+                        "W", YEAR(CvtDate) & ":W" & TEXT(QUOTIENT(CvtDate - DATE(YEAR(CvtDate), 1, 0) - 1, 7) + 1, "00"),
+                        "I", YEAR(CvtDate) & ":W" & TEXT(ISOWEEKNUM(CvtDate), "00"),
+                        "M", TEXT(CvtDate, "YYYY-MMM"),
+                        "Q", YEAR(CvtDate) & ":Q" & QUOTIENT(MONTH(CvtDate) - 1, 3) + 1,
+                        "S", YEAR(CvtDate) & ":S" & QUOTIENT(MONTH(CvtDate) - 1, 6) + 1,
+                        "A", TEXT(CvtDate, "YYYY"),
+                        "Y", TEXT(CvtDate, "YYYY"),                            
                         #Value!
                     ),        
     //  Return Result
@@ -396,7 +396,7 @@ Periodsλ = LAMBDA(
                         "DESCRIPTION:   →Determine the number of periods from date1 to date 2 inclusive.¶" &
                                        "→Differences to Excel4.0's DateDif are:¶" & 
                                        "→* Interval includes Weeks & Quarters¶" & 
-                                       "→* End Date is inclusive¶" & 
+                                       "→* Counts the period starts crossed, so a part period at the end counts¶" & 
                                        "→* Returns negative values if Date1 is after Date2¶" & 
                         "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                         "PARAMETERS:    →¶" &
@@ -407,7 +407,7 @@ Periodsλ = LAMBDA(
                         "Result         →Formula (nb is assumed to be the module's name)¶" &
                         "2              →=nb.Periodsλ(""31/3/2025"", ""15/5/2025"")¶" &
                         "-2             →=nb.Periodsλ(""15/5/2025"", ""31/3/2025"")¶" &
-                        "-12            →=nb.Periodsλ(""15/1/2026"", ""16/1/2025"", , FALSE)¶" &
+                        "-12            →=nb.Periodsλ(""15/1/2026"", ""16/1/2025"")¶" &
                         "-53            →=nb.Periodsλ(""15/1/2026"", ""16/1/2025"", ""W"")",
                         "→", "¶"
                     )
@@ -430,6 +430,8 @@ Periodsλ = LAMBDA(
         MPY, 12,    //Months Per Year
         MPQ, 3,     //Months Per Quarter
         DPW, 7,     //Days Per Week
+        WPY, 53,    //Week labels Per Year: the last one runs 1 or 2 days
+        QPY, 4,     //Quarters Per Year
     //  Procedure
         Rows,       MAX( ROWS( CvtStarts), ROWS( CvtEnds)), 
         Cols,       MAX( COLUMNS( CvtStarts), COLUMNS( CvtEnds)), 
@@ -439,14 +441,19 @@ Periodsλ = LAMBDA(
                                 DateTwo,    IF( COUNTA( CvtEnds) = 1, CvtEnds, INDEX( CvtEnds, R, C)),
                                 Interval,   IF( COUNTA( Intervals) = 1, Intervals, INDEX( Intervals, R, C)),
                                 Earliest,   MIN(DateOne, DateTwo),
-                                Latest,     MAX(DateOne, DateTwo) , //+ 1,
+                                Latest,     MAX(DateOne, DateTwo),
                                 Sign,       SIGN(DateTwo - DateOne),
                                 Periods,    Switch(Interval,   
-                                                "D", DATEDIF(Earliest, Latest, "D"),
-                                                "W", INT(DATEDIF(Earliest, Latest, "D")/DPW),
-                                                "M", DATEDIF(Earliest, Latest, "M"),
-                                                "Q", INT(DATEDIF(Earliest, Latest, "M")/MPQ),
-                                                "Y", DATEDIF(Earliest, Latest, "Y")
+                                                "D", Latest - Earliest,
+                                                "W", WPY * (YEAR(Latest) - YEAR(Earliest))
+                                                     + QUOTIENT(Latest   - DATE(YEAR(Latest),   1, 0) - 1, DPW)
+                                                     - QUOTIENT(Earliest - DATE(YEAR(Earliest), 1, 0) - 1, DPW),
+                                                "M", MPY * (YEAR(Latest) - YEAR(Earliest))
+                                                     + MONTH(Latest) - MONTH(Earliest),
+                                                "Q", QPY * (YEAR(Latest) - YEAR(Earliest))
+                                                     + QUOTIENT(MONTH(Latest)   - 1, MPQ)
+                                                     - QUOTIENT(MONTH(Earliest) - 1, MPQ),
+                                                "Y", YEAR(Latest) - YEAR(Earliest)
                                             ),
                                 Sign * Periods
                             )
@@ -503,7 +510,7 @@ ScheduleRatesλ = LAMBDA(
                             IF( ISNUMBER( RateStarts), RateStarts, DATEVALUE( RateStarts))
                         ),
     //  Procedure
-        Result,         XLOOKUP(PeriodEnds, RateStarts, Rates, "", -1),
+        Result,         XLOOKUP(CvtEnds, CvtStarts, Rates, "", -1),
     //  Return Result
         CHOOSE( Help? + 1, Result, Help)
     )
@@ -634,10 +641,10 @@ ScheduleValuesλ = LAMBDA(
                         ),
     //  Procedure
         Result,         BYCOL(
-                            SEQUENCE(, COLUMNS(PeriodStarts)), 
+                            SEQUENCE(, COLUMNS(CvtPrdStarts)), 
                             LAMBDA(Period, 
-                                LET(StartDate,  INDEX(PeriodStarts, Period), 
-                                    EndDate,    INDEX(PeriodEnds, Period),
+                                LET(StartDate,  INDEX(CvtPrdStarts, Period), 
+                                    EndDate,    INDEX(CvtPrdEnds, Period),
                                     SUM(Values * (CvtEffDates >= StartDate) * (CvtEffDates <= EndDate))
                                 )
                             )
@@ -776,11 +783,11 @@ Timelineλ = LAMBDA(
         EndDates,       N(NOT(PeriodStarts?)),
         Result,         SWITCH(
                             Interval,
-                            "Y", EDATE(StartDate, SEQUENCE(1, Periods, EndDates * MPY, MPY)) - EndDates,
-                            "Q", EDATE(StartDate, SEQUENCE(1, Periods, EndDates * MPQ, MPQ)) - EndDates,
-                            "M", EDATE(StartDate, SEQUENCE(1, Periods, EndDates, 1)) - EndDates,
-                            "W", SEQUENCE(1, Periods, StartDate + IF(PeriodStarts?, 0, DPW - 1), DPW),
-                            "D", SEQUENCE(1, Periods, StartDate, 1),
+                            "Y", EDATE(CvtStart, SEQUENCE(1, Periods, EndDates * MPY, MPY)) - EndDates,
+                            "Q", EDATE(CvtStart, SEQUENCE(1, Periods, EndDates * MPQ, MPQ)) - EndDates,
+                            "M", EDATE(CvtStart, SEQUENCE(1, Periods, EndDates, 1)) - EndDates,
+                            "W", SEQUENCE(1, Periods, CvtStart + IF(PeriodStarts?, 0, DPW - 1), DPW),
+                            "D", SEQUENCE(1, Periods, CvtStart, 1),
                             #Value!
                         ),
     //  Return Result

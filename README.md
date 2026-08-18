@@ -124,7 +124,7 @@ Structure: XML well-formedness, undefined names, `#REF!`, volatile functions, st
 python tools/verify_sources.py nabla.xlsx src
 ```
 
-Provenance: every function in `src/` must match the defined name that ships, and must be written in the form Excel accepts as typed input rather than the form the file format stores. The two differ in four ways, which it maps rather than ignores. Also runs in CI.
+Provenance: every function in `src/` must match the defined name that ships, and must be written in the form Excel accepts as typed input rather than the form the file format stores. The two differ in four ways, which it maps rather than ignores. It also requires that a function which converts a date argument goes on to read the conversion: five of them converted one and then used the raw argument, which is silent until text ordering and date ordering disagree. Also runs in CI.
 
 ```bash
 python tools/verify_signatures.py src

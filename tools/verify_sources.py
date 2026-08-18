@@ -171,6 +171,24 @@ def qualify(formula, module, names):
     return "".join(chunks)
 
 
+def dead_conversions(body):
+    """Names bound to a converted argument that nothing ever reads.
+
+    Several functions take a date that may be written as text, convert it to a serial
+    number under a Cvt name, and then compare or subtract the raw argument instead. The
+    conversion is computed and thrown away. It is silent: Excel coerces a text date in
+    most arithmetic, so the wrong version usually agrees with the right one, and disagrees
+    only where text ordering and date ordering differ.
+
+    A Cvt name that appears once in a body is bound and never read, since a reference
+    cannot exist without the binding that precedes it. Comments and string literals are
+    already out of the way, so a name inside help text does not count as a use.
+    """
+    code = "".join(chunk for is_string, chunk in split_literals(body) if not is_string)
+    seen = re.findall(r"\bCvt\w*\b", code)
+    return sorted({n for n in seen if seen.count(n) == 1})
+
+
 def main():
     # Two passes: the namespace is flat, so a call in one module may name a function
     # declared in another, and every declaration has to be known before any is qualified.
@@ -192,6 +210,9 @@ def main():
                 if m.group(1) in raw:
                     fail("%s is declared in more than one module" % m.group(1))
                 raw[m.group(1)] = m.group(2).strip()
+                for dead in dead_conversions(m.group(2)):
+                    fail("%s binds %s and never reads it, so the argument it converts is "
+                         "used in its raw form" % (m.group(1), dead))
             elif st.strip():
                 fail("%s has an unparsable statement: %r" % (path, st.strip()[:60]))
 
@@ -226,7 +247,8 @@ def main():
         for item in failures:
             print("  - %s" % item)
         return 1
-    print("OK: %s/ reproduces all %d functions in %s" % (SRC_DIR, matched, WORKBOOK))
+    print("OK: %s/ reproduces all %d functions in %s, and every date conversion in them "
+          "is read" % (SRC_DIR, matched, WORKBOOK))
     return 0
 
 
