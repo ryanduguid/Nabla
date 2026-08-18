@@ -2,6 +2,53 @@
 
 ## Unreleased
 
+- **The workbook now ships the numbers its own formulas produce.** An `.xlsx` stores two
+  things for every calculated cell, the formula and the answer Excel last got from it, and
+  nothing keeps them in step. The build edits the workbook as XML and has no formula
+  engine, so every cell downstream of a value it changes keeps the answer it had before.
+  Shifting the sample dates forward two years left **3,193 cached cells across 43 of the 50
+  sheets** holding numbers their own formulas no longer produce. `nb.IsOccurrenceDateλ`
+  alone accounted for 978 of them.
+
+  Nobody ever saw one. Excel recalculates on open and replaces the lot, which is precisely
+  what made this worth finding: the file could be wrong in a way only a second tool could
+  see, and everything that reads an `.xlsx` without a formula engine, from a diff to a
+  converter to a web preview, reads the cached answer. It is the same defect as the five
+  saved `#VALUE!` cells fixed in v2.2.0, three orders of magnitude wider.
+
+  `tools/refresh_cache.py` recalculates the workbook in Excel and saves it, then clears the
+  always-calculate flags Excel puts back. `fullCalcOnLoad` comes off with them: that flag
+  exists to force a recalculation past stale values, and there are none left. The workbook
+  now opens reading correctly without recalculating, so Excel no longer asks to save a file
+  the reader never edited.
+
+  Nothing about the functions changes. Measured against the build's own output: **all 4,506
+  worksheet formula cells byte-identical, all 130 defined names byte-identical, the
+  Advanced Formula Environment store byte-identical.** The file grows from 435 KB to 510
+  KB, because a recalculated value is longer than the stale integer it replaces and Excel
+  adds a 13 KB calculation chain.
+
+### Added
+
+- `tools/verify_cache.py`, a sixth gate and the second that needs Excel. It opens the
+  workbook, recalculates, and compares every one of the 20,221 cached values against what
+  the formula produces. Run against the previous build it reports all 3,193 by sheet, row
+  and column. It refuses to pass on fewer than 15,000 comparisons, so a run that silently
+  read almost nothing fails rather than reporting success.
+- `tools/refresh_cache.ps1` and `tools/dump_values.ps1`, the two Excel steps the pair above
+  drive. Both fold in a lesson that cost real time: `CalculationState` comes back over COM
+  as the name `xlDone` rather than as `0`, so the obvious test against `0` is true forever
+  and a wait built on it never ends early.
+
+### Changed
+
+- `tools/verify_workbook.py` no longer demands `fullCalcOnLoad`. There are two honest ways
+  for a reader to see the right numbers, and that flag is only one of them. It now fails
+  when a workbook has neither `fullCalcOnLoad` nor the calculation chain Excel leaves
+  behind when it saves, which is the case where the file would open showing whatever the
+  build last left in it.
+
+
 - **`nb.DebtSculptVariableLRVλ` added each period's interest back into a balance the same
   period's cash had already paid.** It worked out the payment as the debt service less the
   interest, which is only right if the interest is paid, and then set the closing balance to

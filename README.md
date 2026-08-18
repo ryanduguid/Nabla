@@ -51,7 +51,7 @@ utilities copies. The five About tables take words instead: `nb.AboutFinancialλ
    names. `src/` is for reading, diffing, and pasting a single definition into Name
    Manager, where the name is yours to choose.
 
-The workbook recalculates fully on first open, so demonstration outputs (including random sample data) refresh and Excel will offer to save the result.
+The workbook opens showing the numbers its own formulas produce, so nothing has to recalculate before it reads correctly and Excel does not ask you to save a file you never edited. That is a property the build cannot give it: the build edits the workbook as XML with no formula engine, so `tools/refresh_cache.py` recalculates it in Excel afterwards and `tools/verify_cache.py` proves every cached value matches.
 
 Functions with a data-validation companion (named with a `DV` suffix, such as `nb.AmortiseλDV`) diagnose argument problems when the parent function returns something unexpected.
 
@@ -112,7 +112,7 @@ Each module has its own tab colour, gridlines are hidden, and every sheet opens 
 
 ## Checks
 
-Five gates, because they answer different questions.
+Six gates, because they answer different questions. Four run in CI; the two that need Excel run locally.
 
 ```bash
 python tools/verify_workbook.py nabla.xlsx
@@ -141,6 +141,12 @@ Migration: v2.0.0 renamed every function, so `functions.csv` carries a `previous
 ```bash
 powershell -ExecutionPolicy Bypass -File tools/excel_selftest.ps1
 ```
+
+```bash
+python tools/verify_cache.py nabla.xlsx
+```
+
+Cached values: an `.xlsx` stores a formula and the answer Excel last got from it, and nothing keeps the two in step. The build edits values as XML with no formula engine, so every cell downstream of an edit keeps the answer it had before: shifting the sample dates forward two years left 3,193 such cells across 43 sheets, and five cells shipped a saved `#VALUE!` from v1.2.0 to v2.2.0. Excel replaces them all on open, which is exactly why it needs a gate: the file can be wrong in a way only a second tool can see, and everything that reads an `.xlsx` without a formula engine reads the cached answer. This opens the workbook, recalculates, and compares all 20,221 cached values against what the formulas produce. Needs Excel, so it is a local gate. Run `python tools/refresh_cache.py` to fix what it reports.
 
 Arithmetic: opens the workbook in a real Excel, forces a full rebuild, fails on any error cell, then runs 152 assertions over the Australian functions, the worksheet that demonstrates them, and the balance identities of the debt sculpting schedules. Needs Excel with LAMBDA support, so it cannot run on GitHub's runners and stays a local gate. It opens Excel over COM and quits it when finished, so it refuses to start if Excel is already running rather than closing your workbooks; it never saves the file it tests.
 

@@ -122,8 +122,17 @@ def main():
     if declared != len(list(shared)):
         fail(f"sharedStrings uniqueCount {declared} != {len(list(shared))} entries")
 
-    if 'fullCalcOnLoad="1"' not in workbook:
-        fail("fullCalcOnLoad is not set, so demo outputs will not refresh on open")
+    # A reader has to see the right numbers, and there are two honest ways to get there.
+    # Either the file forces a recalculation on load, which is what a workbook built purely
+    # from XML needs because it has no formula engine to refresh what it edits, or its
+    # cached values are already correct, which only Excel can produce and only
+    # tools/verify_cache.py can confirm. Excel leaves a calculation chain behind when it
+    # saves, so its absence together with no fullCalcOnLoad means neither is true: the file
+    # would open showing whatever the build last left in it.
+    if 'fullCalcOnLoad="1"' not in workbook and "xl/calcChain.xml" not in parts:
+        fail("neither fullCalcOnLoad nor a calculation chain: this workbook would open "
+             "showing cached values nothing has refreshed. Run tools/refresh_cache.py, or "
+             "set fullCalcOnLoad")
 
     # [MS-XLSX] requires each slicer cache to have a #N/A defined name of the same name.
     for part in parts:
