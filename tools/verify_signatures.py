@@ -39,6 +39,12 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from verify_sources import NAME, statements   # same statement splitter the src check uses
 
+# Every function name carries a λ, and a Windows console defaults to cp1252, which
+# cannot encode it: without this the check dies printing its own result.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
+
 SRC = sys.argv[1] if len(sys.argv) > 1 else "src"
 
 SIGNATURE = re.compile(r"^([A-Za-z0-9_.]*λ[A-Za-z0-9_]*)\s*\((.*)\)\s*$", re.S)

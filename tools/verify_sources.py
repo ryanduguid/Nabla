@@ -29,6 +29,12 @@ import re
 import sys
 import zipfile
 
+# Every function name carries a λ, and a Windows console defaults to cp1252, which
+# cannot encode it: without this the check dies printing its own result.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
+
 WORKBOOK = sys.argv[1] if len(sys.argv) > 1 else "nabla.xlsx"
 SRC_DIR = sys.argv[2] if len(sys.argv) > 2 else "src"
 MODULES = ["nabla.d", "nabla.e", "nabla.f", "nabla.r", "nabla.u", "nabla.debt"]

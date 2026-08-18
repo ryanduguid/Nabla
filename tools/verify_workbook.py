@@ -12,6 +12,12 @@ import sys
 import xml.etree.ElementTree as ET
 import zipfile
 
+# Every function name carries a λ, and a Windows console defaults to cp1252, which
+# cannot encode it: without this the check dies printing its own result.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
+
 WORKBOOK = sys.argv[1] if len(sys.argv) > 1 else "nabla.xlsx"
 
 # Tokens that must never reappear: upstream branding, and any foreign tax content.
