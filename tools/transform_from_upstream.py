@@ -114,8 +114,8 @@ rewrites = [
      "Click any name below to jump to its worksheet"),
     ("Financial Starter Pack Introduction", "nabla Introduction"),
     ("This workbook contains two 5g libraries: Dates (BXD) and Financial Functions (BXF). ",
-     "This workbook contains six nabla modules: dates (nabla.d), array essentials (nabla.e), "
-     "financial functions (nabla.f), financial ratios (nabla.r), utilities (nabla.u) and debt (nabla.debt). "),
+     "This workbook contains the Nabla function library, covering dates, array essentials, "
+     "financial functions, financial ratios, utilities and debt. Every function shares the nb. prefix. "),
     ("click and worksheet name", "click any worksheet name"),
     # matched before the brand sweep runs, so this is the upstream wording
     ("This is a library of 5g functions for simplifying financial model development, "
@@ -1555,9 +1555,212 @@ core = core.replace("<cp:lastModifiedBy>",
                     "<dc:creator>Craig Hatmaker (original library); nabla project (derivative)</dc:creator><cp:lastModifiedBy>")
 put("docProps/core.xml", core)
 
+# ---------- 11. Flat nb. namespace ----------
+# Every function lives in one namespace, nb., so callers type three characters
+# instead of eight. Where two modules shipped the same base name, the fuller
+# implementation keeps the plain name and the other takes a module tag
+# (B borrowings, E essentials, U utilities). The five About tables take words,
+# because nb.AboutRλ would tell a reader nothing.
+FLAT_EXPLICIT = [
+    ("nabla.debt.Amortiseλ", "nb.AmortiseBλ"),
+    ("nabla.u.CountAColsλ", "nb.CountAColsUλ"),
+    ("nabla.u.CountARowsλ", "nb.CountARowsUλ"),
+    ("nabla.e.IsBetweenλ", "nb.IsBetweenEλ"),
+    ("nabla.e.RangeToDAλ", "nb.RangeToDAEλ"),
+    ("nabla.u.CountColsλ", "nb.CountColsUλ"),
+    ("nabla.u.CountRowsλ", "nb.CountRowsUλ"),
+    ("nabla.u.IsBetweenλ", "nb.IsBetweenUλ"),
+    ("nabla.u.RangeToDAλ", "nb.RangeToDAUλ"),
+    ("nabla.u.IsInListλ", "nb.IsInListUλ"),
+    ("nabla.u.AvgColsλ", "nb.AvgColsUλ"),
+    ("nabla.u.AvgRowsλ", "nb.AvgRowsUλ"),
+    ("nabla.u.MaxColsλ", "nb.MaxColsUλ"),
+    ("nabla.u.MaxRowsλ", "nb.MaxRowsUλ"),
+    ("nabla.u.MinColsλ", "nb.MinColsUλ"),
+    ("nabla.u.MinRowsλ", "nb.MinRowsUλ"),
+    ("nabla.u.SumColsλ", "nb.SumColsUλ"),
+    ("nabla.u.SumRowsλ", "nb.SumRowsUλ"),
+    ("nabla.u.CountCλ", "nb.CountCUλ"),
+    ("nabla.d.Aboutλ", "nb.AboutDatesλ"),
+    ("nabla.e.Aboutλ", "nb.AboutEssentialsλ"),
+    ("nabla.f.Aboutλ", "nb.AboutFinancialλ"),
+    ("nabla.r.Aboutλ", "nb.AboutRatiosλ"),
+    ("nabla.u.Aboutλ", "nb.AboutUtilitiesλ"),
+]
+FLAT_PREFIX = [("nabla.debt.", "nb."), ("nabla.d.", "nb."), ("nabla.e.", "nb."),
+               ("nabla.f.", "nb."), ("nabla.r.", "nb."), ("nabla.u.", "nb.")]
+FLAT_BARE = [("nabla.debt", "nb"), ("nabla.d", "nb"), ("nabla.e", "nb"),
+             ("nabla.f", "nb"), ("nabla.r", "nb"), ("nabla.u", "nb")]
+# The About tables list their functions by bare name, so the tagged ones need it here too.
+ABOUT_ENTRY_FIXES = {
+    "nb.AboutUtilitiesλ": [(b + "λ", b + "Uλ") for b in (
+        "CountC", "SumCols", "SumRows", "AvgCols",
+        "AvgRows", "MinCols", "MinRows", "MaxCols",
+        "MaxRows", "CountCols", "CountRows", "CountACols",
+        "CountARows", "IsBetween", "IsInList", "RangeToDA",
+    )],
+    "nb.AboutEssentialsλ": [("IsBetweenλ", "IsBetweenEλ"), ("RangeToDAλ", "RangeToDAEλ")],
+    "nb.AboutFinancialλ": [("Aboutλ", "AboutFinancialλ")],
+    "nb.AboutRatiosλ": [("Aboutλ", "AboutRatiosλ")],
+}
+# The AFE module containers cannot all collapse to "nb" without colliding, so they take words.
+AFE_MODULES = [("nabla.debt", "Debt"), ("nabla.d", "Dates"), ("nabla.e", "Essentials"),
+               ("nabla.f", "Financial"), ("nabla.r", "Ratios"), ("nabla.u", "Utilities")]
+
+def flatten_names(s):
+    for a, b in FLAT_EXPLICIT:
+        s = s.replace(a, b)
+    for a, b in FLAT_PREFIX:
+        s = s.replace(a, b)
+    for a, b in FLAT_BARE:
+        s = s.replace(a, b)
+    return s
+
+def capitalise_brand(s):
+    # the chart template filename and the theme colour scheme are asset ids, not prose
+    s = s.replace("nabla Combo Area", "@@CRTX@@").replace("nabla TnC", "@@TNC@@")
+    s = re.sub(r"(?<![A-Za-z/])nabla(?![A-Za-z])", "Nabla", s)
+    return s.replace("@@CRTX@@", "nabla Combo Area").replace("@@TNC@@", "nabla TnC")
+
+def fix_about_entries(s):
+    for nm, subs in ABOUT_ENTRY_FIXES.items():
+        m = re.search(r'(<definedName name="%s"[^>]*>)(.*?)(</definedName>)' % re.escape(nm), s, re.S)
+        if not m:
+            continue
+        body = m.group(2)
+        for a, b in subs:
+            body = re.sub(r"(?<![A-Za-z])" + re.escape(a), b, body)
+        s = s[:m.start()] + m.group(1) + body + m.group(3) + s[m.end():]
+    return s
+
+# A renamed function still prints its old bare name in its own inline help.
+SELF_NAME_FIXES = [
+    ('nb.AmortiseBλ', 'Amortiseλ', 'AmortiseBλ'),
+    ('nb.CountAColsUλ', 'CountAColsλ', 'CountAColsUλ'),
+    ('nb.CountARowsUλ', 'CountARowsλ', 'CountARowsUλ'),
+    ('nb.IsBetweenEλ', 'IsBetweenλ', 'IsBetweenEλ'),
+    ('nb.RangeToDAEλ', 'RangeToDAλ', 'RangeToDAEλ'),
+    ('nb.CountColsUλ', 'CountColsλ', 'CountColsUλ'),
+    ('nb.CountRowsUλ', 'CountRowsλ', 'CountRowsUλ'),
+    ('nb.IsBetweenUλ', 'IsBetweenλ', 'IsBetweenUλ'),
+    ('nb.RangeToDAUλ', 'RangeToDAλ', 'RangeToDAUλ'),
+    ('nb.IsInListUλ', 'IsInListλ', 'IsInListUλ'),
+    ('nb.AvgColsUλ', 'AvgColsλ', 'AvgColsUλ'),
+    ('nb.AvgRowsUλ', 'AvgRowsλ', 'AvgRowsUλ'),
+    ('nb.MaxColsUλ', 'MaxColsλ', 'MaxColsUλ'),
+    ('nb.MaxRowsUλ', 'MaxRowsλ', 'MaxRowsUλ'),
+    ('nb.MinColsUλ', 'MinColsλ', 'MinColsUλ'),
+    ('nb.MinRowsUλ', 'MinRowsλ', 'MinRowsUλ'),
+    ('nb.SumColsUλ', 'SumColsλ', 'SumColsUλ'),
+    ('nb.SumRowsUλ', 'SumRowsλ', 'SumRowsUλ'),
+    ('nb.CountCUλ', 'CountCλ', 'CountCUλ'),
+    ('nb.AboutDatesλ', 'Aboutλ', 'AboutDatesλ'),
+    ('nb.AboutEssentialsλ', 'Aboutλ', 'AboutEssentialsλ'),
+    ('nb.AboutFinancialλ', 'Aboutλ', 'AboutFinancialλ'),
+    ('nb.AboutRatiosλ', 'Aboutλ', 'AboutRatiosλ'),
+    ('nb.AboutUtilitiesλ', 'Aboutλ', 'AboutUtilitiesλ'),
+]
+# Same correction inside the Excel Labs module source.
+AFE_BARE_FIXES = {
+    'Dates': [
+        ('Aboutλ', 'AboutDatesλ'),
+    ],
+    'Debt': [
+        ('Amortiseλ', 'AmortiseBλ'),
+    ],
+    'Essentials': [
+        ('Aboutλ', 'AboutEssentialsλ'),
+        ('IsBetweenλ', 'IsBetweenEλ'),
+        ('RangeToDAλ', 'RangeToDAEλ'),
+    ],
+    'Financial': [
+        ('Aboutλ', 'AboutFinancialλ'),
+    ],
+    'Ratios': [
+        ('Aboutλ', 'AboutRatiosλ'),
+    ],
+    'Utilities': [
+        ('Aboutλ', 'AboutUtilitiesλ'),
+        ('AvgColsλ', 'AvgColsUλ'),
+        ('AvgRowsλ', 'AvgRowsUλ'),
+        ('CountAColsλ', 'CountAColsUλ'),
+        ('CountARowsλ', 'CountARowsUλ'),
+        ('CountColsλ', 'CountColsUλ'),
+        ('CountCλ', 'CountCUλ'),
+        ('CountRowsλ', 'CountRowsUλ'),
+        ('IsBetweenλ', 'IsBetweenUλ'),
+        ('IsInListλ', 'IsInListUλ'),
+        ('MaxColsλ', 'MaxColsUλ'),
+        ('MaxRowsλ', 'MaxRowsUλ'),
+        ('MinColsλ', 'MinColsUλ'),
+        ('MinRowsλ', 'MinRowsUλ'),
+        ('RangeToDAλ', 'RangeToDAUλ'),
+        ('SumColsλ', 'SumColsUλ'),
+        ('SumRowsλ', 'SumRowsUλ'),
+    ],
+}
+
+def fix_self_names(s):
+    for full, ob, nb_ in SELF_NAME_FIXES:
+        m = re.search(r'(<definedName name="%s"[^>]*>)(.*?)(</definedName>)' % re.escape(full), s, re.S)
+        if not m:
+            continue
+        body = re.sub(r"(?<![A-Za-z])" + re.escape(ob), nb_, m.group(2))
+        s = s[:m.start()] + m.group(1) + body + m.group(3) + s[m.end():]
+    return s
+def flat_text(s):
+    return capitalise_brand(flatten_names(s))
+
+# Which module each function came from, captured before the prefixes disappear.
+# The exporters below need it: one namespace leaves nothing in the name to group by.
+FLAT_MODULE_OF = {}
+_pre_wb = get("xl/workbook.xml")
+_mod_word = dict(AFE_MODULES)
+for _m in re.finditer(r'<definedName name="(nabla\.(?:debt|d|e|f|r|u))\.([^"]+)"', _pre_wb):
+    FLAT_MODULE_OF[flatten_names(_m.group(1) + "." + _m.group(2))] = _mod_word[_m.group(1)]
+
+# AFE store: rename the module containers, then flatten the source inside them
+afe_flat = get("customXml/item1.xml")
+m_flat = re.search(r'>([A-Za-z0-9+/=]{100,})<', afe_flat)
+assert m_flat
+j_flat = base64.b64decode(m_flat.group(1)).decode("utf-16-le")
+obj_flat = json.loads(j_flat)
+# rename the containers first: flattening them all to "nb" would collide
+for f in obj_flat["files"]:
+    for a, b in AFE_MODULES:
+        if f["path"].endswith("/" + a) or f["path"] == a:
+            f["path"] = f["path"][: -len(a)] + b
+            break
+for f in obj_flat["files"]:
+    for ob, nb_ in AFE_BARE_FIXES.get(f["path"].rsplit("/", 1)[-1], []):
+        f["text"] = re.sub(r"(?<![A-Za-z])" + re.escape(ob), nb_, f["text"])
+# then flatten the whole store, which also covers the projectNames function index
+j2_flat = flat_text(json.dumps(obj_flat, ensure_ascii=False, separators=(",", ":")))
+assert "nabla." not in j2_flat
+afe_flat = afe_flat.replace(m_flat.group(1), base64.b64encode(j2_flat.encode("utf-16-le")).decode("ascii"))
+put("customXml/item1.xml", afe_flat)
+
+flat_parts = 0
+for n in list(parts):
+    if n == "customXml/item1.xml":
+        continue  # handled above
+    if n.endswith((".xml", ".rels")):
+        s = flat_text(get(n))
+        if n == "xl/workbook.xml":
+            s = fix_self_names(fix_about_entries(s))
+        put(n, s)
+        flat_parts += 1
+    elif re.match(r"xl/customProperty\d+\.bin$", n):
+        parts[n] = flat_text(parts[n].decode("utf-16-le")).encode("utf-16-le")
+        flat_parts += 1
+for n in parts:
+    if n.endswith((".xml", ".rels")):
+        assert "nabla." not in get(n), n
+print("flattened to the nb. namespace across", flat_parts, "parts")
+
 # ---------- write ----------
 import os
-os.makedirs(os.path.dirname(DST), exist_ok=True)
+os.makedirs(os.path.dirname(DST) or ".", exist_ok=True)
 order = [n for n in zin.namelist() if n in parts]
 order += [n for n in parts if n not in set(zin.namelist())]   # parts this build adds
 with zipfile.ZipFile(DST, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zout:
@@ -1581,17 +1784,17 @@ store = json.loads(base64.b64decode(
 exported = []
 for f in store["files"]:
     mod = f["path"].rsplit("/", 1)[-1]
-    if not mod.startswith("nabla."):
-        continue                      # /projects/Workbook is a stub, not a module
+    if mod == "Workbook":
+        continue                      # a stub, not a module
     with open(os.path.join(src_dir, mod + ".txt"), "w", encoding="utf-8", newline="\n") as fh:
         fh.write(f["text"])
     exported.append(mod)
 
 wbx_final = parts["xl/workbook.xml"].decode("utf-8")
-NAME_RE = re.compile(r'<definedName name="(nabla\.[^"]+)"([^>]*)>(.*?)</definedName>', re.S)
+NAME_RE = re.compile(r'<definedName name="(nb\.[^"]+)"([^>]*)>(.*?)</definedName>', re.S)
 entries = [(n, a, html.unescape(b)) for n, a, b in NAME_RE.findall(wbx_final)]
 
-# nabla.debt is recursive, so Excel Labs cannot hold it; export it from the names instead.
+# The Debt functions are recursive, so Excel Labs cannot hold them; export from the names.
 # Two tokens in the stored form are NOT valid to type back in, and both have to be
 # translated or the exported module cannot be imported at all:
 #   _xlop.Name   marks an OPTIONAL parameter. Stripping the prefix leaves a required
@@ -1599,15 +1802,15 @@ entries = [(n, a, html.unescape(b)) for n, a, b in NAME_RE.findall(wbx_final)]
 #                whole definition. The typed form is [Name].
 #   [0]!         is the internal token for "a name in this workbook". The typed form
 #                is a bare reference.
-OPTIONAL = re.compile(r"_xlop\.([A-Za-z_][A-Za-z0-9_]*)")
+OPTIONAL = re.compile(r"_xlop\.([A-Za-z_][A-Za-z0-9_]*\??)")
 
 def as_typed(body):
     body = OPTIONAL.sub(r"[\1]", body)
     return DEPREFIX.sub("", body).replace("[0]!", "").lstrip("=")
 
-debt = [(n, b) for n, _, b in entries if n.startswith("nabla.debt.")]
-with open(os.path.join(src_dir, "nabla.debt.txt"), "w", encoding="utf-8", newline="\n") as fh:
-    fh.write("//  nabla.debt module - debt sculpting and amortisation functions\n"
+debt = [(n, b) for n, _, b in entries if FLAT_MODULE_OF.get(n) == "Debt"]
+with open(os.path.join(src_dir, "Debt.txt"), "w", encoding="utf-8", newline="\n") as fh:
+    fh.write("//  Debt module - debt sculpting and amortisation functions\n"
              "//  Exported from the workbook's defined names. These are recursive and are not part\n"
              "//  of the Advanced Formula Environment project store, so import them by pasting each\n"
              "//  definition into Name Manager rather than through the AFE module importer.\n\n")
@@ -1616,7 +1819,7 @@ with open(os.path.join(src_dir, "nabla.debt.txt"), "w", encoding="utf-8", newlin
         assert "_xl" not in typed and "[0]!" not in typed, n
         # trailing ; so each block can be pasted straight into Name Manager
         fh.write("%s =\n%s;\n\n" % (n.rsplit(".", 1)[1], typed))
-exported.append("nabla.debt")
+exported.append("Debt")
 print("exported", len(exported), "module sources to", src_dir)
 
 SIG_RE = re.compile(r"FUNCTION:\s*→?\s*(.*?)¶")   # arrow optional: some upstream help omits it
@@ -1629,7 +1832,7 @@ with open(os.path.join(repo, "functions.csv"), "w", encoding="utf-8", newline=""
         sig = SIG_RE.search(body)
         desc = re.search(r'comment="([^"]*)"', attrs)
         fallback = DESC_RE.search(body)
-        out.writerow([name, name.rsplit(".", 1)[0],
+        out.writerow([name, FLAT_MODULE_OF.get(name, ""),
                       sig.group(1).strip() if sig else bare,
                       html.unescape(desc.group(1)) if desc else
                       (fallback.group(1).strip() if fallback else "")])

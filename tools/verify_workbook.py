@@ -22,11 +22,11 @@ WORKBOOK = sys.argv[1] if len(sys.argv) > 1 else "nabla.xlsx"
 
 # Tokens that must never reappear: upstream branding, and any foreign tax content.
 BANNED = re.compile(
-    r"BX[DEFRLU]\.|BXLDebt|\bBXL\b|beyondexcel|Eloquens|dropbox|Leonardo"
+    r"BX[DEFRLU]\.|BXLDebt|\bBXL\b|nabla\.[a-z]+\.|beyondexcel|Eloquens|dropbox|Leonardo"
     r"|Starter Pack|Calibri|MACRS|Modified Accelerated|US GAAP|IRS Depreciation"
 )
 SHEET_RE = re.compile(r"xl/worksheets/sheet\d+\.xml$")
-TOKEN_RE = re.compile(r"nabla\.[a-z]+\.[A-Za-z0-9_]+λ?(?:DV)?")
+TOKEN_RE = re.compile(r"nb\.[A-Za-z0-9_]+λ?(?:DV)?")
 
 failures = []
 

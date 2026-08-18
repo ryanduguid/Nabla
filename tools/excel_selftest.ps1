@@ -26,11 +26,11 @@ function Same($id, $expr, $want) {
     Check $id "=LET(v, $expr, IF(ISERROR(v), `"ERROR`", IF(v=`"$want`", `"OK`", `"got [`"&v&`"]`")))"
 }
 
-$dv = "nabla.f.DiminishingValue$L"
-$pc = "nabla.f.PrimeCost$L"
-$ga = "nabla.f.GSTAdd$L"
-$ge = "nabla.f.GSTExtract$L"
-$fy = "nabla.d.FinancialYear$L"
+$dv = "nb.DiminishingValue$L"
+$pc = "nb.PrimeCost$L"
+$ga = "nb.GSTAdd$L"
+$ge = "nb.GSTExtract$L"
+$fy = "nb.FinancialYear$L"
 
 # --- Depreciation: a schedule must always sum to cost, whatever the effective life.
 # ATO effective lives are frequently fractional (3 1/3, 6 2/3, 13 1/3), and a life of

@@ -1,6 +1,6 @@
-/*  Module Contains nabla Compliant LAMBDAs that deal with dates */
+/*  Module Contains Nabla Compliant LAMBDAs that deal with dates */
 
-/*  FUNCTION NAME:  Aboutλ
+/*  FUNCTION NAME:  AboutDatesλ
     DESCRIPTION:*//**Displays this module's repository URL and function list*/
 /*  REVISIONS:      Date        Developer       Description  
                     Mar 17 2023 Craig Hatmaker  Original Development
@@ -11,14 +11,14 @@
                     Jan 05 2024 Craig Hatmaker  Add all data validation/diagnostic routines
                     Jun 06 2024 Craig Hatmaker  Code Simplification
 */
-Aboutλ = TRIM(
+AboutDatesλ = TRIM(
     TEXTSPLIT(
-        "About:                 →CBSE compliant LAMBDAs dealing with dates. Suggested module name: nabla.d¶" &
+        "About:                 →CBSE compliant LAMBDAs dealing with dates. Suggested module name: nb¶" &
         "Version:               →18 Aug 2026¶" &
         "Repository:              →https://github.com/ryanduguid/Nabla ¶" &
         "→¶" & 
         "Function               →Description¶" & 
-        "Aboutλ                 →Produces this table¶" &
+        "AboutDatesλ                 →Produces this table¶" &
         "CountDOWλ              →Count instances of a specific day of the week between two dates¶" &
         "IsBetweenλ             →Determine if a value is between a lower and upper limit¶" &
         "IsOccurrenceDateλ      →Determine if a date passed is when a potentially repeating event happens¶" &
@@ -77,8 +77,8 @@ CountDOWλ = LAMBDA(
                         "Ends           →(Required) End dates (text or numeric) for each start date¶" & 
                         "DayOfWeek      →(Required) 1=Sunday, 7=Saturday.¶" &
                         "EXAMPLES:      →¶" & 
-                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
-                        "3              →=nabla.d.CountDOWλ(""22/3/2012"", ""10/4/2012"",  1)", 
+                        "Result         →Formula (nb is assumed to be the module's name)¶" &
+                        "3              →=nb.CountDOWλ(""22/3/2012"", ""10/4/2012"",  1)", 
                         "→", "¶"
                         )
                     ),
@@ -128,10 +128,10 @@ IsBetweenλ = LAMBDA(
                         "High           →(Required) The higher limit that the value(s) must be less than¶" &
                         "Inclusive      →(Optional) TRUE: Value(s) can be equal to Low and/or High (default)¶" &
                         "EXAMPLES:      →¶" & 
-                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
-                        "FALSE          →=nabla.d.IsBetweenλ(1, 2, 4)¶" & 
-                        "TRUE           →=nabla.d.IsBetweenλ(Today(), Today(), Today()+1)¶" & 
-                        "FALSE          →=nabla.d.IsBetweenλ(""B"", ""B"", ""D"", FALSE)", 
+                        "Result         →Formula (nb is assumed to be the module's name)¶" &
+                        "FALSE          →=nb.IsBetweenλ(1, 2, 4)¶" & 
+                        "TRUE           →=nb.IsBetweenλ(Today(), Today(), Today()+1)¶" & 
+                        "FALSE          →=nb.IsBetweenλ(""B"", ""B"", ""D"", FALSE)", 
                         "→", "¶"
                         )
                     ),
@@ -189,10 +189,10 @@ IsOccurrenceDateλ = LAMBDA(
                                         "→X=Every Workday (Monday to Friday)¶" & 
                                         "→D=Daily¶" &                      
                         "EXAMPLES:      →¶" &
-                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
-                        "72             →=SUM(N(nabla.d.IsOccurrenceDateλ(SEQUENCE(,90,""1/1/2025""), ""1/1/2025"", ""13/3/2025"", ""D"")))¶" &
-                        "01             →=SUM(N(nabla.d.IsOccurrenceDateλ(SEQUENCE(,90,""1/1/2025""), ""1/1/2025"", ""13/3/2025"", ""O"")))¶" &
-                        "11             →=SUM(N(nabla.d.IsOccurrenceDateλ(SEQUENCE(,90,""1/1/2025""), ""1/1/2025"", ""13/3/2025"", ""W"")))", 
+                        "Result         →Formula (nb is assumed to be the module's name)¶" &
+                        "72             →=SUM(N(nb.IsOccurrenceDateλ(SEQUENCE(,90,""1/1/2025""), ""1/1/2025"", ""13/3/2025"", ""D"")))¶" &
+                        "01             →=SUM(N(nb.IsOccurrenceDateλ(SEQUENCE(,90,""1/1/2025""), ""1/1/2025"", ""13/3/2025"", ""O"")))¶" &
+                        "11             →=SUM(N(nb.IsOccurrenceDateλ(SEQUENCE(,90,""1/1/2025""), ""1/1/2025"", ""13/3/2025"", ""W"")))", 
                         "→", "¶"
                         )
                     ),
@@ -274,10 +274,10 @@ OverLapDaysλ = LAMBDA(
                         "Period2Start   →(Required) Second period's start date.¶" & 
                         "Period2End     →(Required) Decond period's end date.¶" & 
                         "EXAMPLES:      →¶" & 
-                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
-                        "5              →=nabla.d.OverLapDaysλ(08, 14, 10, 17)¶" & 
-                        "8              →=nabla.d.OverLapDaysλ(10, 20, 11, 18)¶" & 
-                        "12             →=nabla.d.OverLapDaysλ(""17/1/2025"", ""25/1/2025"", ""7/1/2025"", ""18/1/2025"")", 
+                        "Result         →Formula (nb is assumed to be the module's name)¶" &
+                        "5              →=nb.OverLapDaysλ(08, 14, 10, 17)¶" & 
+                        "8              →=nb.OverLapDaysλ(10, 20, 11, 18)¶" & 
+                        "12             →=nb.OverLapDaysλ(""17/1/2025"", ""25/1/2025"", ""7/1/2025"", ""18/1/2025"")", 
                         "→", "¶"
                         )
                     ),
@@ -343,11 +343,11 @@ PeriodLabelλ = LAMBDA(
                                        "→S=Semi-Annually¶" & 
                                        "→A or Y=Annually¶" & 
                         "EXAMPLES:      →¶" & 
-                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
-                        "2025-Feb-26    →=nabla.d.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""D"")¶" &
-                        "2023-Feb       →=nabla.d.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""M"")¶" & 
-                        "2025:Q1       →=nabla.d.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""Q"")¶" & 
-                        "2023           →=nabla.d.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""Y"")", 
+                        "Result         →Formula (nb is assumed to be the module's name)¶" &
+                        "2025-Feb-26    →=nb.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""D"")¶" &
+                        "2023-Feb       →=nb.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""M"")¶" & 
+                        "2025:Q1       →=nb.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""Q"")¶" & 
+                        "2023           →=nb.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""Y"")", 
                         "→", "¶"
                         )
                     ),
@@ -404,11 +404,11 @@ Periodsλ = LAMBDA(
                         "Ends           →(Required) Second date (normally newer). This must be the same shape (# of rows & columns) as Date1.¶" &
                         "Intervals      →(Optional) Days, Weeks, Months (default), Quarters, or Years (D, W, M, Q, Y)¶" &
                         "EXAMPLES:      →¶" & 
-                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
-                        "2              →=nabla.d.Periodsλ(""31/3/2025"", ""15/5/2025"")¶" &
-                        "-2             →=nabla.d.Periodsλ(""15/5/2025"", ""31/3/2025"")¶" &
-                        "-12            →=nabla.d.Periodsλ(""15/1/2026"", ""16/1/2025"", , FALSE)¶" &
-                        "-53            →=nabla.d.Periodsλ(""15/1/2026"", ""16/1/2025"", ""W"")",
+                        "Result         →Formula (nb is assumed to be the module's name)¶" &
+                        "2              →=nb.Periodsλ(""31/3/2025"", ""15/5/2025"")¶" &
+                        "-2             →=nb.Periodsλ(""15/5/2025"", ""31/3/2025"")¶" &
+                        "-12            →=nb.Periodsλ(""15/1/2026"", ""16/1/2025"", , FALSE)¶" &
+                        "-53            →=nb.Periodsλ(""15/1/2026"", ""16/1/2025"", ""W"")",
                         "→", "¶"
                     )
                 ),
@@ -482,8 +482,8 @@ ScheduleRatesλ = LAMBDA(
                         "RateStarts     →(Required) A column or row of rate effective dates in any order.¶" & 
                         "Rates          →(Required) A column or row of rates associated with RateStarts.¶" & 
                         "EXAMPLES:      →¶" & 
-                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
-                        "_,10,20,30,30  →=nabla.d.ScheduleRatesλ(Timelineλ(""1/1/2025"",5,""W""),{45662; 45670; 45676}, {10; 20; 30})", 
+                        "Result         →Formula (nb is assumed to be the module's name)¶" &
+                        "_,10,20,30,30  →=nb.ScheduleRatesλ(Timelineλ(""1/1/2025"",5,""W""),{45662; 45670; 45676}, {10; 20; 30})", 
                         "→", "¶"
                         )
                     ),   
@@ -541,8 +541,8 @@ ScheduleRatesByItemsλ = LAMBDA(
                         "RateList       →(Required) Rates in a rate schedule for each item/effective date pair.¶" & 
                         "DoNotUse       →This is a counter used internally. Do not make any entry.¶" & 
                         "EXAMPLES:      →¶" & 
-                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
-                                       "→nabla.d.ScheduleRatesByItemsλ( Timelineλ( ""1/1/2025""), UNIQUE( tblRates(Unit)),¶" &
+                        "Result         →Formula (nb is assumed to be the module's name)¶" &
+                                       "→nb.ScheduleRatesByItemsλ( Timelineλ( ""1/1/2025""), UNIQUE( tblRates(Unit)),¶" &
                                        "→tblRates[Unit], tblRates[Rent], tblRates[Effective])", 
                         "→", "¶"
                             )
@@ -608,8 +608,8 @@ ScheduleValuesλ = LAMBDA(
                         "Values         →(Required) A column or row of values to be scheduled.¶" & 
                         "EffectiveDates →(Required) A column or row of when a value is scheduled.¶" &                   
                         "EXAMPLES:→¶" &
-                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
-                                       "→=nabla.d.ScheduleValuesλ(Timelineλ(""1/1/2025""), Timelineλ(""1/1/2025"",,,FALSE), {1;3}, {""1/1/2025""; ""15/2/2025""})", 
+                        "Result         →Formula (nb is assumed to be the module's name)¶" &
+                                       "→=nb.ScheduleValuesλ(Timelineλ(""1/1/2025""), Timelineλ(""1/1/2025"",,,FALSE), {1;3}, {""1/1/2025""; ""15/2/2025""})", 
                         "→", "¶"
                         )
                     ),
@@ -679,8 +679,8 @@ ScheduleValuesByItemsλ = LAMBDA(
                         "ValueList      →(Required) Values in a value schedule for each item/effective date pair.¶" & 
                         "DoNotUse       →This is a counter used internally. Do not make any entry.¶" & 
                         "EXAMPLES:      →¶" & 
-                        "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
-                                       "→nabla.d.ScheduleRatesByItemsλ( Timelineλ( ""1/1/2025""),  Timelineλ( ""1/1/2025"",,,FALSE), ¶" & 
+                        "Result         →Formula (nb is assumed to be the module's name)¶" &
+                                       "→nb.ScheduleRatesByItemsλ( Timelineλ( ""1/1/2025""),  Timelineλ( ""1/1/2025"",,,FALSE), ¶" & 
                                        "→UNIQUE( tblExp(Items)), tblExp[Items], tblExp[Dates], tblExp[Amount])", 
                         "→", "¶"
                         )
@@ -752,9 +752,9 @@ Timelineλ = LAMBDA(
                             "Interval       →(Optional) Period interval: D, W, M, Q or Y (Day, Week, Month <default>, Quarter, or Year)¶" &
                             "PeriodStarts?  →(Optional) TRUE=Display period start dates <default>. FALSE=Period end dates¶" &
                             "EXAMPLES:      →¶" & 
-                            "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
-                            "12 mo, starts  →=nabla.d.Timelineλ(TODAY())¶" &
-                            "12 qtr, ends   →=nabla.d.Timelineλ(TODAY(), , ""Q"", FALSE)",
+                            "Result         →Formula (nb is assumed to be the module's name)¶" &
+                            "12 mo, starts  →=nb.Timelineλ(TODAY())¶" &
+                            "12 qtr, ends   →=nb.Timelineλ(TODAY(), , ""Q"", FALSE)",
                             "→", "¶"
                             )
                         ),      
@@ -793,7 +793,7 @@ Timelineλ = LAMBDA(
 /*  FUNCTION NAME:  FinancialYearλ
     DESCRIPTION:*//**Labels dates with their Australian financial year, which starts on 1 July*/
 /*  REVISIONS:      Date        Developer       Description  
-                    18 Aug 2026 nabla           Original development
+                    18 Aug 2026 Nabla           Original development
 */
 
 FinancialYearλ = LAMBDA(
@@ -811,8 +811,8 @@ FinancialYearλ = LAMBDA(
                             "Dates          →(Required) One or more dates.¶" &
                             "StartMonth     →(Optional: Default = 7) Month the financial year starts.¶" &
                             "EXAMPLES:      →¶" &
-                            "→Formula (nabla.d is assumed to be the module's name)¶" &
-                            "→=nabla.d.FinancialYearλ(DATE(2026,8,15))¶" &
+                            "→Formula (nb is assumed to be the module's name)¶" &
+                            "→=nb.FinancialYearλ(DATE(2026,8,15))¶" &
                             "→Result¶" &
                             "→FY2027",
                             "→", "¶"

@@ -1,10 +1,10 @@
-# nabla
+# Nabla
 
-![nabla](assets/nabla.svg)
+![Nabla](assets/nabla.svg)
 
 A LAMBDA function library for building dynamic-array financial models in Excel.
 
-`nabla.xlsx` ships 130 named functions across six modules. Every function carries inline help, and the core functions each have a demonstration worksheet with live, editable examples. The **Australian tax** worksheet demonstrates the ATO depreciation, GST and financial-year helpers. Every function is built from native Excel functions only, so models assembled with nabla save as ordinary `.xlsx` workbooks with no add-ins and no macros.
+`nabla.xlsx` ships 130 named functions under a single `nb.` prefix. Every function carries inline help, and the core functions each have a demonstration worksheet with live, editable examples. The **Australian tax** worksheet demonstrates the ATO depreciation, GST and financial-year helpers. Every function is built from native Excel functions only, so models assembled with Nabla save as ordinary `.xlsx` workbooks with no add-ins and no macros.
 
 **Version: 18 August 2026**
 
@@ -16,26 +16,37 @@ Everything in the library is built from functions that shipped with Excel 2024, 
 
 ## Modules
 
-| Module | Functions | Covers |
+Every function shares one prefix, `nb.`, so a call is three characters of namespace
+rather than eight. The groupings below describe what the library covers; they are not
+part of the name.
+
+| Group | Functions | Covers |
 |---|---|---|
-| `nabla.d` | 13 | Dates and timelines: periods, schedules, overlaps, occurrence tests, financial-year labels |
-| `nabla.e` | 17 | Array essentials: row and column totals, averages, counts, range conversion |
-| `nabla.f` | 39 | Financial building blocks: amortisation, depreciation, corkscrews, IRR, rolling sums, GST |
-| `nabla.r` | 39 | Financial ratios: liquidity, leverage, margins, returns, market multiples |
-| `nabla.u` | 17 | Utilities mirroring `nabla.e` for standalone use |
-| `nabla.debt` | 5 | Debt sculpting: amortisation schedule, fixed and variable DSCR sculpting, sculpting interest |
+| Dates | 13 | Dates and timelines: periods, schedules, overlaps, occurrence tests, financial-year labels |
+| Essentials | 17 | Array essentials: row and column totals, averages, counts, range conversion |
+| Financial | 39 | Financial building blocks: amortisation, depreciation, corkscrews, IRR, rolling sums, GST |
+| Ratios | 39 | Financial ratios: liquidity, leverage, margins, returns, market multiples |
+| Utilities | 17 | Standalone copies of the Essentials functions, each carrying a `U` suffix |
+| Debt | 5 | Debt sculpting: amortisation schedule, fixed and variable DSCR sculpting, sculpting interest |
+
+Where two groups shipped a function of the same name, the fuller implementation keeps
+the plain name and the other takes a one-letter tag: `B` for debt, `E` for essentials,
+`U` for utilities. So `nb.Amortiseλ` is the financial amortisation schedule and
+`nb.AmortiseBλ` the debt one; `nb.SumRowsλ` and `nb.SumRowsUλ` are the essentials and
+utilities copies. The five About tables take words instead: `nb.AboutFinancialλ`,
+`nb.AboutRatiosλ`, and so on.
 
 ## Getting started
 
 1. Open `nabla.xlsx`.
 2. Cell A1 of every visible worksheet links back to the table of contents; every name in the TOC links to its worksheet.
-3. For inline help, type a function name with no arguments in an empty cell, for example `=nabla.f.Amortiseλ()`. The help block spills syntax, parameters and worked examples.
+3. For inline help, type a function name with no arguments in an empty cell, for example `=nb.Amortiseλ()`. The help block spills syntax, parameters and worked examples.
 4. Grey-shaded cells on each worksheet are inputs. Change them and watch the function respond.
 5. To use the functions in your own workbook, copy a green-shaded cell across (Excel brings the named LAMBDA with it), or import the plain-text source from `src/` with the Advanced Formula Environment in the Excel Labs add-in.
 
 The workbook recalculates fully on first open, so demonstration outputs (including random sample data) refresh and Excel will offer to save the result.
 
-Functions with a data-validation companion (named with a `DV` suffix, such as `nabla.f.AmortiseλDV`) diagnose argument problems when the parent function returns something unexpected.
+Functions with a data-validation companion (named with a `DV` suffix, such as `nb.AmortiseλDV`) diagnose argument problems when the parent function returns something unexpected.
 
 ## Australian conventions
 
@@ -48,13 +59,13 @@ The library is Australian-only. Tax content follows ATO practice, and the foreig
 
 | Function | Purpose |
 |---|---|
-| `nabla.f.DiminishingValueλ(Cost, Life)` | ATO diminishing value method (200% declining balance), writing the residual off in the final period |
-| `nabla.f.PrimeCostλ(Cost, Life)` | ATO prime cost method (straight line) |
-| `nabla.f.GSTAddλ(Amounts, [Rate])` | Adds GST to GST-exclusive amounts, 10% by default |
-| `nabla.f.GSTExtractλ(Amounts, [Rate])` | Returns the GST inside GST-inclusive amounts |
-| `nabla.d.FinancialYearλ(Dates, [StartMonth])` | Labels dates with their financial year, starting 1 July |
+| `nb.DiminishingValueλ(Cost, Life)` | ATO diminishing value method (200% declining balance), writing the residual off in the final period |
+| `nb.PrimeCostλ(Cost, Life)` | ATO prime cost method (straight line) |
+| `nb.GSTAddλ(Amounts, [Rate])` | Adds GST to GST-exclusive amounts, 10% by default |
+| `nb.GSTExtractλ(Amounts, [Rate])` | Returns the GST inside GST-inclusive amounts |
+| `nb.FinancialYearλ(Dates, [StartMonth])` | Labels dates with their financial year, starting 1 July |
 
-`nabla.f.Depreciateλ` accepts the method codes `SLN`, `SYD`, `DB`, `DDB`, `VDB`, `DV` (diminishing value) and `PC` (prime cost).
+`nb.Depreciateλ` accepts the method codes `SLN`, `SYD`, `DB`, `DDB`, `VDB`, `DV` (diminishing value) and `PC` (prime cost).
 
 The depreciation helpers return full-year amounts. Apportion the first year yourself if the asset was held for part of it.
 
@@ -64,7 +75,7 @@ Excel 365 has gained functions since this library's upstream release in July 202
 
 | Helper | Native equivalent in Excel 365 |
 |---|---|
-| `RangeToDAλ` (in `nabla.e`, `nabla.f`, `nabla.u`) | `TRIMRANGE`, or trim references (`.:.`) |
+| `nb.RangeToDAλ`, `nb.RangeToDAEλ`, `nb.RangeToDAUλ` | `TRIMRANGE`, or trim references (`.:.`) |
 | `FilterContainsλ` | `REGEXTEST`, `REGEXEXTRACT` |
 | `SumPeriodsλ`, `SumContainsλ` | `GROUPBY`, `PIVOTBY` |
 
@@ -81,7 +92,7 @@ Each module has its own tab colour, gridlines are hidden, and every sheet opens 
 | Path | Contents |
 |---|---|
 | `nabla.xlsx` | The library and its documentation workbook |
-| `src/nabla.*.txt` | Plain-text LAMBDA source per module, diffable and importable |
+| `src/*.txt` | Plain-text LAMBDA source per group (Dates, Essentials, Financial, Ratios, Utilities, Debt), diffable and importable |
 | `ATTRIBUTION.md` | Provenance and upstream copyright |
 | `functions.csv` | Machine-readable index of every function |
 | `tools/` | The build pipeline: rebuilds the workbook from upstream and checks it |
@@ -122,54 +133,54 @@ Arithmetic: opens the workbook in a real Excel, forces a full rebuild, fails on 
 
 | Worksheet | What it demonstrates |
 |---|---|
-| `nabla.d.CountDOWλ` | Count instances of a specific day of the week between two dates |
-| `nabla.d.IsBetweenλ` | Determine if a value is between a lower and upper limit |
-| `nabla.d.IsOccurrenceDateλ` | Determine if a date passed is when a potentially repeating event happens |
-| `nabla.d.OverLapDaysλ` | Return how many days overlap two period ranges. |
-| `nabla.d.Periodsλ` | Determine the number of periods from Starts to Ends inclusive |
-| `nabla.d.PeriodLabelλ` | Creates a label for a date based on period interval |
-| `nabla.d.ScheduleRatesλ` | Schedule rates that persist until replaced in a timeline. |
-| `nabla.d.ScheduleRatesByItemsλ` | Schedule rates that persist until replaced in a timeline for each item in a list. |
-| `nabla.d.ScheduleValuesλ` | Schedules values in a timeline. |
-| `nabla.d.ScheduleValuesByItemsλ` | Schedules values in a timeline for each item in a list. |
-| `nabla.d.Timelineλ` | Creates a horizontal list of start or end dates for a timeline |
-| `nabla.f.Amortiseλ` | Creates a corkscrew amortisation schedule. |
-| `nabla.f.LabelAmortiseλ` | Create row labels for Amortiseλ result |
-| `nabla.f.SumAmortiseλ` | Create totals for payments, interest, and principal portion in Amortiseλ results |
-| `nabla.f.Corkscrewλ` | Creates a simple corkscrew where the closing balance is the sum of independent flows plus opening balance |
-| `nabla.f.Cumulativeλ` | Creates a row or column of cumulative totals from a total row or column |
-| `nabla.f.Depreciateλ` | Create a block of CAPEX, Opening Balance, Depreciation Values, and Book Value for each asset |
-| `nabla.f.LabelDepreciateλ` | Create row labels for Depreciateλ result |
-| `nabla.f.SumDepreciateλ` | Create row totals for CAPEX, Depreciation, Book Value, Salvage Value, and Disposal costs in Depreciateλ results |
-| `nabla.f.SumContains` | Creates a row of totals for each row in an array where its labels contain a unique letter, word, or phrase. |
-| `nabla.f.IntOnIntλ` | Calculate Interest on Interest. Use to determine amount needed to cover debt plus interest on debt |
-| `nabla.f.IRRλ` | Calculates IRR, correcting for when the first investment is not in the first period |
-| `nabla.f.Reversalλ` | Create a row that reverses input values in the next period. |
-| `nabla.f.Movementλ` | Create a row of differences from column to column |
-| `nabla.f.RollingSumλ` | Creates totals for preceding values of a set size moving from beginning to end over a row of values. |
-| `nabla.f.SumPeriodsλ` | Groups and totals all columns in a Values array by period resulting in one column for each period. |
-| `nabla.f.TimelineOffsetλ` | Determines how many columns a date is offset from a timeline's first date |
-| `nabla.f.TimelinePositionλ` | Places an array or value appropriately within a model's timeline. |
-| `nabla.e.Aboutλ` | About the nabla Array Essentials library |
-| `nabla.e.CountCλ` | Count the number of times one or more characters appear in a string |
-| `nabla.e.SumRowsλ` | Creates totals for each row in array. |
-| `nabla.e.SumColsλ` | Creates totals for each column in array. |
-| `nabla.e.AvgRowsλ` | Gets the average of each row in an array |
-| `nabla.e.AvgColsλ` | Gets the average of each column in an array |
-| `nabla.e.MinRowsλ` | Gets the minimum of each row in an array |
-| `nabla.e.MinColsλ` | Gets the minimum of each column in an array |
-| `nabla.e.MaxRowsλ` | Gets the maximum of each row in an array |
-| `nabla.e.MaxColsλ` | Gets the maximum of each column in an array |
-| `nabla.e.CountRowsλ` | Count the number of numbers in each row of an array |
-| `nabla.e.CountColsλ` | Count the number of numbers in each column of an array |
-| `nabla.e.CountARowsλ` | Count all non-empty cells in each row of a range. NOTE! Dynamic Arrays always fill each cell. |
-| `nabla.e.CountAColsλ` | Count all non-empty cells in each column of a range. NOTE! Dynamic Arrays always fill each cell. |
-| `nabla.e.IsBetweenλ` | Determine if a value is between a lower and upper limit |
-| `nabla.e.RangeToDAλ` | Convert a static range into a dynamic array |
-| `nabla.r.FinancialRatios` | Three dozen financial Ratios |
+| `nb.CountDOWλ` | Count instances of a specific day of the week between two dates |
+| `nb.IsBetweenλ` | Determine if a value is between a lower and upper limit |
+| `nb.IsOccurrenceDateλ` | Determine if a date passed is when a potentially repeating event happens |
+| `nb.OverLapDaysλ` | Return how many days overlap two period ranges. |
+| `nb.Periodsλ` | Determine the number of periods from Starts to Ends inclusive |
+| `nb.PeriodLabelλ` | Creates a label for a date based on period interval |
+| `nb.ScheduleRatesλ` | Schedule rates that persist until replaced in a timeline. |
+| `nb.ScheduleRatesByItemsλ` | Schedule rates that persist until replaced in a timeline for each item in a list. |
+| `nb.ScheduleValuesλ` | Schedules values in a timeline. |
+| `nb.ScheduleValuesByItemsλ` | Schedules values in a timeline for each item in a list. |
+| `nb.Timelineλ` | Creates a horizontal list of start or end dates for a timeline |
+| `nb.Amortiseλ` | Creates a corkscrew amortisation schedule. |
+| `nb.LabelAmortiseλ` | Create row labels for Amortiseλ result |
+| `nb.SumAmortiseλ` | Create totals for payments, interest, and principal portion in Amortiseλ results |
+| `nb.Corkscrewλ` | Creates a simple corkscrew where the closing balance is the sum of independent flows plus opening balance |
+| `nb.Cumulativeλ` | Creates a row or column of cumulative totals from a total row or column |
+| `nb.Depreciateλ` | Create a block of CAPEX, Opening Balance, Depreciation Values, and Book Value for each asset |
+| `nb.LabelDepreciateλ` | Create row labels for Depreciateλ result |
+| `nb.SumDepreciateλ` | Create row totals for CAPEX, Depreciation, Book Value, Salvage Value, and Disposal costs in Depreciateλ results |
+| `nb.SumContains` | Creates a row of totals for each row in an array where its labels contain a unique letter, word, or phrase. |
+| `nb.IntOnIntλ` | Calculate Interest on Interest. Use to determine amount needed to cover debt plus interest on debt |
+| `nb.IRRλ` | Calculates IRR, correcting for when the first investment is not in the first period |
+| `nb.Reversalλ` | Create a row that reverses input values in the next period. |
+| `nb.Movementλ` | Create a row of differences from column to column |
+| `nb.RollingSumλ` | Creates totals for preceding values of a set size moving from beginning to end over a row of values. |
+| `nb.SumPeriodsλ` | Groups and totals all columns in a Values array by period resulting in one column for each period. |
+| `nb.TimelineOffsetλ` | Determines how many columns a date is offset from a timeline's first date |
+| `nb.TimelinePositionλ` | Places an array or value appropriately within a model's timeline. |
+| `nb.AboutEssentialsλ` | About the Nabla Array Essentials library |
+| `nb.CountCλ` | Count the number of times one or more characters appear in a string |
+| `nb.SumRowsλ` | Creates totals for each row in array. |
+| `nb.SumColsλ` | Creates totals for each column in array. |
+| `nb.AvgRowsλ` | Gets the average of each row in an array |
+| `nb.AvgColsλ` | Gets the average of each column in an array |
+| `nb.MinRowsλ` | Gets the minimum of each row in an array |
+| `nb.MinColsλ` | Gets the minimum of each column in an array |
+| `nb.MaxRowsλ` | Gets the maximum of each row in an array |
+| `nb.MaxColsλ` | Gets the maximum of each column in an array |
+| `nb.CountRowsλ` | Count the number of numbers in each row of an array |
+| `nb.CountColsλ` | Count the number of numbers in each column of an array |
+| `nb.CountARowsλ` | Count all non-empty cells in each row of a range. NOTE! Dynamic Arrays always fill each cell. |
+| `nb.CountAColsλ` | Count all non-empty cells in each column of a range. NOTE! Dynamic Arrays always fill each cell. |
+| `nb.IsBetweenEλ` | Determine if a value is between a lower and upper limit |
+| `nb.RangeToDAEλ` | Convert a static range into a dynamic array |
+| `nb.FinancialRatios` | Three dozen financial Ratios |
 
-The other 85 functions (all of `nabla.r`, `nabla.u` and `nabla.debt`, the depreciation-method, GST and rolling-statistic helpers in `nabla.f`, `nabla.d.FinancialYearλ`, and the module `Aboutλ` tables) have no dedicated worksheet; call any of them with no arguments for inline help, `nabla.r.FinancialRatios` demonstrates the ratio suite on one worksheet, and [functions.csv](functions.csv) lists every function with its signature.
+The other 85 functions (all of `nb`, `nb` and `nb`, the depreciation-method, GST and rolling-statistic helpers in `nb`, `nb.FinancialYearλ`, and the module `Aboutλ` tables) have no dedicated worksheet; call any of them with no arguments for inline help, `nb.FinancialRatios` demonstrates the ratio suite on one worksheet, and [functions.csv](functions.csv) lists every function with its signature.
 
 ## Attribution
 
-nabla is a renamed and reworked derivative of an existing LAMBDA library. See [ATTRIBUTION.md](ATTRIBUTION.md) for provenance, upstream copyright and the full list of changes.
+Nabla is a renamed and reworked derivative of an existing LAMBDA library. See [ATTRIBUTION.md](ATTRIBUTION.md) for provenance, upstream copyright and the full list of changes.

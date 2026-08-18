@@ -37,7 +37,8 @@ if hasattr(sys.stdout, "reconfigure"):
 
 WORKBOOK = sys.argv[1] if len(sys.argv) > 1 else "nabla.xlsx"
 SRC_DIR = sys.argv[2] if len(sys.argv) > 2 else "src"
-MODULES = ["nabla.d", "nabla.e", "nabla.f", "nabla.r", "nabla.u", "nabla.debt"]
+MODULES = ["Dates", "Essentials", "Financial", "Ratios", "Utilities", "Debt"]
+NAMESPACE = "nb"          # every function ships under one prefix, whatever module it lives in
 
 OPENERS, CLOSERS = "({[", ")}]"
 NAME = re.compile(r"^\s*([A-Za-z_][A-Za-z0-9_.λ]*)\s*=\s*(.+)$", re.S)
@@ -171,7 +172,9 @@ def qualify(formula, module, names):
 
 
 def main():
-    parsed = {}
+    # Two passes: the namespace is flat, so a call in one module may name a function
+    # declared in another, and every declaration has to be known before any is qualified.
+    raw = {}
     for mod in MODULES:
         path = os.path.join(SRC_DIR, mod + ".txt")
         if not os.path.exists(path):
@@ -183,20 +186,24 @@ def main():
             if token in text:
                 fail("%s contains the stored-form token %r, which Excel will not accept "
                      "as typed input" % (path, token))
-        defs = {}
         for st in statements(text):
             m = NAME.match(st)
             if m:
-                defs[m.group(1)] = m.group(2).strip()
+                if m.group(1) in raw:
+                    fail("%s is declared in more than one module" % m.group(1))
+                raw[m.group(1)] = m.group(2).strip()
             elif st.strip():
                 fail("%s has an unparsable statement: %r" % (path, st.strip()[:60]))
-        for bare, body in defs.items():
-            parsed["%s.%s" % (mod, bare)] = qualify(body, mod, set(defs))
+
+    every = set(raw)
+    parsed = {"%s.%s" % (NAMESPACE, bare): qualify(body, NAMESPACE, every)
+              for bare, body in raw.items()}
 
     z = zipfile.ZipFile(WORKBOOK)
     wbx = z.read("xl/workbook.xml").decode("utf-8")
     shipped = {n: html.unescape(b) for n, b in
-               re.findall(r'<definedName name="(nabla\.[^"]+)"[^>]*>(.*?)</definedName>', wbx, re.S)}
+               re.findall(r'<definedName name="(%s\.[^"]+)"[^>]*>(.*?)</definedName>' % NAMESPACE,
+                          wbx, re.S)}
 
     for name in sorted(set(shipped) - set(parsed)):
         fail("%s ships in the workbook but is not in src/" % name)

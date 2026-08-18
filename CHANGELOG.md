@@ -20,7 +20,7 @@ Every function's help repeats its parameters as a table below the signature. v1.
 
 ### `IsInListλ` built its help sideways
 
-`TEXTSPLIT` takes the text, then a column delimiter, then an optional row delimiter. This one supplied a single delimiter: the arrow that should have separated the two columns was left concatenated onto the end of the text, and the pilcrow that should have ended each row became the column delimiter. Calling `nabla.e.IsInListλ()` for help therefore returned one row of eleven columns and spilled sideways across the sheet instead of down it, with each label and its explanation run together in a single cell. The other 125 functions that build help this way supply both delimiters; these two were the only ones that did not. Both copies now do, and their help returns the 11-row, 2-column table it was always written to be, read back out of Excel to confirm it.
+`TEXTSPLIT` takes the text, then a column delimiter, then an optional row delimiter. This one supplied a single delimiter: the arrow that should have separated the two columns was left concatenated onto the end of the text, and the pilcrow that should have ended each row became the column delimiter. Calling `nb.IsInListλ()` for help therefore returned one row of eleven columns and spilled sideways across the sheet instead of down it, with each label and its explanation run together in a single cell. The other 125 functions that build help this way supply both delimiters; these two were the only ones that did not. Both copies now do, and their help returns the 11-row, 2-column table it was always written to be, read back out of Excel to confirm it.
 
 ### Help that describes its own parameters
 
@@ -28,23 +28,23 @@ Every function's help opens with a signature, and repeats the same parameters as
 
 | function | its signature said | its signature says now |
 |---|---|---|
-| `nabla.f.CorkScrewReversalλ` | `Opening, Flow1, ...` | `Opening, ReversalFlags, Flow1, ...` |
-| `nabla.f.Movementλ` | `BeginningValue` | `BeginningValues` |
-| `nabla.f.LabelAmortiseλ` | `[LoanNames]` alone | all four parameters |
-| `nabla.f.Depreciateλ` | `[Factor]` | `[Factors]` |
-| `nabla.f.DBλ` | `[Month]` | `[Months]` |
-| `nabla.f.TimelineOffsetλ` | `ArrayStart` | `Date` |
-| `nabla.f.FilterContainsλ` | `Text` | `FilterByText` |
-| `nabla.r.QuickRatioλ` | `LiquidAssets` | `QuickAssets` |
-| `nabla.r.WorkingCapitalTurnoverRatioλ` | `CostOfGoodsSold, AverageInventory` | `NetAnnualSales, WorkingCapital` |
-| `nabla.r.DSCRλ` | `Totaldebtservice` | `TotalDebtService` |
-| `nabla.r.CashFlowMarginλ` | `NetIncome` | `CashFlowFromOperatingActivities` |
-| `nabla.r.PriceToBookRatioλ` | `BookValuePerShareBvps` | `BookValuePerShare` |
-| `nabla.r.PriceToCashRatioλ` | `SalesPerShare` | `OperatingCashFlowPerShare` |
+| `nb.CorkScrewReversalλ` | `Opening, Flow1, ...` | `Opening, ReversalFlags, Flow1, ...` |
+| `nb.Movementλ` | `BeginningValue` | `BeginningValues` |
+| `nb.LabelAmortiseλ` | `[LoanNames]` alone | all four parameters |
+| `nb.Depreciateλ` | `[Factor]` | `[Factors]` |
+| `nb.DBλ` | `[Month]` | `[Months]` |
+| `nb.TimelineOffsetλ` | `ArrayStart` | `Date` |
+| `nb.FilterContainsλ` | `Text` | `FilterByText` |
+| `nb.QuickRatioλ` | `LiquidAssets` | `QuickAssets` |
+| `nb.WorkingCapitalTurnoverRatioλ` | `CostOfGoodsSold, AverageInventory` | `NetAnnualSales, WorkingCapital` |
+| `nb.DSCRλ` | `Totaldebtservice` | `TotalDebtService` |
+| `nb.CashFlowMarginλ` | `NetIncome` | `CashFlowFromOperatingActivities` |
+| `nb.PriceToBookRatioλ` | `BookValuePerShareBvps` | `BookValuePerShare` |
+| `nb.PriceToCashRatioλ` | `SalesPerShare` | `OperatingCashFlowPerShare` |
 
 Three parameter tables disagreed with their own LAMBDA too, and were corrected the same way: `LoanAPR` and `LoanTerm` in `LabelAmortiseλ`, and `TotaldebtService` in `DSCRλ`.
 
-`nabla.e.IsInListλ` and `nabla.u.IsInListλ` were the one case where the declaration was the odd one out. It shouts `LIST`, while the signature, the parameter table and one of the function's own two references all write `List`. Excel resolves identifiers case-insensitively, so the parameter is renamed to match the rest of the library rather than the help being made to shout back. Both functions were exercised in Excel afterwards, including the branch that calls `ISOMITTED()` on the renamed parameter.
+`nb.IsInListλ` and `nb.IsInListλ` were the one case where the declaration was the odd one out. It shouts `LIST`, while the signature, the parameter table and one of the function's own two references all write `List`. Excel resolves identifiers case-insensitively, so the parameter is renamed to match the rest of the library rather than the help being made to shout back. Both functions were exercised in Excel afterwards, including the branch that calls `ISOMITTED()` on the renamed parameter.
 
 Each correction is applied in three places: the module source `src/` is exported from, the defined name Excel installs, and the help already spilled and cached on the demonstration sheets. Five sheets carried a stale copy. Every corrected signature was then read back out of a running Excel rather than trusted from the file.
 
@@ -52,7 +52,49 @@ Each correction is applied in three places: the module source `src/` is exported
 
 - `tools/verify_signatures.py` reads every function's help signature and compares it against the LAMBDA's own declaration, character for character, since case is exactly the kind of difference that goes unnoticed. It accounts for every declaration in every module and prints the tally, and fails if it parsed too few, because a checker that reads nothing passes everything. Square brackets are ignored: upstream declares every parameter optional so a function called with no arguments can return its own help, so the declaration says nothing about which arguments a caller may omit. Run against the previous release it reports all 15 divergences. Now runs in CI.
 
-- **`FLow1` in the corkscrew signatures.** `nabla.f.Corkscrewλ` and `nabla.f.CorkScrewReversalλ` both spelled their second argument `FLow1` on the FUNCTION line of their help, with a capital L. The parameter table three rows below spelled it `Flow1`, and so did the LAMBDA, so anyone copying the signature was copying a name the function does not have. Corrected in the module source, in the defined name, in `functions.csv`, and in the help output already cached on the demonstration sheet, which would otherwise have kept showing the typo until something forced a recalculation. Read back out of Excel afterwards, both functions now report `( Opening, Flow1, ...)`.
+- **`FLow1` in the corkscrew signatures.** `nb.Corkscrewλ` and `nb.CorkScrewReversalλ` both spelled their second argument `FLow1` on the FUNCTION line of their help, with a capital L. The parameter table three rows below spelled it `Flow1`, and so did the LAMBDA, so anyone copying the signature was copying a name the function does not have. Corrected in the module source, in the defined name, in `functions.csv`, and in the help output already cached on the demonstration sheet, which would otherwise have kept showing the typo until something forced a recalculation. Read back out of Excel afterwards, both functions now report `( Opening, Flow1, ...)`.
+
+## 2026-08-18, later still
+
+### One namespace: every function is now `nb.`
+
+Six module prefixes became one. `nabla.f.Amortiseλ` is now `nb.Amortiseλ`, which is five
+fewer characters on every call and, more to the point, makes formula autocomplete useful:
+typing `=nb.` narrows to this library instead of dumping 130 entries behind a prefix you
+had to spell out first.
+
+Collisions were the only real obstacle. Eighteen base names existed in more than one
+module, forty functions in total. Nothing was dropped: the fuller implementation keeps the
+plain name and the other takes a one-letter tag.
+
+- `B` for debt, `E` for essentials, `U` for utilities: `nb.AmortiseBλ`, `nb.IsBetweenEλ`,
+  `nb.SumRowsUλ` and so on, 23 functions in all.
+- The five About tables take words rather than letters, because `nb.AboutRλ` tells a
+  reader nothing: `nb.AboutDatesλ`, `nb.AboutEssentialsλ`, `nb.AboutFinancialλ`,
+  `nb.AboutRatiosλ`, `nb.AboutUtilitiesλ`.
+- The Utilities group is a copy of Essentials; 16 of its 17 functions are byte-identical
+  after normalising the namespace. They were kept, tagged, rather than merged away.
+
+The rename is done in the build, not by editing the artefact, so it cannot drift. That
+also fixed something a direct edit would have missed: the Excel Labs project store holds
+the LAMBDA source as base64 UTF-16 JSON, including a `projectNames` index of all 130
+functions. Patching the workbook leaves 365 stale tokens in there. Building leaves none.
+
+Also in this release:
+
+- The Advanced Formula Environment modules are named for what they hold (Dates,
+  Essentials, Financial, Ratios, Utilities, Debt) rather than by prefix, since six
+  containers all called `nb` would collide. `src/` follows the same names.
+- `functions.csv` keeps a `module` column, now filled from the group a function came from
+  rather than parsed out of its name.
+- `tools/verify_workbook.py` checks `nb.` tokens resolve, and the retired `nabla.<module>.`
+  namespace joins the banned-token list so it cannot come back.
+- Two Windows-only build bugs: the script died printing a λ to a cp1252 console, and
+  `os.makedirs` raised on a bare output filename.
+
+Verified by rebuilding from upstream and comparing every cell against the previous build:
+85,647 cells, no numeric change, and the only text differences are the renamed functions,
+the rewritten cover paragraph and the corrected About tables.
 
 ## 2026-08-18, help that names itself
 
