@@ -521,7 +521,7 @@ EquityMultiplierλ = LAMBDA(
                         "VERSION:           →18 Aug 2026¶" &
                         "PARAMETERS:        →¶" & 
                         "TotalAssets        →(Required) Both current and long-term assets¶" & 
-                        "ShareholdersEquity →(Required) Shareholders' Equity (total assets - total liabilities) ¶" & 
+                        "TotalShareholdersEquity →(Required) Shareholders' Equity (total assets - total liabilities) ¶" & 
                         "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
                         "4.40625            →=nabla.r.EquityMultiplierλ(366.6, 83.2 )", 
                     "→", "¶" )
@@ -675,8 +675,9 @@ EquityRatioλ = LAMBDA(
                         "WEBPAGE:           →https://www.wallstreetprep.com/knowledge/equity-ratio/ ¶" &
                         "VERSION:           →18 Aug 2026¶" &
                         "PARAMETERS:        →¶" & 
-                        "OperatingIncome    →(Required) Operating Income (EBIT) ¶" & 
-                        "InterestExpenses   →(Required) Interest Expense ¶" & 
+                        "ShareholdersEquity →(Required) Shareholders' Equity (total assets - total liabilities) ¶" & 
+                        "TotalAssets        →(Required) Both current and long-term assets¶" & 
+                        "IntangibleAssets   →(Required) Deducted from total assets before the comparison¶" & 
                         "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
                         "40%                →=nabla.r.EquityRatioλ( 20.0, 60.0, 10.0 )", 
                     "→", "¶" )

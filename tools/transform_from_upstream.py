@@ -666,7 +666,39 @@ HELP_SIGNATURES = [
     ("nabla.u", "IsBetweenλ", "(Required) The lower limit that the value must be less than",
      "(Required) The higher limit that the value must be less than"),
     ("nabla.u", "IsBetweenλ", "equal to Lo and/or Hi", "equal to Low and/or Hi"),
+    # EquityMultiplierλ's table drops the Total from its second parameter. The LAMBDA and
+    # the signature agree on TotalShareholdersEquity; only the table shortens it, which is
+    # the name the neighbouring DebtToEquityRatioλ genuinely uses.
+    ("nabla.r", "EquityMultiplierλ", '"ShareholdersEquity →(Required)',
+     '"TotalShareholdersEquity →(Required)'),
+    # EquityRatioλ's table is not its own at all: it documents InterestCoverageRatioλ's two
+    # arguments, which is the same copy that gave this function the wrong name until v1.2.3.
+    # Its three real parameters were never described. The wording follows the neighbours
+    # that already document the same quantities.
+    ("nabla.r", "EquityRatioλ",
+     '"OperatingIncome    →(Required) Operating Income (EBIT) ¶"',
+     '"ShareholdersEquity →(Required) Shareholders\' Equity (total assets - total liabilities) ¶"'),
+    ("nabla.r", "EquityRatioλ",
+     '"InterestExpenses   →(Required) Interest Expense ¶"',
+     '"TotalAssets        →(Required) Both current and long-term assets¶" & \n'
+     '                        "IntangibleAssets   →(Required) Deducted from total assets before '
+     'the comparison¶"',
+     # the stored formula is one line, and it is XML, so the joining ampersand is escaped
+     '"InterestExpenses   →(Required) Interest Expense ¶"',
+     '"TotalAssets        →(Required) Both current and long-term assets¶" &amp; '
+     '"IntangibleAssets   →(Required) Deducted from total assets before the comparison¶"'),
 ]
+
+
+def stores(entry):
+    """One correction as (module, function, source pair, defined-name pair).
+
+    The two forms differ only when a replacement spans more than one row: the module
+    source wraps its help across lines and indents the continuation, while the stored
+    formula is a single line joining the same literals with a plain ampersand.
+    """
+    module, fn, old, new = entry[:4]
+    return module, fn, (old, new), (entry[4], entry[5]) if len(entry) == 6 else (old, new)
 
 # IsInListλ is the one case where the declaration is the odd one out: it shouts LIST,
 # while its own signature, its parameter table and one of its two references all write
@@ -684,7 +716,8 @@ def function_block(module, fn):
     return a, text.index("\n);", a) + 3
 
 
-for _mod, _fn, _old, _new in HELP_SIGNATURES:
+for _entry in HELP_SIGNATURES:
+    _mod, _fn, (_old, _new), _ = stores(_entry)
     _a, _b = function_block(_mod, _fn)
     _text = mods[_mod]["text"]
     _blk = _text[_a:_b]
@@ -770,7 +803,8 @@ for n in list(parts):
 # and the upstream spelling: QuickRatioλ's help said Liabilites, and LabelAmortiseλ was
 # still LabelAmortizeλ. Now that both stores read the same, apply the same table.
 _wbx = get("xl/workbook.xml")
-for _mod, _fn, _old, _new in HELP_SIGNATURES:
+for _entry in HELP_SIGNATURES:
+    _mod, _fn, _, (_old, _new) = stores(_entry)
     _hit = []
 
     # the full name, not the base: several functions exist in more than one module, and
@@ -827,7 +861,8 @@ def cached_forms(fragment):
 
 
 _refreshed = {}
-for _mod, _fn, _old, _new in HELP_SIGNATURES:
+for _entry in HELP_SIGNATURES:
+    _mod, _fn, (_old, _new), _ = stores(_entry)
     _co, _cn = cached_forms(_old), cached_forms(_new)
     for _sheet in [n for n in list(parts) if re.match(r"xl/worksheets/sheet\d+\.xml$", n)]:
         _text = get(_sheet)

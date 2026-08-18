@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **`nabla.r.EquityRatioλ` documented a different function's arguments.** Its parameter table listed `OperatingIncome` and `InterestExpenses`, which belong to `InterestCoverageRatioλ`, while the function takes `ShareholdersEquity`, `TotalAssets` and `IntangibleAssets`. This is the second half of the copy that gave it the wrong name until v1.2.3: the name and the table came across together and only the name was corrected then. Its three real parameters had never been described at all. They are now, in the wording its neighbours already use for the same quantities.
+- **`nabla.r.EquityMultiplierλ` dropped a word from its second parameter.** Its table called it `ShareholdersEquity`; the LAMBDA and the signature above it both say `TotalShareholdersEquity`. `ShareholdersEquity` is what the neighbouring `DebtToEquityRatioλ` genuinely takes, which is where the shortened name came from.
 - **`IsBetweenλ` documented a parameter it does not have, and described the wrong limit.** Its parameter table called the second argument `Lo` where the LAMBDA and the signature above it both say `Low`, and the row for `Hi` read "The lower limit that the value must be less than", copied from the row above it, so the function's own help described its upper bound as a lower one. The `Inclusive` row referred to `Lo` as well. All three are corrected in the Essentials and Utilities copies, which are clones of each other; the Dates module's own `IsBetweenλ` has always had both right and its wording, "the higher limit that the value must be less than", is what the other two now use. Corrected in the module source, the defined name, and the demonstration sheet that had cached the old text.
 
 ## v1.2.5, 18 Aug 2026, a colon back where it belongs
