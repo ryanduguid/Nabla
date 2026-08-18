@@ -102,9 +102,11 @@ longer true.
 
   Nothing about the functions changes. Measured against the build's own output: **all 4,506
   worksheet formula cells byte-identical, all 130 defined names byte-identical, the
-  Advanced Formula Environment store byte-identical.** The file grows from 435 KB to 510
-  KB, because a recalculated value is longer than the stale integer it replaces and Excel
-  adds a 13 KB calculation chain.
+  Advanced Formula Environment store byte-identical.** The file grows by 247 bytes, from
+  435,267 to 435,514. Excel's own save is 75 KB larger, because a recalculated value is
+  longer than the stale integer it replaces and Excel adds a calculation chain, but the
+  refresh rewrites the archive afterwards and compresses it harder than Excel does, which
+  gives all of that back.
 
 ### Added
 
