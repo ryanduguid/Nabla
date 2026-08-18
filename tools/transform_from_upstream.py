@@ -647,6 +647,13 @@ HELP_SIGNATURES = [
     ("nabla.f", "LabelAmortiseλ", '"LoanAPR       →', '"LoanAPRs      →'),
     ("nabla.f", "LabelAmortiseλ", '"LoanTerm      →', '"LoanTerms     →'),
     ("nabla.r", "DSCRλ", '"TotaldebtService   →', '"TotalDebtService   →'),
+    # Four labels put the colon after the padding instead of before it, so the help
+    # reads "EXAMPLES :" and its arrow sits one column right of every other row's.
+    # These four are clones of one another; every other EXAMPLES label is already right.
+    ("nabla.e", "IsBetweenλ", '"EXAMPLES       :→', '"EXAMPLES:      →'),
+    ("nabla.e", "IsInListλ", '"EXAMPLES       :→', '"EXAMPLES:      →'),
+    ("nabla.u", "IsBetweenλ", '"EXAMPLES       :→', '"EXAMPLES:      →'),
+    ("nabla.u", "IsInListλ", '"EXAMPLES       :→', '"EXAMPLES:      →'),
 ]
 
 # IsInListλ is the one case where the declaration is the odd one out: it shouts LIST,
@@ -754,8 +761,10 @@ _wbx = get("xl/workbook.xml")
 for _mod, _fn, _old, _new in HELP_SIGNATURES:
     _hit = []
 
-    def _fix(m, _old=_old, _new=_new, _hit=_hit):
-        if m.group(1).rsplit(".", 1)[-1] != _fn or _old not in m.group(2):
+    # the full name, not the base: several functions exist in more than one module, and
+    # a correction belongs to the copy the table names
+    def _fix(m, _old=_old, _new=_new, _hit=_hit, _want=_mod + "." + _fn):
+        if m.group(1) != _want or _old not in m.group(2):
             return m.group(0)
         _hit.append(m.group(1))
         return m.group(0).replace(_old, _new)
@@ -794,9 +803,14 @@ print("corrected %d help signatures in the defined names, renamed %d LIST tokens
 
 
 def cached_forms(fragment):
-    """The fragment as it appears in a cached spill: a bare label, or the text itself."""
+    """The fragment as it appears in a cached spill: a bare label, or the text itself.
+
+    The help is built with TRIM(), which strips the padding and also collapses any run
+    of spaces inside the label to one, so a label whose colon sits after its padding is
+    cached with a single space before the colon rather than seven.
+    """
     if fragment.startswith('"') and fragment.rstrip().endswith("→"):
-        return "<v>%s</v>" % fragment[1:].rstrip()[:-1].strip()
+        return "<v>%s</v>" % " ".join(fragment[1:].rstrip()[:-1].split())
     return fragment
 
 

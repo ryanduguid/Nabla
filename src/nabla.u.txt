@@ -478,7 +478,7 @@ IsBetweenλ = LAMBDA(
                             "Hi             →(Required) The lower limit that the value must be less than¶" &
                             "Inclusive      →(Optional) If set to TRUE (default) the value can be equal to Lo and/or Hi¶" &
                             "→¶" &
-                            "EXAMPLES       :→¶" & 
+                            "EXAMPLES:      →¶" & 
                             "Result         →Formula¶" &
                             "FALSE          →=IsBetweenλ(1, 2, 4)¶" & 
                             "TRUE           →=IsBetweenλ(2, 2, 4)¶" & 
@@ -521,7 +521,7 @@ IsInListλ = LAMBDA(
                             "Value          →(Required) A value or array of values to compare.¶" & 
                             "List           →(Required) A list of values to check¶" &
                             "→¶" &
-                            "EXAMPLES       :→¶" & 
+                            "EXAMPLES:      →¶" & 
                             "Result         →Formula¶" &
                             "FALSE          →=IsInListλ(1, {2,3,4})¶" & 
                             "TRUE           →=IsInListλ(1, {1,3,5})¶" & 

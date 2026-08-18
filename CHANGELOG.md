@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **`EXAMPLES       :` in four help tables.** The label column is written as the label, then padding, then the arrow that separates it from the second column, so every arrow lines up. Four labels put the colon after the padding instead of before it, one character wider than every other row, and since the help is built with `TRIM()` the reader saw `EXAMPLES :` with the colon adrift. It affected `IsBetweenλ` and `IsInListλ`, each in both the Essentials and Utilities modules; those four are clones of one another and every other `EXAMPLES` label in the library was already correct. Corrected in the module source, the defined name, and the one demonstration sheet that had cached the old label.
+
 ## v1.2.4, 18 Aug 2026, help you can read
 
 ### `IsInListλ` built its help sideways
