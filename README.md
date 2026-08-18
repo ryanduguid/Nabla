@@ -128,7 +128,7 @@ Provenance: every function in `src/` must match the defined name that ships, and
 python tools/verify_signatures.py src
 ```
 
-Documentation: every function states its parameters twice, once as the signature on its help's FUNCTION line and again as a table below it, and both must match what the LAMBDA declares, character for character. Both are hand-written text inside a string literal, so nothing else in the build ever reads them and they drift separately: one function's table described a different function's arguments for six releases. It reads 117 signatures and 122 parameter tables, accounts for every declaration in every module, and refuses to pass if it parsed too few. Also runs in CI.
+Documentation: every function states its parameters twice, once as the signature on its help's FUNCTION line and again as a table below it, and ends with worked examples a reader is meant to copy. All three are hand-written text inside a string literal, so nothing else in the build ever reads them and they drift separately: one function's table described a different function's arguments for six releases, and three worked examples called a neighbouring function rather than the one they were printed under. It reads 117 signatures, 122 parameter tables and 76 example blocks, checks that every function named in a help is one the library declares, accounts for every declaration in every module, and refuses to pass if it parsed too few. Also runs in CI.
 
 ```bash
 python tools/verify_previous_names.py functions.csv

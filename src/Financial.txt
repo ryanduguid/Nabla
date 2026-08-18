@@ -437,7 +437,7 @@ RollingAvgλ = LAMBDA(
                                            "→include and preceed the current value¶" & 
                             "EXAMPLES:      →¶" &
                             "Result         →Formula (nb is assumed to be the module's name)¶" &
-                            "1,3,6,9,12     →=nb.RollingAvgλ(SEQUENCE(, 5), 3)",
+                            "1,1.5,2,3,4    →=nb.RollingAvgλ(SEQUENCE(, 5), 3)",
                         "→", "¶" )
                     ),
     //  Check inputs - Omitted required arguments
@@ -539,7 +539,7 @@ RollingMinλ = LAMBDA(
                                            "→include and preceed the current value¶" & 
                             "EXAMPLES:      →¶" &
                             "Result         →Formula (nb is assumed to be the module's name)¶" &
-                            "5,3,3,3,2,2    →=nb.RollingMaxλ({5,3,4,6,2,7}, 3)",
+                            "5,3,3,3,2,2    →=nb.RollingMinλ({5,3,4,6,2,7}, 3)",
                         "→", "¶" )
                     ),
     //  Check inputs - Omitted required arguments
@@ -591,7 +591,7 @@ RollingSumλ = LAMBDA(
                                            "→include and preceed the current value¶" & 
                             "EXAMPLES:      →¶" &
                             "Result         →Formula (nb is assumed to be the module's name)¶" &
-                            "1,3,6,9,12     →=nb.RollingMinλ(SEQUENCE(, 5), 3)",
+                            "1,3,6,9,12     →=nb.RollingSumλ(SEQUENCE(, 5), 3)",
                         "→", "¶" )
                     ),
     //  Check inputs - Omitted required arguments
@@ -755,7 +755,7 @@ Amortiseλ = LAMBDA(
                         "FUNCTION:      →Amortiseλ( Principals, APRs, Terms, StartDates, [Timeline])¶" &
                         "DESCRIPTION:   →Creates an amortisation schedule array for one or more loans.¶" &
                                        "→It assumes all payments are made monthly.¶" &
-                                       "→Use LableAmortiseλ() to apply labels to this function's results:¶" & 
+                                       "→Use LabelAmortiseλ() to apply labels to this function's results:¶" & 
                                        "→Use SumAmortiseλ() to apply totals to this function's results:¶" & 
                         "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                         "VERSION:       →18 Aug 2026¶" &

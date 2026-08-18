@@ -675,6 +675,17 @@ HELP_SIGNATURES = [
     # arguments, which is the same copy that gave this function the wrong name until v1.2.3.
     # Its three real parameters were never described. The wording follows the neighbours
     # that already document the same quantities.
+    # Three worked examples call a neighbour instead of the function they document, so
+    # copying the example as printed runs the wrong function. The results they claim are
+    # right for the function they belong to, which is how it went unnoticed: only the
+    # call is wrong. RollingAvgλ is the same copy going the other way, its call correct
+    # and its result lifted from RollingSumλ. Excel gives 1, 1.5, 2, 3, 4.
+    ("nabla.f", "RollingMinλ", "RollingMaxλ({5,3,4,6,2,7}, 3)", "RollingMinλ({5,3,4,6,2,7}, 3)"),
+    ("nabla.f", "RollingSumλ", "RollingMinλ(SEQUENCE(, 5), 3)", "RollingSumλ(SEQUENCE(, 5), 3)"),
+    ("nabla.f", "RollingAvgλ", '"1,3,6,9,12     →', '"1,1.5,2,3,4    →'),
+    ("nabla.d", "ScheduleValuesByItemsλ", "ScheduleRatesByItemsλ(", "ScheduleValuesByItemsλ("),
+    # and one help points the reader at a function that does not exist, by transposition
+    ("nabla.f", "Amortiseλ", "LableAmortiseλ", "LabelAmortiseλ"),
     ("nabla.r", "EquityRatioλ",
      '"OperatingIncome    →(Required) Operating Income (EBIT) ¶"',
      '"ShareholdersEquity →(Required) Shareholders\' Equity (total assets - total liabilities) ¶"'),
@@ -849,29 +860,63 @@ print("corrected %d help signatures in the defined names, renamed %d LIST tokens
 
 
 def cached_forms(fragment):
-    """The fragment as it appears in a cached spill: a bare label, or the text itself.
+    """The fragment as a cached spill holds it, and whether it is a whole cell.
 
-    The help is built with TRIM(), which strips the padding and also collapses any run
-    of spaces inside the label to one, so a label whose colon sits after its padding is
-    cached with a single space before the colon rather than seven.
+    Returns (is_whole_cell, value). A parameter label spills into a cell of its own, so
+    it is matched whole: the help is built with TRIM(), which strips the padding and
+    collapses any run of spaces inside the label, so a label whose colon sits after its
+    padding caches with one space before the colon rather than seven. Anything else is a
+    piece of a longer cell and is matched as a substring.
     """
     if fragment.startswith('"') and fragment.rstrip().endswith("→"):
-        return "<v>%s</v>" % " ".join(fragment[1:].rstrip()[:-1].split())
-    return fragment
+        return True, " ".join(fragment[1:].rstrip()[:-1].split())
+    return False, fragment
+
+
+CACHED_VALUE = re.compile(r"<v>(.*?)</v>", re.S)
+
+
+def refresh_cached(text, whole, old, new):
+    """Replace inside cached values only, never inside a formula.
+
+    A worksheet holds both: <f> is what Excel will recalculate, <v> is what it last
+    produced. Correcting a spilled help block means rewriting the stale <v>. Rewriting an
+    <f> would change which function a demonstration sheet calls, which is exactly what a
+    blanket replace did once: a correction aimed at one function's help text renamed a
+    live call on a neighbouring sheet and spilled #SPILL! across it.
+    """
+    hits = [0]
+
+    def one(m):
+        value = m.group(1)
+        if whole:
+            if value.strip() != old:
+                return m.group(0)
+            hits[0] += 1
+            return "<v>%s</v>" % value.replace(old, new)
+        if old not in value:
+            return m.group(0)
+        hits[0] += 1
+        return "<v>%s</v>" % value.replace(old, new)
+
+    return CACHED_VALUE.sub(one, text), hits[0]
 
 
 _refreshed = {}
 for _entry in HELP_SIGNATURES:
     _mod, _fn, (_old, _new), _ = stores(_entry)
-    _co, _cn = cached_forms(_old), cached_forms(_new)
+    _whole, _co = cached_forms(_old)
+    _cn = cached_forms(_new)[1]
     for _sheet in [n for n in list(parts) if re.match(r"xl/worksheets/sheet\d+\.xml$", n)]:
-        _text = get(_sheet)
-        if _co not in _text:
+        _text, _hits = refresh_cached(get(_sheet), _whole, _co, _cn)
+        if not _hits:
             continue
-        put(_sheet, _text.replace(_co, _cn))
+        put(_sheet, _text)
         _refreshed.setdefault(_sheet, []).append(_fn)
-    assert not any(_co in get(n) for n in parts
-                   if re.match(r"xl/worksheets/sheet\d+\.xml$", n)), (_fn, _co)
+    _left = [v for n in parts if re.match(r"xl/worksheets/sheet\d+\.xml$", n)
+             for v in CACHED_VALUE.findall(get(n))
+             if (v.strip() == _co if _whole else _co in v)]
+    assert not _left, (_fn, _co, _left[:2])
 print("refreshed cached help on %d sheets: %s"
       % (len(_refreshed), ", ".join("%s (%s)" % (s.rsplit("/", 1)[1], ", ".join(f))
                                     for s, f in sorted(_refreshed.items()))))

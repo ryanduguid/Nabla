@@ -680,7 +680,7 @@ ScheduleValuesByItemsλ = LAMBDA(
                         "DoNotUse       →This is a counter used internally. Do not make any entry.¶" & 
                         "EXAMPLES:      →¶" & 
                         "Result         →Formula (nb is assumed to be the module's name)¶" &
-                                       "→nb.ScheduleRatesByItemsλ( Timelineλ( ""1/1/2025""),  Timelineλ( ""1/1/2025"",,,FALSE), ¶" & 
+                                       "→nb.ScheduleValuesByItemsλ( Timelineλ( ""1/1/2025""),  Timelineλ( ""1/1/2025"",,,FALSE), ¶" & 
                                        "→UNIQUE( tblExp(Items)), tblExp[Items], tblExp[Dates], tblExp[Amount])", 
                         "→", "¶"
                         )

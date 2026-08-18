@@ -2,10 +2,10 @@
 
 Usage: python tools/verify_signatures.py [src dir]
 
-Every function carries its own help, and states its parameters twice: once on the
-FUNCTION line as a signature, and again as a table below it, one row per parameter.
-Both are hand-written text inside a string literal, so no structural check ever reads
-them, and both drift, separately. A function written by copying a neighbour keeps the
+Every function carries its own help. It states its parameters twice, once on the
+FUNCTION line as a signature and again as a table below it, and ends with worked
+examples a reader is meant to copy. All three are hand-written text inside a string
+literal, so no structural check ever reads them, and all three drift, separately. A function written by copying a neighbour keeps the
 neighbour's name, its signature, its table, or all three. A parameter renamed in the
 LAMBDA is not renamed in the help. A capital lands one key early and Flow1 becomes
 FLow1. Every one of those shipped at least once, and one function's table described a
@@ -28,9 +28,15 @@ Four conventions are honoured rather than reported:
     leave out. Only the help distinguishes them, and there is nothing to check that
     against. Names are compared; requiredness is not.
 
-The two checks are independent, because the parts they read are independent: the debt
-module has never carried a FUNCTION line, but it does carry parameter tables, and those
-are checked. Every declaration in every module is accounted for and the counts are
+A worked example must call the function it is printed under. Three shipped calling a
+neighbour instead, and because the result each claimed was correct for that neighbour,
+nothing looked wrong: copy the line and you run a different function. Every function
+named anywhere in a help must also be one the library declares, which catches a
+reference to LableAmortiseλ that no release ever defined.
+
+The checks are independent, because the parts they read are independent: the debt
+module has never carried a FUNCTION line, but it does carry parameter tables and
+examples, and those are checked. Every declaration in every module is accounted for and the counts are
 printed. Too few is itself a failure, since a checker that reads nothing passes
 everything.
 """
@@ -51,6 +57,8 @@ if hasattr(sys.stdout, "reconfigure"):
 SRC = sys.argv[1] if len(sys.argv) > 1 else "src"
 
 SIGNATURE = re.compile(r"^([A-Za-z0-9_.]*λ[A-Za-z0-9_]*)\s*\((.*)\)\s*$", re.S)
+# a call in help text, with or without the namespace the EXAMPLES header says to assume
+CALL = re.compile(r"(?<![A-Za-z0-9_.])(?:nb\.)?([A-Za-z_][A-Za-z0-9_]*λ[A-Za-z0-9_]*)\s*\(")
 INTERNAL = "DoNotUse"        # an internal counter, documented but kept out of the signature
 FLOOR = 100                  # the library ships 130 functions; reading far fewer is a bug
 
@@ -103,6 +111,20 @@ def declared(body):
     return names(head[:cut] if cut != -1 else head)
 
 
+def worked_examples(body):
+    """The calls in the help's EXAMPLES table, which is where a reader copies from."""
+    calls, started = [], False
+    for label, text in help_rows(body):
+        if label.startswith("EXAMPLE"):
+            started = True
+            continue
+        if started and label.endswith(":"):
+            break
+        if started:
+            calls.extend(CALL.findall(text))
+    return calls
+
+
 def parameter_table(body):
     """The labels of the help's parameter table, or None if it has no such table.
 
@@ -127,8 +149,17 @@ def main():
     if not paths:
         sys.exit("no source modules found in %s/" % SRC)
 
+    # every name the library declares, so a help reference can be checked against it.
+    # Not `declared`: that is the function just above, which reads a LAMBDA's parameters.
+    declared_names = set()
+    for path in paths:
+        for st in statements(open(path, encoding="utf-8").read()):
+            m = NAME.match(st)
+            if m:
+                declared_names.add(m.group(1))
+
     failures, no_signature, no_table, not_lambda = [], [], [], []
-    signatures = tables = read = 0
+    signatures = tables = examples = read = 0
     for path in paths:
         for st in statements(open(path, encoding="utf-8").read()):
             m = NAME.match(st)
@@ -161,6 +192,20 @@ def main():
                                         % (name, ", ".join(claimed),
                                            ", ".join(without_internal)))
 
+            # A worked example is the line a reader copies, so it must call the function
+            # it is printed under. Three shipped calling a neighbour, with results correct
+            # for that neighbour, which is exactly why nobody noticed.
+            calls = worked_examples(body)
+            if calls:
+                examples += 1
+                if name not in calls:
+                    failures.append("%s's worked examples never call it, they call %s"
+                                    % (name, ", ".join(sorted(set(calls)))))
+            for called in sorted(set(CALL.findall(literals(body)))):
+                if called not in declared_names:
+                    failures.append("%s's help calls %s, which the library does not declare"
+                                    % (name, called))
+
             listed = parameter_table(body)
             if listed is None:
                 no_table.append(name)
@@ -172,7 +217,8 @@ def main():
                                     % (name, ", ".join(listed) or "nothing",
                                        ", ".join(real)))
 
-    print("%d declarations read: %d signatures and %d parameter tables checked" % (read, signatures, tables))
+    print("%d declarations read: %d signatures, %d parameter tables and %d example blocks checked"
+          % (read, signatures, tables, examples))
     print("   no FUNCTION line (%d): %s" % (len(no_signature),
                                             ", ".join(sorted(set(no_signature))) or "none"))
     print("   no parameter table (%d): %s" % (len(no_table),
@@ -190,8 +236,8 @@ def main():
         for item in failures:
             print("  - %s" % item)
         return 1
-    print("OK: all %d signatures and %d parameter tables describe their own function's "
-          "real parameters" % (signatures, tables))
+    print("OK: all %d signatures, %d parameter tables and %d example blocks describe their "
+          "own function" % (signatures, tables, examples))
     return 0
 
 
