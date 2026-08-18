@@ -883,7 +883,20 @@ def static_cells(part, values, numeric=True):
         d = d[:m.start()] + '<c r="%s"%s>%s</c>' % (cell, attrs, body) + d[m.end():]
     put(part, d)
 
-CUSTOMERS = ["ACME", "Wool*Art", "Town Hall", "Amazonia", "Jacqie Pens"]
+# Read the customer names straight out of tblCT (sheet13 B28:B32) so the frozen invoice rows
+# can never name a customer the lookup cannot find.
+_ss = get("xl/sharedStrings.xml")
+_si = re.findall(r'<si>(.*?)</si>', _ss, re.S)
+def _shared(i):
+    return "".join(re.findall(r'<t[^>]*>([^<]*)</t>', _si[i]))
+_s13 = get("xl/worksheets/sheet13.xml")
+CUSTOMERS = []
+for _r in range(28, 33):
+    _m = re.search(r'<c r="B%d"[^>]*t="s"[^>]*><v>(\d+)</v></c>' % _r, _s13)
+    assert _m, "tblCT customer row %d not found" % _r
+    CUSTOMERS.append(_shared(int(_m.group(1))))
+assert len(CUSTOMERS) == 5 and all(CUSTOMERS), CUSTOMERS
+print("tblCT customers:", CUSTOMERS)
 # tblCO: 21 invoices, issued across the first half of 2026, amounts 1,000 to 5,000
 issued = {"G%d" % r: 46023 + ((r - 20) * 7 + 3) for r in range(20, 41)}
 amounts = {"I%d" % r: 1000 + ((r - 20) * 197 % 4001) for r in range(20, 41)}
