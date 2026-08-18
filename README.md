@@ -4,7 +4,7 @@
 
 A LAMBDA function library for building dynamic-array financial models in Excel.
 
-`nabla.xlsx` ships 130 named functions under a single `nb.` prefix. Every function carries inline help, and the core functions each have a demonstration worksheet with live, editable examples. The **Australian tax** worksheet demonstrates the ATO depreciation, GST and financial-year helpers. Every function is built from native Excel functions only, so models assembled with Nabla save as ordinary `.xlsx` workbooks with no add-ins and no macros.
+`nabla.xlsx` ships 130 named functions under a single `nb.` prefix. Every function carries inline help, and the core functions each have a demonstration worksheet with live, editable examples. The **Australian tax** worksheet demonstrates the depreciation, GST and financial-year helpers. Every function is built from native Excel functions only, so models assembled with Nabla save as ordinary `.xlsx` workbooks with no add-ins and no macros.
 
 **Version: 18 August 2026**
 
@@ -57,24 +57,26 @@ Functions with a data-validation companion (named with a `DV` suffix, such as `n
 
 ## Australian conventions
 
-The library is Australian-only. Tax content follows ATO practice, and the foreign tax regimes and references the upstream library carried have been removed rather than relabelled.
+The library is Australian-only: the foreign tax regimes and references the upstream library carried have been removed rather than relabelled, and the conventions below are Australian throughout.
 
 - Australian English throughout (amortise, modelling, and so on), including function names.
 - Dates are day-first, in text examples and in cell formats. Worksheets print on A4.
 - Sample data uses AUD.
-- Australian tax helpers:
+- Depreciation, GST and financial-year helpers:
 
 | Function | Purpose |
 |---|---|
-| `nb.DiminishingValueλ(Cost, Life)` | ATO diminishing value method (200% declining balance), writing the residual off in the final period |
-| `nb.PrimeCostλ(Cost, Life)` | ATO prime cost method (straight line) |
+| `nb.DiminishingValueλ(Cost, Life)` | Diminishing balance at 200% of the straight-line rate, writing the residual off in the final period |
+| `nb.PrimeCostλ(Cost, Life)` | Straight line over whole years |
 | `nb.GSTAddλ(Amounts, [Rate])` | Adds GST to GST-exclusive amounts, 10% by default |
 | `nb.GSTExtractλ(Amounts, [Rate])` | Returns the GST inside GST-inclusive amounts |
 | `nb.FinancialYearλ(Dates, [StartMonth])` | Labels dates with their financial year, starting 1 July |
 
 `nb.Depreciateλ` accepts the method codes `SLN`, `SYD`, `DB`, `DDB`, `VDB`, `DV` (diminishing value) and `PC` (prime cost).
 
-The depreciation helpers return full-year amounts. Apportion the first year yourself if the asset was held for part of it.
+**These are modelling schedules, not tax calculations.** They take a cost and an effective life and nothing else: no acquisition date, no income year, no days held, and no disposal. `nb.DiminishingValueλ` also writes the whole undeducted residual off in its final period, which a diminishing-balance calculation does not do on its own, so the schedule totals to cost by construction. For a cost of 1,000 over five years it returns 400, 240, 144, 86.40 and 129.60, where the last figure is the residual rather than a computed deduction.
+
+Use them for modelling. Do not use them to prepare a return, and do not treat any output as a deduction the ATO would accept. Apportion for part-year ownership yourself.
 
 ## Modern Excel
 

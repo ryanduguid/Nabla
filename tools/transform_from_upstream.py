@@ -192,8 +192,8 @@ AMORT = [("Amoritization", "Amortisation"), ("amoritization", "amortisation"),
          ("Occurence", "Occurrence"), ("occurence", "occurrence")]
 # Americanisms -> Australian equivalents (content, not just spelling)
 AMERICAN = [
-    # the MACRS row on the Data Validation sheet becomes the ATO diminishing value row
-    ("IRS Depreciation", "Diminishing value (ATO)"),
+    # the MACRS row on the Data Validation sheet becomes the diminishing-balance row
+    ("IRS Depreciation", "Diminishing balance 200%"),
     ("Some of Years", "Sum of Years"),
     ("Wal*Art", "Wool*Art"),
     ("Apt. ", "Unit "),
@@ -347,7 +347,7 @@ FUNCS = [
     {
         "module": "nabla.f", "name": "DiminishingValueλ",
         "sig": "DiminishingValueλ(Cost, Life)",
-        "desc": "Diminishing value depreciation (ATO 200% method), writing the residual off in the final period.",
+        "desc": "Diminishing-balance depreciation schedule at 200% of the straight-line rate, writing the residual off in the final period. A modelling schedule, not a tax calculation.",
         "params": [("Cost", "(Required) Asset's cost."),
                    ("Life", "(Required) Asset's effective life in years.")],
         "example": "nabla.f.DiminishingValueλ(1000, 5)",
@@ -369,7 +369,7 @@ FUNCS = [
     {
         "module": "nabla.f", "name": "PrimeCostλ",
         "sig": "PrimeCostλ(Cost, Life)",
-        "desc": "Prime cost (straight line) depreciation, ATO method, for one asset or asset class.",
+        "desc": "Straight-line depreciation schedule for one asset or asset class, in whole years. A modelling schedule, not a tax calculation.",
         "params": [("Cost", "(Required) Asset's cost."),
                    ("Life", "(Required) Asset's effective life in years.")],
         "example": "nabla.f.PrimeCostλ(1000, 5)",
@@ -440,8 +440,9 @@ FUNCS = [
 ]
 
 # MACRS (US Modified Accelerated Cost Recovery System) is removed outright: the library is
-# Australian-only. Depreciation method slot 6 becomes the ATO diminishing value method and a
-# seventh slot adds ATO prime cost.
+# Australian-only. Depreciation method slot 6 becomes diminishing balance at 200% of straight
+# line and a seventh slot adds straight line. Both are modelling schedules, not tax calculations:
+# neither knows an income year, an acquisition date or days held.
 AFE_MACRS = [
     ('{"SLN","SYD","DB","DDB","VDB", "MACRS"}', '{"SLN","SYD","DB","DDB","VDB","DV","PC"}'),
     ('@INDEX( LifeInYears, Asset) + N(Method = "MACRS")', '@INDEX( LifeInYears, Asset)'),
@@ -452,17 +453,17 @@ AFE_MACRS = [
      'Methods must be omitted or one of: SLN, SYD, DB, DDB, VDB, DV, or PC.'),
     ('Must be one of these Excel function names: ', 'Must be one of these method codes: '),
     ('"→MACRS=Modified Accelerated Cost Recovery System. NOTE: Salvage value ignored¶" & ',
-     '"→DV =Diminishing value (ATO 200% method). Salvage value ignored¶" & \n'
-     '                                           "→PC =Prime cost (ATO straight line). Salvage value ignored¶" & '),
+     '"→DV =Diminishing balance at 200% of straight line. Salvage value ignored¶" & \n'
+     '                                           "→PC =Straight line, whole years. Salvage value ignored¶" & '),
 ]
 AFE_MACRS_RE = [
     (r'DisposalDate,   IF\( Method = "MACRS", \s*\n\s*MAX\(EDATE\( InserviceDate, Years \* MpY\), '
      r'@INDEX\( DisposalDates, Asset\)\),\s*\n\s*@INDEX\( DisposalDates, Asset\)\), ',
      'DisposalDate,   @INDEX( DisposalDates, Asset), '),
     (r'//  6\. Modified accelerated cost recovery system \s*\n\s*MACRSλ\( InitialValue, Years - 1\),',
-     '//  6. Diminishing value (ATO 200% method)\n'
+     '//  6. Diminishing balance at 200% of straight line\n'
      + ' ' * 56 + 'DiminishingValueλ( InitialValue, Years),\n'
-     + ' ' * 52 + '//  7. Prime cost (ATO straight line)\n'
+     + ' ' * 52 + '//  7. Straight line, whole years\n'
      + ' ' * 56 + 'PrimeCostλ( InitialValue, Years),'),
 ]
 
@@ -1130,8 +1131,8 @@ WB_MACRS = [
      'Methods must be omitted or one of: SLN, SYD, DB, DDB, VDB, DV, or PC.'),
     ('Must be one of these Excel function names: ', 'Must be one of these method codes: '),
     ('"→MACRS=Modified Accelerated Cost Recovery System. NOTE: Salvage value ignored¶" &amp; ',
-     '"→DV =Diminishing value (ATO 200% method). Salvage value ignored¶" &amp; '
-     '"→PC =Prime cost (ATO straight line). Salvage value ignored¶" &amp; '),
+     '"→DV =Diminishing balance at 200% of straight line. Salvage value ignored¶" &amp; '
+     '"→PC =Straight line, whole years. Salvage value ignored¶" &amp; '),
 ]
 wb = get("xl/workbook.xml")
 for old, new in WB_MACRS:
@@ -1163,7 +1164,7 @@ for n in list(parts):
     if re.match(r'xl/worksheets/sheet\d+\.xml$', n):
         d = get(n)
         d2 = d.replace("MACRS=Modified Accelerated Cost Recovery System. NOTE: Salvage value ignored",
-                       "DV =Diminishing value (ATO 200% method). Salvage value ignored")
+                       "DV =Diminishing balance at 200% of straight line. Salvage value ignored")
         d2 = d2.replace("Must be one of these Excel function names: ",
                         "Must be one of these method codes: ")
         d2 = d2.replace("<v>MACRS</v>", "<v>DV</v>")
@@ -1183,7 +1184,7 @@ print("cleared cached MACRS text on", cache_fixes, "sheets")
 ss = get("xl/sharedStrings.xml")
 cnt = int(re.search(r'count="(\d+)"', ss).group(1))
 uniq = int(re.search(r'uniqueCount="(\d+)"', ss).group(1))
-new_si = ["PC", "Prime cost (ATO)"]
+new_si = ["PC", "Straight line"]
 ss = ss.replace("</sst>", "".join("<si><t>%s</t></si>" % v for v in new_si) + "</sst>")
 ss = ss.replace('count="%d" uniqueCount="%d"' % (cnt, uniq),
                 'count="%d" uniqueCount="%d"' % (cnt + 2, uniq + 2), 1)
@@ -1301,18 +1302,25 @@ AU_ROWS = {
     4:  txt("A4", H, "DEPRECIATION"),
     5:  txt("A5", H, "Cost") + txt("B5", H, "Effective life (years)"),
     6:  num("A6", MONEY, 50000) + num("B6", 0, 5),
-    8:  txt("A8", 0, "Diminishing value (ATO 200% method)")
+    8:  txt("A8", 0, "Diminishing balance at 200% of straight line")
         + fml("B8", MONEY, "nabla.f.DiminishingValueλ($A$6,$B$6)", spill="B8:F8"),
-    9:  txt("A9", 0, "Prime cost (ATO straight line)")
+    9:  txt("A9", 0, "Straight line, whole years")
         + fml("B9", MONEY, "nabla.f.PrimeCostλ($A$6,$B$6)", spill="B9:F9"),
     # Both schedules must write off the whole cost, whatever the effective life. Shown on
     # the sheet because it is the property that a part-year or sub-two-year life breaks.
-    10: txt("A10", 0, "Total written off, diminishing value")
+    10: txt("A10", 0, "Total written off, diminishing balance")
         + fml("B10", MONEY, "SUM(_xlfn.ANCHORARRAY(B8))"),
-    11: txt("A11", 0, "Total written off, prime cost")
+    11: txt("A11", 0, "Total written off, straight line")
         + fml("B11", MONEY, "SUM(_xlfn.ANCHORARRAY(B9))"),
     12: txt("A12", 0, "Both totals equal the cost above for any effective life, "
-                      "including part years such as 6 2/3 and lives under 2 years."),
+                      "including part years such as 6 2/3 and lives under 2 years, "
+                      "because the diminishing-balance schedule writes its residual off "
+                      "in the final period."),
+    # its own row: a cell belongs to the row its address names, and Excel refuses to open
+    # a file where A13 sits inside <row r="12">
+    13: txt("A13", 0, "Modelling schedules, not tax calculations: no acquisition date, "
+                      "no income year, no days held, no disposal. Do not use them to "
+                      "prepare a return."),
     14: txt("A14", H, "GST"),
     15: txt("A15", H, "GST-exclusive amount") + txt("B15", H, "Plus GST"),
     # marked as dynamic-array cells so Excel does not store them as legacy formulas and
@@ -1373,7 +1381,7 @@ assert '<row r="70"' not in toc
 row70 = ('<row r="70" spans="1:4">'
          + txt("A70", 110, "Australian tax") + txt("B70", 108, "Worksheet")
          + txt("C70", 111, "Australian tax") + txt("D70", 109,
-             "ATO depreciation, GST and financial-year helpers") + '</row>')
+             "depreciation, GST and financial-year helpers") + '</row>')
 toc = toc.replace("</sheetData>", row70 + "</sheetData>")
 toc = toc.replace('<dimension ref="A1:F69"/>', '<dimension ref="A1:F70"/>')
 toc = toc.replace('<hyperlinks>', '<hyperlinks><hyperlink ref="A70" location="\'Australian tax\'!$A$1" '

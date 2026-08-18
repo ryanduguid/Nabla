@@ -45,8 +45,8 @@ AboutFinancialλ = TRIM(TEXTSPLIT(
     "DBλ                →Fixed declining balance depreciation method for one asset or asset class.¶" & 
     "DDBλ               →Double-declining balance depreciation method for one asset or asset class.¶" & 
     "VDBλ               →Variable declining balance depreciation method for one asset or asset class.¶" & 
-                                           "DiminishingValueλ  →Diminishing value depreciation (ATO 200% method), writing the residual off in the final period.¶" & 
-                                           "PrimeCostλ         →Prime cost (straight line) depreciation, ATO method, for one asset or asset class.¶" & 
+                                           "DiminishingValueλ  →Diminishing-balance depreciation schedule at 200% of the straight-line rate, writing the residual off in the final period. A modelling schedule, not a tax calculation.¶" & 
+                                           "PrimeCostλ         →Straight-line depreciation schedule for one asset or asset class, in whole years. A modelling schedule, not a tax calculation.¶" & 
                                            "→¶" & 
                                            "AUSTRALIAN TAX     →¶" & 
                                            "GSTAddλ            →Adds GST to one or more GST-exclusive amounts.¶" & 
@@ -1045,8 +1045,8 @@ Depreciateλ = LAMBDA(
                                            "→DB =Declining Balance¶" & 
                                            "→DDB=Double Declining Balance¶" & 
                                            "→VDB=Variable Declining Balance¶" & 
-                                           "→DV =Diminishing value (ATO 200% method). Salvage value ignored¶" & 
-                                           "→PC =Prime cost (ATO straight line). Salvage value ignored¶" & 
+                                           "→DV =Diminishing balance at 200% of straight line. Salvage value ignored¶" & 
+                                           "→PC =Straight line, whole years. Salvage value ignored¶" & 
                             "Factors        →(Optional: Default = 2) Only applicable to DDB and VDB methods.", 
                             "→", "¶"
                             )
@@ -1125,9 +1125,9 @@ Depreciateλ = LAMBDA(
                                                         DDBλ( InitialValue, SalvageValue, Years, Factor),
                                                     //  5. Variable declining balance 
                                                         VDBλ( InitialValue, SalvageValue, Years, Factor), 
-                                                    //  6. Diminishing value (ATO 200% method)
+                                                    //  6. Diminishing balance at 200% of straight line
                                                         DiminishingValueλ( InitialValue, Years),
-                                                    //  7. Prime cost (ATO straight line)
+                                                    //  7. Straight line, whole years
                                                         PrimeCostλ( InitialValue, Years),
                                                     ),
                                 //  Place Disposal and Salvage in the asset's last month
@@ -2147,7 +2147,7 @@ PeriodStartλ = LAMBDA(
 
 
 /*  FUNCTION NAME:  DiminishingValueλ
-    DESCRIPTION:*//**Diminishing value depreciation (ATO 200% method), writing the residual off in the final period*/
+    DESCRIPTION:*//**Diminishing-balance depreciation schedule at 200% of the straight-line rate, writing the residual off in the final period. A modelling schedule, not a tax calculation*/
 /*  REVISIONS:      Date        Developer       Description  
                     18 Aug 2026 Nabla           Original development
 */
@@ -2160,7 +2160,7 @@ DiminishingValueλ = LAMBDA(
     //  Help
         Help,           TRIM(TEXTSPLIT(
                             "FUNCTION:      →DiminishingValueλ(Cost, Life)¶" &
-                            "DESCRIPTION:   →Diminishing value depreciation (ATO 200% method), writing the residual off in the final period.¶" &
+                            "DESCRIPTION:   →Diminishing-balance depreciation schedule at 200% of the straight-line rate, writing the residual off in the final period. A modelling schedule, not a tax calculation.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" &
@@ -2193,7 +2193,7 @@ DiminishingValueλ = LAMBDA(
 
 
 /*  FUNCTION NAME:  PrimeCostλ
-    DESCRIPTION:*//**Prime cost (straight line) depreciation, ATO method, for one asset or asset class*/
+    DESCRIPTION:*//**Straight-line depreciation schedule for one asset or asset class, in whole years. A modelling schedule, not a tax calculation*/
 /*  REVISIONS:      Date        Developer       Description  
                     18 Aug 2026 Nabla           Original development
 */
@@ -2206,7 +2206,7 @@ PrimeCostλ = LAMBDA(
     //  Help
         Help,           TRIM(TEXTSPLIT(
                             "FUNCTION:      →PrimeCostλ(Cost, Life)¶" &
-                            "DESCRIPTION:   →Prime cost (straight line) depreciation, ATO method, for one asset or asset class.¶" &
+                            "DESCRIPTION:   →Straight-line depreciation schedule for one asset or asset class, in whole years. A modelling schedule, not a tax calculation.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" &

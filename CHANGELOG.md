@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- **The depreciation helpers no longer claim to be ATO methods.** `nb.DiminishingValueλ` described itself as the ATO 200% diminishing value method and `nb.PrimeCostλ` as the ATO prime cost method. Neither is one. They take a cost and an effective life and nothing else: no acquisition date, no income year, no days held, no disposal. `nb.DiminishingValueλ` also writes the entire undeducted residual off in its final period, so for a cost of 1,000 over five years it returns 400, 240, 144, 86.40 and 129.60, where a diminishing-balance calculation would deduct 51.84 that year and carry the rest forward. The schedules are unchanged and still useful for modelling; what changes is that they are now described as modelling schedules rather than tax calculations, in the function help, the method codes on `nb.Depreciateλ`, the Data Validation sheet, the Australian tax worksheet and the README. The worksheet now says so on its face, and the README says plainly not to use them to prepare a return.
+
+  Raised by an external audit of v1.2.6. Its arithmetic checks out: the fifth-year deduction under a plain diminishing-balance calculation is 51.84, not the 129.60 residual the function returns.
+
 - **Three worked examples called a different function than the one they document.** `nb.RollingMinλ`'s example called `nb.RollingMaxλ`, `nb.RollingSumλ`'s called `nb.RollingMinλ`, and `nb.ScheduleValuesByItemsλ`'s called `nb.ScheduleRatesByItemsλ`. The examples are the lines a reader copies, so copying one as printed ran a different function. Each claimed result was correct for the function it wrongly called, which is exactly why nothing looked wrong.
 - **`nb.RollingAvgλ` claimed a result belonging to `nb.RollingSumλ`,** the same copy going the other way: its call was right and its answer, `1,3,6,9,12`, was the running total rather than the running average. Excel gives `1,1.5,2,3,4`, which is what it now says.
 - **`nb.Amortiseλ`'s help pointed at a function that does not exist,** `LableAmortiseλ`, a transposition of `LabelAmortiseλ`.
