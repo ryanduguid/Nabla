@@ -1714,10 +1714,23 @@ def flat_text(s):
 # Which module each function came from, captured before the prefixes disappear.
 # The exporters below need it: one namespace leaves nothing in the name to group by.
 FLAT_MODULE_OF = {}
+# What each function was called before the prefixes collapsed. functions.csv publishes
+# it, because renaming every name in the library breaks every formula written against
+# the old ones and a reader needs somewhere to look the replacement up.
+FLAT_PREVIOUS_OF = {}
 _pre_wb = get("xl/workbook.xml")
 _mod_word = dict(AFE_MODULES)
 for _m in re.finditer(r'<definedName name="(nabla\.(?:debt|d|e|f|r|u))\.([^"]+)"', _pre_wb):
-    FLAT_MODULE_OF[flatten_names(_m.group(1) + "." + _m.group(2))] = _mod_word[_m.group(1)]
+    _was = _m.group(1) + "." + _m.group(2)
+    _now = flatten_names(_was)
+    FLAT_MODULE_OF[_now] = _mod_word[_m.group(1)]
+    # two old names collapsing onto one new one would silently lose a function
+    assert FLAT_PREVIOUS_OF.setdefault(_now, _was) == _was, (_now, _was, FLAT_PREVIOUS_OF[_now])
+assert len(FLAT_PREVIOUS_OF) == len(set(FLAT_PREVIOUS_OF.values())), "the rename map is not one to one"
+print("rename map: %d functions, %d of them keeping their bare name"
+      % (len(FLAT_PREVIOUS_OF),
+         sum(1 for _n, _o in FLAT_PREVIOUS_OF.items()
+             if _n.split(".", 1)[1] == _o.rsplit(".", 1)[1])))
 
 # AFE store: rename the module containers, then flatten the source inside them
 afe_flat = get("customXml/item1.xml")
@@ -1824,15 +1837,18 @@ print("exported", len(exported), "module sources to", src_dir)
 
 SIG_RE = re.compile(r"FUNCTION:\s*→?\s*(.*?)¶")   # arrow optional: some upstream help omits it
 DESC_RE = re.compile(r"DESCRIPTION:\s*→(.*?)¶")
+# every shipped name came from somewhere, so a missing entry is a build error rather
+# than an empty cell: index directly instead of .get()
+assert len(entries) == len(FLAT_PREVIOUS_OF), (len(entries), len(FLAT_PREVIOUS_OF))
 with open(os.path.join(repo, "functions.csv"), "w", encoding="utf-8", newline="") as fh:
     out = csv.writer(fh, lineterminator="\n")
-    out.writerow(["function", "module", "signature", "description"])
+    out.writerow(["function", "module", "previous_name", "signature", "description"])
     for name, attrs, body in sorted(entries):
         bare = name.rsplit(".", 1)[1]
         sig = SIG_RE.search(body)
         desc = re.search(r'comment="([^"]*)"', attrs)
         fallback = DESC_RE.search(body)
-        out.writerow([name, FLAT_MODULE_OF.get(name, ""),
+        out.writerow([name, FLAT_MODULE_OF.get(name, ""), FLAT_PREVIOUS_OF[name],
                       sig.group(1).strip() if sig else bare,
                       html.unescape(desc.group(1)) if desc else
                       (fallback.group(1).strip() if fallback else "")])
