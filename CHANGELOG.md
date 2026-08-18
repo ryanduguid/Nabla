@@ -99,7 +99,7 @@ typing `=nb.` narrows to this library instead of dumping 130 entries behind a pr
 had to spell out first.
 
 Collisions were the only real obstacle. Eighteen base names existed in more than one
-module, forty functions in total. Nothing was dropped: the fuller implementation keeps the
+module, forty-one functions in total. Nothing was dropped: the fuller implementation keeps the
 plain name and the other takes a one-letter tag.
 
 - `B` for debt, `E` for essentials, `U` for utilities: `nb.AmortiseBλ`, `nb.IsBetweenEλ`,
