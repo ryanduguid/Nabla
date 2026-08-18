@@ -11,7 +11,7 @@ The build fills the column and asserts as it goes, but the build is not what peo
 the committed CSV is. This checks the published file against the published baseline, so a
 stale or hand-edited CSV fails here rather than misinforming somebody mid-migration.
 
-Three things must hold:
+Four things must hold:
 
   * every name the baseline records is claimed by exactly one function, since an
     unclaimed one is a function that disappeared without a forwarding address
@@ -19,6 +19,12 @@ Three things must hold:
     never shipped is worse than no predecessor at all
   * a function added since the baseline records nothing, which is honest, rather than a
     plausible-looking name derived from the build's own intermediate naming
+  * each function's claimed predecessor is recognisably its own, not merely some unused
+    baseline name. The first three checks together prove the map is a bijection, which is
+    not the same as proving it is the right one: swapping two unrelated functions'
+    predecessors satisfies all three and still sends a reader to the wrong function. The
+    rename only ever appended to a bare name, adding a `B`, `E` or `U` tag or a module
+    word, so the new bare name must begin with the old one.
 
 A blank `previous_name` is therefore expected and allowed. It means "new since v1.2.6".
 """
@@ -68,6 +74,13 @@ def main():
                             % (was, claimed[was], row["function"]))
         else:
             claimed[was] = row["function"]
+            # the rename only ever appended to a bare name, so an unrelated pairing shows
+            # up here even though it satisfies every count
+            old_bare = was.rsplit(".", 1)[1].rstrip("λ")
+            new_bare = row["function"].split(".", 1)[1]
+            if not new_bare.startswith(old_bare):
+                failures.append("%s is not a renaming of %s: %s does not begin with %s"
+                                % (row["function"], was, new_bare, old_bare))
 
     for was in sorted(released - set(claimed)):
         failures.append("%s shipped in the baseline and no function claims it" % was)

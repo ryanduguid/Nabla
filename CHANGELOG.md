@@ -6,7 +6,9 @@
 
 ### Added
 
-- `tools/verify_previous_names.py`, a fifth gate and the fourth in CI. The build's asserts guarantee the column is right when it is generated, but the committed file is what people read, so this checks the published index against the published baseline. Exercised against three deliberate breakages: a fabricated predecessor, a dropped function, and one old name claimed twice. It names the offending function in each case rather than reporting a count.
+- `tools/verify_previous_names.py`, a fifth gate and the fourth in CI. The build's asserts guarantee the column is right when it is generated, but the committed file is what people read, so this checks the published index against the published baseline. Exercised against four deliberate breakages: a fabricated predecessor, a dropped function, one old name claimed twice, and two unrelated functions with their predecessors swapped. It names the offending function in each case rather than reporting a count.
+
+  That last case is why the check does more than count. Claiming every baseline name exactly once proves the mapping is a bijection, which is not the same as proving it is the right one: swap two functions' predecessors and every count still balances while a reader is sent to the wrong function. The rename only ever appended to a bare name, adding a `B`, `E` or `U` tag or a module word, so each new bare name must begin with the old one. All 130 satisfy that, and a swap does not.
 
 ## v2.0.0, 18 August 2026, one namespace
 
