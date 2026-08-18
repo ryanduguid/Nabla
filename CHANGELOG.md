@@ -1,6 +1,14 @@
 # Changelog
 
-## Unreleased
+## v2.1.0, 18 August 2026, functions that do what they say
+
+v2.0.0 renamed every function. This one fixes what three of them compute, and stops two
+more from claiming to be something they are not.
+
+Nothing is renamed, so formulas written against v2.0.0 keep working. Three functions do
+return different numbers, and only for the inputs they were handling wrongly: dates passed
+as text to `nb.OverLapDaysλ`, a start date after the end date in `nb.Periodsλ`, and
+`No_Switch` set to `TRUE` in `nb.VDBλ`.
 
 - **`nb.OverLapDaysλ` compared its dates as text.** It converts all four arguments, so that
   a date written as text becomes a serial number, and then compared the raw arguments
@@ -50,6 +58,7 @@
 - **The build's help corrections can no longer reach a live formula.** Correcting help text also refreshes any copy of that help already spilled and cached on a demonstration sheet, and that refresh was a blanket text replace across the whole worksheet. Fixing `nb.ScheduleValuesByItemsλ`'s example rewrote a real formula on a neighbouring sheet, changing which function it called and spilling `#SPILL!` across it. The Excel gate caught it before it shipped. The refresh is now confined to cached values, never formulas, and a parameter label must match a whole cell rather than appear anywhere inside one.
 - **`tools/verify_signatures.py` now reads the worked examples too.** It already checked the signature and the parameter table; it now also requires that a function's examples call that function, and that every function named anywhere in a help is one the library declares. Both are pure text, so both run in CI. Run against the source before these fixes it reports all four defects above by name. 76 example blocks are checked.
 
+- **v2.0.0's own release text carried three defects the rename left behind.** The flat-namespace substitution ran over the prose as well as the code: the README's coverage note became "all of `nb`, `nb` and `nb`" where it meant Ratios, Utilities and Debt, and this changelog named `nb.IsInListλ` twice where the second is `nb.IsInListUλ`. It also said 89 functions change prefix and nothing else; 89 is only the count that never collided, and the true figure including the 17 collision winners is 106, checked against `functions.csv`. The cell-comparison claim omitted the capitalisation of the product name from `nabla` to `Nabla` in 29 places, done in the same build. Corrected here and in the published v2.0.0 release notes.
 - **`previous_name` is now pinned to a released baseline rather than to the build's own intermediate names.** The column shipped correct in v2.0.0, but it was derived from the `nabla.<module>.` names the build uses internally before it flattens them, which happen to match what v1.2.6 shipped only because nothing has been added since. The next function added would have published a predecessor that no release ever carried, and the build's count check could not have caught it, because both sides of that count come from the same build. The 130 names v1.2.6 shipped are now recorded in `tools/released-names-v1.2.6.txt`, and a function whose predecessor is not in that file records nothing rather than a plausible-looking guess. A baseline name that no function claims now stops the build and says which name, because a function disappearing without a forwarding address is the one thing this column exists to prevent.
 
 ### Added
@@ -92,9 +101,6 @@ name dropped and none invented.
   did not offer.
 - The entry below for the namespace work said the tag scheme covered 23 functions. It
   covers 19; the other 4 were the About renames, counted twice.
-
-## Unreleased
-
 - **`tools/verify_signatures.py` now reads the parameter tables too.** It checked the FUNCTION line and stopped there, which is why the table defects fixed in v1.2.6 had to be found by hand. The two are independent pieces of hand-written text, so the checks are independent: 117 signatures and 122 parameter tables, the extra five being the debt module's functions, which have never carried a FUNCTION line but do carry tables. A row whose label ends in `!` is an aside rather than a parameter, and the internal `DoNotUse` counter may be documented or omitted. Run against v1.2.5 it reports all four table divergences; against v1.2.3, twenty-four problems across both checks.
 
 ## v1.2.6, 18 Aug 2026, parameter tables that describe their own function
