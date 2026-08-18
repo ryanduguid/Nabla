@@ -307,7 +307,7 @@ MaxColsUλ = LAMBDA(
 //  Help
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →MaxColsUλ( Array)¶" &
-                            "DESCRIPTION:   →Get the minimum for each Column¶" & 
+                            "DESCRIPTION:   →Get the maximum for each Column¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
@@ -361,7 +361,7 @@ CountARowsUλ = LAMBDA(
 
 
 /*  FUNCTION NAME:  CountAColsUλ
-    DESCRIPTION:*//**Count everything in each row*/
+    DESCRIPTION:*//**Count everything in each column*/
 /*  REVISIONS:      Date        Developer       Description  
                     Feb 21 2024 Craig Hatmaker  Copyright
 */
@@ -425,7 +425,7 @@ CountRowsUλ = LAMBDA(
 
 
 /*  FUNCTION NAME:  CountColsUλ
-    DESCRIPTION:*//**Count numbers in each row*/
+    DESCRIPTION:*//**Count numbers in each column*/
 /*  REVISIONS:      Date        Developer       Description  
                     Feb 21 2024 Craig Hatmaker  Copyright
 */
@@ -434,7 +434,7 @@ CountColsUλ = LAMBDA(
     [Array],
 //  Help
     LET(Help,       TRIM(TEXTSPLIT( 
-                            "FUNCTION:      →CountColsUλ( Array,)¶" &
+                            "FUNCTION:      →CountColsUλ( Array)¶" &
                             "DESCRIPTION:   →Count numbers in each column¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
@@ -504,7 +504,7 @@ IsBetweenUλ = LAMBDA(
 
 
 /*  FUNCTION NAME:      IsInListUλ
-    DESCRIPTION:*//**Determine if a value is between a lower and upper limit*/
+    DESCRIPTION:*//**Determine whether a value is one of a list of items*/
 /*  REVISIONS:          Date        Developer       Description  
                         Jun 18 2023 Craig Hatmaker  Copyright
                         Feb 28 2024 Craig Hatmaker  Updated to new standards

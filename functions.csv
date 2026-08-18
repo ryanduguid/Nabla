@@ -4,19 +4,19 @@ nb.AboutEssentialsλ,Essentials,nabla.e.Aboutλ,AboutEssentialsλ,Displays this 
 nb.AboutFinancialλ,Financial,nabla.f.Aboutλ,AboutFinancialλ,Displays this module's repository URL and function list
 nb.AboutRatiosλ,Ratios,nabla.r.Aboutλ,AboutRatiosλ,Displays this module's repository URL and function list
 nb.AboutUtilitiesλ,Utilities,nabla.u.Aboutλ,AboutUtilitiesλ,Displays this module's repository URL and function list
-nb.Allocateλ,Financial,nabla.f.Allocateλ,"Allocateλ(Amounts, [FromInterval], [ToInterval])",→Divide one or more amounts equally across smaller periods
+nb.Allocateλ,Financial,nabla.f.Allocateλ,"Allocateλ(Amounts, [FromInterval], [ToInterval])",Divide one or more amounts equally across smaller periods
 nb.AmortiseBλ,Debt,nabla.debt.Amortiseλ,AmortiseBλ,Creates an amortisation schedule for a debt/loan
 nb.Amortiseλ,Financial,nabla.f.Amortiseλ,"Amortiseλ( Principals, APRs, Terms, StartDates, [Timeline])",Creates a corkscrew amortisation schedule
 nb.AmortiseλDV,Financial,nabla.f.AmortiseλDV,AmortiseλDV,Provides extended data validation of arguments for Amortiseλ()
-nb.AssetTurnoverRatioλ,Ratios,nabla.r.AssetTurnoverRatioλ,"AssetTurnoverRatioλ( NetSales, TotalAssets)",Measures the value of a company's sales or revenues relative to the value of its assets._x000a_(Net Sales/Total Assets)
+nb.AssetTurnoverRatioλ,Ratios,nabla.r.AssetTurnoverRatioλ,"AssetTurnoverRatioλ( NetSales, TotalAssets)",Measures the value of a company's sales or revenues relative to the value of its assets. (Net Sales/Total Assets)
 nb.AvgColsUλ,Utilities,nabla.u.AvgColsλ,AvgColsUλ( Array),Get the average for each Column
 nb.AvgColsλ,Essentials,nabla.e.AvgColsλ,AvgColsλ( Array),Get the average for each Column
 nb.AvgRowsUλ,Utilities,nabla.u.AvgRowsλ,AvgRowsUλ( Array),Get the average for each row
 nb.AvgRowsλ,Essentials,nabla.e.AvgRowsλ,AvgRowsλ( Array),Get the average for each row
-nb.BVPSλ,Ratios,nabla.r.BVPSλ,"BVPSλ( ShareholdersEquity, PreferredStock, AverageSharesOutstanding )",Book value per share ratio is an indicator of the value of a company’s stock _x000a_(Shareholders' Equity - Preferred Stock)/Average Shares Outstanding)
-nb.CAPERatioλ,Ratios,nabla.r.CAPERatioλ,"CAPERatioλ( SharePrice, TenYearAverageEarningsInflationAdjusted )",CAPE Ratio is a valuation measure that uses real earnings per share (EPS) over a 10-year period_x000a_to smooth out fluctuations in corporate profits that occur over different periods of a business_x000a_cycle (aka Shiller PE Ratio) (Share Price/Ten Year Average Earn
-nb.CashFlowMarginλ,Ratios,nabla.r.CashFlowMarginλ,"CashFlowMarginλ( CashFlowFromOperatingActivities, Revenue)",Cash Flow Margin is a trusted metric of a company’s profitability and efficiency _x000a_and its earnings quality (Cash Flow From Operating Activities/Revenue).
-nb.CashRatioλ,Ratios,nabla.r.CashRatioλ,"CashRatioλ( Cash, Liabilities)",Evaluates ability to repay short-term debt w/cash or near-cash resources _x000a_    (Cash and Cash Equivalents / Current Liabilities)
+nb.BVPSλ,Ratios,nabla.r.BVPSλ,"BVPSλ( ShareholdersEquity, PreferredStock, AverageSharesOutstanding )",Book value per share ratio is an indicator of the value of a company’s stock (Shareholders' Equity - Preferred Stock)/Average Shares Outstanding)
+nb.CAPERatioλ,Ratios,nabla.r.CAPERatioλ,"CAPERatioλ( SharePrice, TenYearAverageEarningsInflationAdjusted )",CAPE Ratio is a valuation measure that uses real earnings per share (EPS) over a 10-year period to smooth out fluctuations in corporate profits that occur over different periods of a business cycle (aka Shiller PE Ratio) (Share Price/Ten Year Average Earn
+nb.CashFlowMarginλ,Ratios,nabla.r.CashFlowMarginλ,"CashFlowMarginλ( CashFlowFromOperatingActivities, Revenue)",Cash Flow Margin is a trusted metric of a company’s profitability and efficiency and its earnings quality (Cash Flow From Operating Activities/Revenue).
+nb.CashRatioλ,Ratios,nabla.r.CashRatioλ,"CashRatioλ( Cash, Liabilities)",Evaluates ability to repay short-term debt w/cash or near-cash resources (Cash and Cash Equivalents / Current Liabilities)
 nb.CorkScrewReversalλ,Financial,nabla.f.CorkScrewReversalλ,"CorkScrewReversalλ( Opening, ReversalFlags, Flow1, [Flow2], [Flow3], [Flow4])",Create a corkscrew where the opening balance is reversed in the next period based on a timing parameter.
 nb.Corkscrewλ,Financial,nabla.f.Corkscrewλ,"Corkscrewλ( Opening, Flow1, [Flow2], [Flow3], [Flow4])",Create a corkscrew section that sums the opening balance and up to 4 independent flows.
 nb.CorkscrewλDV,Financial,nabla.f.CorkscrewλDV,CorkscrewλDV,Provides extended data validation of arguments for Depreciateλ.
@@ -25,8 +25,8 @@ nb.CountAColsλ,Essentials,nabla.e.CountAColsλ,CountAColsλ( Array ),Count ever
 nb.CountARowsUλ,Utilities,nabla.u.CountARowsλ,CountARowsUλ( Array),Count everything in each row
 nb.CountARowsλ,Essentials,nabla.e.CountARowsλ,CountARowsλ( Array),Count everything in each row
 nb.CountCUλ,Utilities,nabla.u.CountCλ,"CountCUλ( Text, Characters)",Count occurrences of character(s) in a string
-nb.CountColsUλ,Utilities,nabla.u.CountColsλ,"CountColsUλ( Array,)",Count numbers in each row
-nb.CountColsλ,Essentials,nabla.e.CountColsλ,"CountColsλ( Array,)",Count numbers in each row
+nb.CountColsUλ,Utilities,nabla.u.CountColsλ,CountColsUλ( Array),Count numbers in each row
+nb.CountColsλ,Essentials,nabla.e.CountColsλ,CountColsλ( Array),Count numbers in each row
 nb.CountCλ,Essentials,nabla.e.CountCλ,"CountCλ( Text, Characters)",Count occurrences of character(s) in a string
 nb.CountDOWλ,Dates,nabla.d.CountDOWλ,"CountDOWλ(Starts, Ends, DayOfWeek)",Count instances of a specific day of the week between two dates.
 nb.CountRowsUλ,Utilities,nabla.u.CountRowsλ,CountRowsUλ( Array),Count numbers in each row
@@ -35,24 +35,24 @@ nb.Cumulativeλ,Financial,nabla.f.Cumulativeλ,"Cumulativeλ( Totals, [OpeningBa
 nb.CurrentRatioλ,Ratios,nabla.r.CurrentRatioλ,"CurrentRatioλ( Assets, Liabilities)",Measures a company’s ability to pay short-term obligations (Current Assets/Liabilities)
 nb.DBλ,Financial,nabla.f.DBλ,"DBλ(Cost, Salvage, Life, [Months])",Fixed declining balance depreciation method for one asset or asset class.
 nb.DDBλ,Financial,nabla.f.DDBλ,"DDBλ(Cost, Salvage, Life, [Factor])",Double-declining balance depreciation method for one asset or asset class.
-nb.DPRλ,Ratios,nabla.r.DPRλ,"DPRλ( DividendsPaid, NetIncome )",Dividend Payout Ratio is the percentage of earnings paid to shareholders via dividends_x000a_    (DividendsPaid/NetIncome)
-nb.DSCRλ,Ratios,nabla.r.DSCRλ,"DSCRλ( NetOperatingIncome, TotalDebtService)",Debt service coverage Ratio measures a firm’s available cash flow to pay its _x000a_current debt obligations(Net Operating Income/Total Debt Service)
-nb.DSIλ,Ratios,nabla.r.DSIλ,"DSIλ( AverageInventory, CostOfGoodsSold)",Days Sales in Inventory Ratio (aka Average age of inventory _x000a_indicates the average time in days that a company takes to turn its inventory _x000a_(Average Inventory/ Cost of Goods Sold)
+nb.DPRλ,Ratios,nabla.r.DPRλ,"DPRλ( DividendsPaid, NetIncome )",Dividend Payout Ratio is the percentage of earnings paid to shareholders via dividends (DividendsPaid/NetIncome)
+nb.DSCRλ,Ratios,nabla.r.DSCRλ,"DSCRλ( NetOperatingIncome, TotalDebtService)",Debt service coverage Ratio measures a firm’s available cash flow to pay its current debt obligations(Net Operating Income/Total Debt Service)
+nb.DSIλ,Ratios,nabla.r.DSIλ,"DSIλ( AverageInventory, CostOfGoodsSold)",Days Sales in Inventory Ratio (aka Average age of inventory indicates the average time in days that a company takes to turn its inventory (Average Inventory/ Cost of Goods Sold)
 nb.DebtRatioλ,Ratios,nabla.r.DebtRatioλ,"DebtRatioλ( TotalDebt, TotalAssets)",Measures the extent of a company’s leverage
 nb.DebtSculptFixedλ,Debt,nabla.debt.DebtSculptFixedλ,DebtSculptFixedλ,Creates a Debt Sculpting schedule where APR and DSCR is fixed for all periods
 nb.DebtSculptVariableLRVλ,Debt,nabla.debt.DebtSculptVariableLRVλ,DebtSculptVariableLRVλ,Creates a Debt Sculpting schedule where APR and DSCR is set for each period
 nb.DebtSculptVariableλ,Debt,nabla.debt.DebtSculptVariableλ,DebtSculptVariableλ,Creates a Debt Sculpting schedule where APR and DSCR is set for each period
-nb.DebtToAssetRatioλ,Ratios,nabla.r.DebtToAssetRatioλ,"DebtToAssetRatioλ( TotalDebt, TotalAssets)",Analysts can compare one company's leverage with that of other _x000a_companies in the same industry. (Total Debt/Total Assets)
-nb.DebtToCapitalRatioλ,Ratios,nabla.r.DebtToCapitalRatioλ,"DebtToCapitalRatioλ( Debt, ShareholdersEquity)",Gives analysts and investors a better idea of a company's financial structure_x000a_and whether or not the company is a suitable investment (Debt/(Debt + Shareholders' equity)
-nb.DebtToEquityRatioλ,Ratios,nabla.r.DebtToEquityRatioλ,"DebtToEquityRatioλ( TotalLiabilities, ShareholdersEquity)",Measures the degree to which a company is financing operations_x000a_with debt rather than its own resources. (Total Liabilities/Shareholders' Equity)
-nb.Depreciateλ,Financial,nabla.f.Depreciateλ,"Depreciateλ(InitialValues, InServiceDates, LifeInYears, Timeline,","Create a block of CAPEX, Opening Balance, Depreciation Values, and Book Value for each asset"
+nb.DebtToAssetRatioλ,Ratios,nabla.r.DebtToAssetRatioλ,"DebtToAssetRatioλ( TotalDebt, TotalAssets)",Analysts can compare one company's leverage with that of other companies in the same industry. (Total Debt/Total Assets)
+nb.DebtToCapitalRatioλ,Ratios,nabla.r.DebtToCapitalRatioλ,"DebtToCapitalRatioλ( Debt, ShareholdersEquity)",Gives analysts and investors a better idea of a company's financial structure and whether or not the company is a suitable investment (Debt/(Debt + Shareholders' equity)
+nb.DebtToEquityRatioλ,Ratios,nabla.r.DebtToEquityRatioλ,"DebtToEquityRatioλ( TotalLiabilities, ShareholdersEquity)",Measures the degree to which a company is financing operations with debt rather than its own resources. (Total Liabilities/Shareholders' Equity)
+nb.Depreciateλ,Financial,nabla.f.Depreciateλ,"Depreciateλ(InitialValues, InServiceDates, LifeInYears, Timeline, [SalvageValues], [DisposalDates], [DisposalCosts], [Methods], [Factors])","Create a block of CAPEX, Opening Balance, Depreciation Values, and Book Value for each asset"
 nb.DepreciateλDV,Financial,nabla.f.DepreciateλDV,DepreciateλDV,Provides extended data validation of arguments for Depreciateλ
 nb.DiminishingValueλ,Financial,nabla.f.DiminishingValueλ,"DiminishingValueλ(Cost, Life)","Diminishing-balance depreciation schedule at 200% of the straight-line rate, writing the residual off in the final period. A modelling schedule, not a tax calculation."
-nb.DividendYieldRatioλ,Ratios,nabla.r.DividendYieldRatioλ,"DividendYieldRatioλ( AnnualDividendsPerShare, SharePrice)",Dividend yield ratio shows how much a company pays out in dividends _x000a_each year relative to its stock price (Annual Dividends Pe rShare/Share Price)
+nb.DividendYieldRatioλ,Ratios,nabla.r.DividendYieldRatioλ,"DividendYieldRatioλ( AnnualDividendsPerShare, SharePrice)",Dividend yield ratio shows how much a company pays out in dividends each year relative to its stock price (Annual Dividends Pe rShare/Share Price)
 nb.EBITDAMarginλ,Ratios,nabla.r.EBITDAMarginλ,"EBITDAMarginλ( EBITDA, TotalRevenue)",Measures a company's operating profit as a percentage of its revenue (EBITDA/Total Revenue).
-nb.EPSλ,Ratios,nabla.r.EPSλ,"EPSλ( NetIncome, PreferredDividends, EndOfPeriodCommonSharesOutstanding)",Earnings per share measures profitability indicating how much profit each _x000a_outstanding share of common stock has earned _x000a_    (Net Income - Preferred Dividends)/End Of Period Common Shares Outstanding)
-nb.EquityMultiplierλ,Ratios,nabla.r.EquityMultiplierλ,"EquityMultiplierλ( TotalAssets, TotalShareholdersEquity)",Measures the portion of a company’s assets financed by shareholders'_x000a_equity rather than by debt (TotalAssets/TotalShareholdersEquity)
-nb.EquityRatioλ,Ratios,nabla.r.EquityRatioλ,"EquityRatioλ( ShareholdersEquity, TotalAssets, IntangibleAssets)",Measures the long-term solvency of a company by comparing its shareholders’ equity to its _x000a_total assets (Shareholder's Equity/(Total Assets - Intangible Assets)).
+nb.EPSλ,Ratios,nabla.r.EPSλ,"EPSλ( NetIncome, PreferredDividends, EndOfPeriodCommonSharesOutstanding)",Earnings per share measures profitability indicating how much profit each outstanding share of common stock has earned (Net Income - Preferred Dividends)/End Of Period Common Shares Outstanding)
+nb.EquityMultiplierλ,Ratios,nabla.r.EquityMultiplierλ,"EquityMultiplierλ( TotalAssets, TotalShareholdersEquity)",Measures the portion of a company’s assets financed by shareholders' equity rather than by debt (TotalAssets/TotalShareholdersEquity)
+nb.EquityRatioλ,Ratios,nabla.r.EquityRatioλ,"EquityRatioλ( ShareholdersEquity, TotalAssets, IntangibleAssets)",Measures the long-term solvency of a company by comparing its shareholders’ equity to its total assets (Shareholder's Equity/(Total Assets - Intangible Assets)).
 nb.FilterContainsλ,Financial,nabla.f.FilterContainsλ,"FilterContainsλ( ArrayToFilter, FilterByArray, FilterByText, [IgnoreCase?] )",Filter an array by another array that contains specific text
 nb.FinancialYearλ,Dates,nabla.d.FinancialYearλ,"FinancialYearλ(Dates, [StartMonth])","Labels dates with their Australian financial year, which starts on 1 July."
 nb.GSTAddλ,Financial,nabla.f.GSTAddλ,"GSTAddλ(Amounts, [Rate])",Adds GST to one or more GST-exclusive amounts.
@@ -60,9 +60,9 @@ nb.GSTExtractλ,Financial,nabla.f.GSTExtractλ,"GSTExtractλ(Amounts, [Rate])",R
 nb.GrossMarginλ,Ratios,nabla.r.GrossMarginλ,"GrossMarginλ( GrossProfit, NetSales)",Shows how much profit a company makes after paying off its Cost of Goods Sold
 nb.IRRλ,Financial,nabla.f.IRRλ,"IRRλ( Values, Dates)","Calculates IRR, correcting for when the first investment is not in the first period"
 nb.IntOnIntλ,Financial,nabla.f.IntOnIntλ,"IntOnIntλ( Principal, Rate)",Calculate Interest on Interest. Use to determine amount needed to cover debt plus interest on debt
-nb.InterestCoverageRatioλ,Ratios,nabla.r.InterestCoverageRatioλ,"InterestCoverageRatioλ( OperatingIncome, InterestExpenses)",Determines how easily a company can pay interest on its outstanding debt_x000a_(Operating Income/Interest Expenses)
+nb.InterestCoverageRatioλ,Ratios,nabla.r.InterestCoverageRatioλ,"InterestCoverageRatioλ( OperatingIncome, InterestExpenses)",Determines how easily a company can pay interest on its outstanding debt (Operating Income/Interest Expenses)
 nb.InterestLRVλ,Debt,nabla.debt.InterestLRVλ,InterestLRVλ,Calculates debt sculpting interest using method presented by Lance Rubin
-nb.InventoryTurnoverRatioλ,Ratios,nabla.r.InventoryTurnoverRatioλ,"InventoryTurnoverRatioλ( CostOfGoodsSold, AverageInventory)",Shows how many times a company turned over its inventory relative _x000a_    to its cost of goods sold (COGS) (COGS/Average Inventory)
+nb.InventoryTurnoverRatioλ,Ratios,nabla.r.InventoryTurnoverRatioλ,"InventoryTurnoverRatioλ( CostOfGoodsSold, AverageInventory)",Shows how many times a company turned over its inventory relative to its cost of goods sold (COGS) (COGS/Average Inventory)
 nb.IsBetweenEλ,Essentials,nabla.e.IsBetweenλ,"IsBetweenEλ( Value, Low, Hi, [Inclusive])",Determine if a value is between a lower and upper limit
 nb.IsBetweenUλ,Utilities,nabla.u.IsBetweenλ,"IsBetweenUλ( Value, Low, Hi, [Inclusive])",Determine if a value is between a lower and upper limit
 nb.IsBetweenλ,Dates,nabla.d.IsBetweenλ,"IsBetweenλ(Values, Low, High, [Inclusive])",Determine if a value is between a lower and upper limit
@@ -80,31 +80,31 @@ nb.MinColsλ,Essentials,nabla.e.MinColsλ,MinColsλ( Array),Get the minimum for 
 nb.MinRowsUλ,Utilities,nabla.u.MinRowsλ,MinRowsUλ( Array),Get the minimum for each row
 nb.MinRowsλ,Essentials,nabla.e.MinRowsλ,MinRowsλ( Array),Get the minimum for each row
 nb.Movementλ,Financial,nabla.f.Movementλ,"Movementλ( [BeginningValues], Values)",Create a row of differences from column to column
-nb.NetProfitMarginλ,Ratios,nabla.r.NetProfitMarginλ,"NetProfitMarginλ( NetIncome, Revenue)",Measures how much net income or profit a company generates as a percentage of its revenue. _x000a_(Net Income/Revenue).
+nb.NetProfitMarginλ,Ratios,nabla.r.NetProfitMarginλ,"NetProfitMarginλ( NetIncome, Revenue)",Measures how much net income or profit a company generates as a percentage of its revenue. (Net Income/Revenue).
 nb.OperatingCashFlowRatioλ,Ratios,nabla.r.OperatingCashFlowRatioλ,"OperatingCashFlowRatioλ( OperatingCashFlow, Liabilities)",Measures a company’s ability to pay short-term obligations
-nb.OperatingMarginλ,Ratios,nabla.r.OperatingMarginλ,"OperatingMarginλ( OperatingEarnings, Revenue)","Measures how much profit a company makes on a dollar of sales after paying for variable costs _x000a_of production, such as wages and raw materials, but before paying interest or tax (Operating Earnings/Revenue)."
-nb.OperatingRatioλ,Ratios,nabla.r.OperatingRatioλ,"OperatingRatioλ( OperatingExpenses, CostOfGoodsSold, NetSales)",Shows how efficient management is at keeping costs low while generating revenue _x000a_(Operating Expenses + Cost Of Goods Sold)/Net Sales)
+nb.OperatingMarginλ,Ratios,nabla.r.OperatingMarginλ,"OperatingMarginλ( OperatingEarnings, Revenue)","Measures how much profit a company makes on a dollar of sales after paying for variable costs of production, such as wages and raw materials, but before paying interest or tax (Operating Earnings/Revenue)."
+nb.OperatingRatioλ,Ratios,nabla.r.OperatingRatioλ,"OperatingRatioλ( OperatingExpenses, CostOfGoodsSold, NetSales)",Shows how efficient management is at keeping costs low while generating revenue (Operating Expenses + Cost Of Goods Sold)/Net Sales)
 nb.OverLapDaysλ,Dates,nabla.d.OverLapDaysλ,"OverLapDaysλ(Period1Start, Period1End, Period2Start, Period2End)",Return how many days overlap two period ranges.
 nb.PeriodDiffλ,Financial,nabla.f.PeriodDiffλ,"PeriodDiffλ(StartDate, EndDate, Interval)",Determine the number of periods between two dates.
 nb.PeriodLabelλ,Dates,nabla.d.PeriodLabelλ,"PeriodLabelλ(Date, [Interval])",Creates a label for a date based on period interval
 nb.PeriodStartλ,Financial,nabla.f.PeriodStartλ,"PeriodStartλ(AnyPeriodStart, MonthsPerPeriod, DateOfInterest)",Determine when the period containing a date of interest starts
 nb.Periodsλ,Dates,nabla.d.Periodsλ,"Periodsλ(Starts, Ends, [Intervals])","Determine the number of periods from Starts to Date2 in Days, Weeks, Months, Quarters, or Years."
 nb.PretaxMarginλ,Ratios,nabla.r.PretaxMarginλ,"PretaxMarginλ( PretaxEarnings, Revenue)",Measures the operating efficiency of a company (Pretax Earnings/Revenue).
-nb.PriceEarningsRatioλ,Ratios,nabla.r.PriceEarningsRatioλ,"PriceEarningsRatioλ( SharePrice, EarningsPerShare)",Price-earnings Ratio measures a company's share price relative to _x000a_its earnings per share (Share Price/Earnings Per Share).
-nb.PriceToBookRatioλ,Ratios,nabla.r.PriceToBookRatioλ,"PriceToBookRatioλ( MarketPricePerShare, BookValuePerShare)",Many investors use the price-to-book ratio (P/B ratio) to compare a firm's market _x000a_capitalisation to its book value and locate undervalued companies.
-nb.PriceToCashRatioλ,Ratios,nabla.r.PriceToCashRatioλ,"PriceToCashRatioλ( MarketPricePerShare, OperatingCashFlowPerShare)",Price to Cash (P/CF) Ratio is a stock valuation indicator or multiple that measures _x000a_the value of a stock’s price relative to its operating cash flow per share _x000a_(Market Price Per Share/Operating Cash Flow Per Share).
-nb.PriceToSalesRatioλ,Ratios,nabla.r.PriceToSalesRatioλ,"PriceToSalesRatioλ( MarketPricePerShare, SalesPerShare)",Price to Sales (P/S) Ratio is an indicator of the value that financial markets have _x000a_placed on each dollar of a company's sales or revenues (Market Price Per Share/Sales Per Share).
+nb.PriceEarningsRatioλ,Ratios,nabla.r.PriceEarningsRatioλ,"PriceEarningsRatioλ( SharePrice, EarningsPerShare)",Price-earnings Ratio measures a company's share price relative to its earnings per share (Share Price/Earnings Per Share).
+nb.PriceToBookRatioλ,Ratios,nabla.r.PriceToBookRatioλ,"PriceToBookRatioλ( MarketPricePerShare, BookValuePerShare)",Many investors use the price-to-book ratio (P/B ratio) to compare a firm's market capitalisation to its book value and locate undervalued companies.
+nb.PriceToCashRatioλ,Ratios,nabla.r.PriceToCashRatioλ,"PriceToCashRatioλ( MarketPricePerShare, OperatingCashFlowPerShare)",Price to Cash (P/CF) Ratio is a stock valuation indicator or multiple that measures the value of a stock’s price relative to its operating cash flow per share (Market Price Per Share/Operating Cash Flow Per Share).
+nb.PriceToSalesRatioλ,Ratios,nabla.r.PriceToSalesRatioλ,"PriceToSalesRatioλ( MarketPricePerShare, SalesPerShare)",Price to Sales (P/S) Ratio is an indicator of the value that financial markets have placed on each dollar of a company's sales or revenues (Market Price Per Share/Sales Per Share).
 nb.PrimeCostλ,Financial,nabla.f.PrimeCostλ,"PrimeCostλ(Cost, Life)","Straight-line depreciation schedule for one asset or asset class, in whole years. A modelling schedule, not a tax calculation."
 nb.QuickRatioλ,Ratios,nabla.r.QuickRatioλ,"QuickRatioλ( QuickAssets, Liabilities)",Measures ability to meet short-term obligations (Quick Assets/Current Liabilities)
-nb.ROAλ,Ratios,nabla.r.ROAλ,"ROAλ( NetIncome, TotalAssets)",Return on assets (ROA) ratio indicates how profitable a company is _x000a_in relation to its total assets ( Net Income / Total Assets)
+nb.ROAλ,Ratios,nabla.r.ROAλ,"ROAλ( NetIncome, TotalAssets)",Return on assets (ROA) ratio indicates how profitable a company is in relation to its total assets ( Net Income / Total Assets)
 nb.ROEλ,Ratios,nabla.r.ROEλ,"ROEλ( NetIncome, ShareholdersEquity)",Return on equity (ROE) ratio is a measure of financial performance (Net Income/Shareholders Equity)
-nb.ROICλ,Ratios,nabla.r.ROICλ,"ROICλ( NetOperatingProfitAfterTax, InvestedCapital)",Return on Invested capital  assesses a company’s efficiency in allocating _x000a_capital to profitable investments (Net Operating Profit After Tax/Invested Capital)
-nb.ROIλ,Ratios,nabla.r.ROIλ,"ROIλ( NetReturnonInvestment, CostofInvestment)",Return on Investment (ROI) ratio  measures the profitability of an investment by comparing _x000a_the gain or loss to its cost (Net Return on Investment/Cost of Investment).
+nb.ROICλ,Ratios,nabla.r.ROICλ,"ROICλ( NetOperatingProfitAfterTax, InvestedCapital)",Return on Invested capital assesses a company’s efficiency in allocating capital to profitable investments (Net Operating Profit After Tax/Invested Capital)
+nb.ROIλ,Ratios,nabla.r.ROIλ,"ROIλ( NetReturnonInvestment, CostofInvestment)",Return on Investment (ROI) ratio measures the profitability of an investment by comparing the gain or loss to its cost (Net Return on Investment/Cost of Investment).
 nb.RangeToDAEλ,Essentials,nabla.e.RangeToDAλ,"RangeToDAEλ(Range, [Rows], [Columns])",Convert a range reference to a dynamic array reference
 nb.RangeToDAUλ,Utilities,nabla.u.RangeToDAλ,"RangeToDAUλ(Range, [Rows], [Columns])",Convert a range reference to a dynamic array reference
 nb.RangeToDAλ,Financial,nabla.f.RangeToDAλ,"RangeToDAλ( Cell, [Rows], [Columns])",Create a dynamic array from a static range
-nb.ReceivablesTurnoverRatioλ,Ratios,nabla.r.ReceivablesTurnoverRatioλ,"ReceivablesTurnoverRatioλ( NetCreditSales, AverageAccountsReceivable)",Indicates effectiveness in collecting outstanding balances from clients and _x000a_managing line of credit process (Net Credit Sales/Average Accounts Receivable)
-nb.RetentionRatioλ,Ratios,nabla.r.RetentionRatioλ,"RetentionRatioλ( RetainedEarnings, NetIncome )",Retention Ratio is the proportion of earnings kept back in the _x000a_business as retained earnings (Retained Earnings/Net Income).
+nb.ReceivablesTurnoverRatioλ,Ratios,nabla.r.ReceivablesTurnoverRatioλ,"ReceivablesTurnoverRatioλ( NetCreditSales, AverageAccountsReceivable)",Indicates effectiveness in collecting outstanding balances from clients and managing line of credit process (Net Credit Sales/Average Accounts Receivable)
+nb.RetentionRatioλ,Ratios,nabla.r.RetentionRatioλ,"RetentionRatioλ( RetainedEarnings, NetIncome )",Retention Ratio is the proportion of earnings kept back in the business as retained earnings (Retained Earnings/Net Income).
 nb.Reversalλ,Financial,nabla.f.Reversalλ,"Reversalλ( [OpeningValue], RowToReverse)",Create a row that reverses input values in the next period.
 nb.RollingAvgλ,Financial,nabla.f.RollingAvgλ,"RollingAvgλ( Values, Size)",Creates Averages for preceding values of a set size moving from beginning to end over a row of values.
 nb.RollingMaxλ,Financial,nabla.f.RollingMaxλ,"RollingMaxλ( Values, Size)",Creates the maximum for preceding values of a set size moving from beginning to end over a row of values.
@@ -119,7 +119,7 @@ nb.ScheduleValuesλ,Dates,nabla.d.ScheduleValuesλ,"ScheduleValuesλ(PeriodStart
 nb.SumAmortiseλ,Financial,nabla.f.SumAmortiseλ,SumAmortiseλ(AmortisationSchedule),Create row totals for Amortiseλ
 nb.SumColsUλ,Utilities,nabla.u.SumColsλ,SumColsUλ( Array),Get the total for each Column
 nb.SumColsλ,Essentials,nabla.e.SumColsλ,SumColsλ( Array),Get the total for each Column
-nb.SumContainsλ,Financial,nabla.f.SumContainsλ,"SumContainsλ(ValuesToFilter, ValueLabels, FilterByText, [IgnoreCase?])","→Creates a row of totals for each row in an array where _x000a_its labels contain a letter, word, or phrase"
+nb.SumContainsλ,Financial,nabla.f.SumContainsλ,"SumContainsλ(ValuesToFilter, ValueLabels, FilterByText, [IgnoreCase?])","Creates a row of totals for each row in an array where its labels contain a letter, word, or phrase"
 nb.SumDepreciateλ,Financial,nabla.f.SumDepreciateλ,SumDepreciateλ(DepreciationSchedule),Create row totals for Depreciateλ
 nb.SumPeriodsλ,Financial,nabla.f.SumPeriodsλ,"SumPeriodsλ( Values, Dates, PeriodStarts)",Groups and totals all columns in a Values array by period resulting in one column for each period
 nb.SumRowsUλ,Utilities,nabla.u.SumRowsλ,SumRowsUλ( Array),Get the total for each row
@@ -128,4 +128,4 @@ nb.TimelineOffsetλ,Financial,nabla.f.TimelineOffsetλ,"TimelineOffsetλ(Date, T
 nb.TimelinePositionλ,Financial,nabla.f.TimelinePositionλ,"TimelinePositionλ(Array, Timeline, Offset)",Crops an array based on a model's timeline
 nb.Timelineλ,Dates,nabla.d.Timelineλ,"Timelineλ(StartDate, Periods, Interval, PeriodStarts?)",Create a horizontal list of period dates
 nb.VDBλ,Financial,nabla.f.VDBλ,"VDBλ(Cost, Salvage, Life, [Factor], [No_Switch])",Variable declining balance depreciation method for one asset or asset class.
-nb.WorkingCapitalTurnoverRatioλ,Ratios,nabla.r.WorkingCapitalTurnoverRatioλ,"WorkingCapitalTurnoverRatioλ( NetAnnualSales, WorkingCapital)",Working Capital Turnover Ratio measures how efficiently a company is using its working _x000a_capital to support sales and growth (Net Annual Sales/Average Working Capital).
+nb.WorkingCapitalTurnoverRatioλ,Ratios,nabla.r.WorkingCapitalTurnoverRatioλ,"WorkingCapitalTurnoverRatioλ( NetAnnualSales, WorkingCapital)",Working Capital Turnover Ratio measures how efficiently a company is using its working capital to support sales and growth (Net Annual Sales/Average Working Capital).

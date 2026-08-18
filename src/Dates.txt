@@ -577,7 +577,7 @@ ScheduleRatesByItemsλ = LAMBDA(
         Item,           INDEX( ItemFilter, DoNotUse),
         ItemDates,      FILTER( CvtEffDates, ItemList = Item), 
         ItemRates,      FILTER( RateList, ItemList = Item), 
-        NewRow,         XLOOKUP( PeriodEnds, ItemDates, ItemRates, 0, -1),
+        NewRow,         XLOOKUP( CvtPrdEnds, ItemDates, ItemRates, 0, -1),
         Result,         IF( DoNotUse >= Counts, 
                             NewRow, 
                             VSTACK( 
@@ -719,7 +719,7 @@ ScheduleValuesByItemsλ = LAMBDA(
         Item,           INDEX( ItemFilter, Counter),
         ItemDates,      FILTER( CvtEffDates, ItemList = Item), 
         ItemValues,     FILTER( ValueList, ItemList = Item), 
-        Array,          (ItemDates >= PeriodStarts) * (ItemDates <= PeriodEnds) * ItemValues,
+        Array,          (ItemDates >= CvtPrdStarts) * (ItemDates <= CvtPrdEnds) * ItemValues,
         NewRow,         BYCOL( Array, LAMBDA( Column, SUM( Column))),
         Result,         IF( Counter >= Counts, 
                             NewRow, 

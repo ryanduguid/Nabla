@@ -24,6 +24,10 @@ WORKBOOK = sys.argv[1] if len(sys.argv) > 1 else "nabla.xlsx"
 BANNED = re.compile(
     r"BX[DEFRLU]\.|BXLDebt|\bBXL\b|nabla\.[a-z]+\.|beyondexcel|Eloquens|dropbox|Leonardo"
     r"|Starter Pack|Calibri|MACRS|Modified Accelerated|US GAAP|IRS Depreciation"
+    # Excel stamps x15ac:absPath with the directory the file was last saved from, so
+    # every release up to v2.2.0 published a path off the build machine. On a machine
+    # whose account is not named "-" that path carries the account name with it.
+    r"|x15ac:absPath|[A-Za-z]:\\\\Users\\\\|/Users/|/home/"
 )
 SHEET_RE = re.compile(r"xl/worksheets/sheet\d+\.xml$")
 TOKEN_RE = re.compile(r"nb\.[A-Za-z0-9_]+λ?(?:DV)?")
@@ -133,6 +137,20 @@ def main():
         fail("neither fullCalcOnLoad nor a calculation chain: this workbook would open "
              "showing cached values nothing has refreshed. Run tools/refresh_cache.py, or "
              "set fullCalcOnLoad")
+
+    # docProps/app.xml repeats the sheet list, and nothing regenerates it: the build added
+    # the Australian tax worksheet to five places and not to this one, so the part disagreed
+    # with the workbook until Excel rewrote it. A reader's file properties dialogue and any
+    # tool that trusts app.xml sees this list, not the real one.
+    if "docProps/app.xml" in parts:
+        app = z.read("docProps/app.xml").decode("utf-8")
+        titles = re.search(r"<TitlesOfParts>(.*?)</TitlesOfParts>", app, re.S)
+        listed = re.findall(r"<vt:lpstr>([^<]*)</vt:lpstr>", titles.group(1) if titles else "")
+        sheets = re.findall(r'<sheet name="([^"]+)"', workbook)
+        if listed[:len(sheets)] != sheets:
+            fail("docProps/app.xml lists %d sheet titles that do not match the workbook's %d, "
+                 "first difference at %r" % (len(listed), len(sheets),
+                 next((a for a, b in zip(listed, sheets) if a != b), "the end")))
 
     # [MS-XLSX] requires each slicer cache to have a #N/A defined name of the same name.
     for part in parts:

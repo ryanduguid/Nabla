@@ -65,6 +65,14 @@ def cached_values(path):
         for si in re.findall(r"<si>(.*?)</si>", z.read("xl/sharedStrings.xml").decode("utf-8"), re.S):
             shared.append(html.unescape(re.sub(r"<.*?>", "", si)))
 
+    # Excel's Worksheets collection skips chart sheets while workbook.xml lists them, so a
+    # chart sheet would shift every position after it and compare two different sheets
+    # against each other without saying so. There are none today; stop if that changes.
+    charts = [n for n, t in order if "/worksheets/" not in ("/" + t.lstrip("/"))]
+    if charts:
+        raise SystemExit("FAIL: %s are not worksheets, so tab position no longer lines up "
+                         "with Excel's Worksheets collection" % ", ".join(charts))
+
     out, names = {}, {}
     for pos, (name, target) in enumerate(order, start=1):
         names[pos] = name
@@ -147,6 +155,15 @@ def main():
     cached, names = cached_values(WORKBOOK)
     both = sorted(set(cached) & set(live))
     stale = [(k, cached[k], live[k]) for k in both if not agree(cached[k], live[k])]
+
+    # A floor on the total is not enough on its own: one sheet dropping out of the dump
+    # would still leave twenty thousand comparisons and look like a pass. Every sheet that
+    # holds cached values has to contribute some.
+    silent = sorted({names[k[0]] for k in cached} - {names[k[0]] for k in both})
+    if silent:
+        print("FAIL: %d sheet(s) carry cached values that were never compared: %s"
+              % (len(silent), ", ".join(silent[:8])))
+        return 1
 
     if len(both) < FLOOR:
         print("FAIL: only %d cells carried both a cached and a calculated value, under the "

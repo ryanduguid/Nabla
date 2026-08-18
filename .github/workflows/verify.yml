@@ -6,6 +6,15 @@ on:
   pull_request:
   workflow_dispatch:
 
+# A push that supersedes an earlier one cancels it rather than paying for both.
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+# The gates only read files. Nothing here needs write access to the repository.
+permissions:
+  contents: read
+
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -14,7 +23,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install openpyxl
       - name: Check workbook integrity
         run: python tools/verify_workbook.py nabla.xlsx
       - name: Check src/ reproduces the shipped functions

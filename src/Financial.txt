@@ -620,7 +620,7 @@ RollingSumλ = LAMBDA(
 
 
 
-/*  FUNCTION NAME:  →SumContainsλ
+/*  FUNCTION NAME:  SumContainsλ
     DESCRIPTION:*//**→Creates a row of totals for each row in an array where 
 its labels contain a letter, word, or phrase*/
 /*  REVISIONS:      Date        Developer       Description  

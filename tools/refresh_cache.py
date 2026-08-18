@@ -42,6 +42,26 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CELL_TAG = re.compile(r"<c\b(?:(?!</c>|<c\b).)*?</c>|<c\b[^>]*/>", re.S)
 
 
+ABS_PATH_BLOCK = re.compile(
+    r"<mc:AlternateContent[^>]*>\s*<mc:Choice Requires=\"x15\">\s*"
+    r"<x15ac:absPath[^>]*/>\s*</mc:Choice>\s*</mc:AlternateContent>", re.S)
+ABS_PATH = re.compile(r"<x15ac:absPath[^>]*/>")
+
+
+def strip_local_path(text):
+    """Remove the directory Excel stamps on the workbook every time it saves.
+
+    x15ac:absPath records where the file sat when it was last written, which is a fact
+    about the build machine and nothing to do with the library. Every release up to v2.2.0
+    published one, and on a machine whose account is not named "-" it carries the account
+    name with it. The whole mc:AlternateContent wrapper goes when the path is all it holds.
+    """
+    out, n = ABS_PATH_BLOCK.subn("", text)
+    if not n:
+        out, n = ABS_PATH.subn("", text)
+    return out, n
+
+
 def tidy(text):
     """Clear always-calculate flags Excel put back on cells that are not volatile."""
     cleared = [0]
@@ -88,6 +108,9 @@ def main():
                 parts[name] = text.encode("utf-8")
                 cleared += n
 
+    book, stripped = strip_local_path(parts["xl/workbook.xml"].decode("utf-8"))
+    parts["xl/workbook.xml"] = book.encode("utf-8")
+
     tmp = WORKBOOK + ".tmp"
     with zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as zout:
         for name, blob in parts.items():
@@ -95,8 +118,10 @@ def main():
     shutil.move(tmp, WORKBOOK)
 
     forced = 'fullCalcOnLoad="1"' in parts["xl/workbook.xml"].decode("utf-8")
-    print("cleared %d always-calculate flag(s) Excel put back; fullCalcOnLoad is %s"
-          % (cleared, "still set" if forced else "off, which is what a refreshed file wants"))
+    print("cleared %d always-calculate flag(s) Excel put back and %d local build path(s); "
+          "fullCalcOnLoad is %s"
+          % (cleared, stripped,
+             "still set" if forced else "off, which is what a refreshed file wants"))
     print("OK: %s holds the values its own formulas produce" % WORKBOOK)
     return 0
 

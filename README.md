@@ -118,7 +118,7 @@ Six gates, because they answer different questions. Four run in CI; the two that
 python tools/verify_workbook.py nabla.xlsx
 ```
 
-Structure: XML well-formedness, undefined names, `#REF!`, volatile functions, stray always-calculate flags, slicer-cache bindings, and tokens that must never reappear. Runs in CI on every push.
+Structure: XML well-formedness, undefined names, `#REF!`, volatile functions, stray always-calculate flags, slicer-cache bindings, the file-properties sheet list against the real one, and tokens that must never reappear. That last list now includes anything describing the machine that built the release: Excel stamps the workbook with the directory it was last saved from, so every release up to v2.2.0 published a path off the build machine. Runs in CI on every push.
 
 ```bash
 python tools/verify_sources.py nabla.xlsx src
@@ -130,7 +130,7 @@ Provenance: every function in `src/` must match the defined name that ships, and
 python tools/verify_signatures.py src
 ```
 
-Documentation: every function states its parameters twice, once as the signature on its help's FUNCTION line and again as a table below it, and ends with worked examples a reader is meant to copy. All three are hand-written text inside a string literal, so nothing else in the build ever reads them and they drift separately: one function's table described a different function's arguments for six releases, and three worked examples called a neighbouring function rather than the one they were printed under. It reads 117 signatures, 122 parameter tables and 76 example blocks, checks that every function named in a help is one the library declares, accounts for every declaration in every module, and refuses to pass if it parsed too few. Also runs in CI.
+Documentation: every function states its parameters twice, once as the signature on its help's FUNCTION line and again as a table below it, and ends with worked examples a reader is meant to copy. All three are hand-written text inside a string literal, so nothing else in the build ever reads them and they drift separately: one function's table described a different function's arguments for six releases, and three worked examples called a neighbouring function rather than the one they were printed under. It reads 117 signatures, 122 parameter tables and 119 example blocks, checks that every function named in a help is one the library declares, accounts for every declaration in every module, and refuses to pass if it parsed too few. Also runs in CI.
 
 ```bash
 python tools/verify_previous_names.py functions.csv
