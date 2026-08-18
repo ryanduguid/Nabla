@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## v1.2.4, 18 Aug 2026, help you can read
+
+### `IsInListλ` built its help sideways
+
+`TEXTSPLIT` takes the text, then a column delimiter, then an optional row delimiter. This one supplied a single delimiter: the arrow that should have separated the two columns was left concatenated onto the end of the text, and the pilcrow that should have ended each row became the column delimiter. Calling `nabla.e.IsInListλ()` for help therefore returned one row of eleven columns and spilled sideways across the sheet instead of down it, with each label and its explanation run together in a single cell. The other 125 functions that build help this way supply both delimiters; these two were the only ones that did not. Both copies now do, and their help returns the 11-row, 2-column table it was always written to be, read back out of Excel to confirm it.
 
 ### Help that describes its own parameters
 

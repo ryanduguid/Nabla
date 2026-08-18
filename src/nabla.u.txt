@@ -525,7 +525,7 @@ IsInListλ = LAMBDA(
                             "Result         →Formula¶" &
                             "FALSE          →=IsInListλ(1, {2,3,4})¶" & 
                             "TRUE           →=IsInListλ(1, {1,3,5})¶" & 
-                            "→", "¶"
+                            "→", "→", "¶"
                             )
                         ),
     //  Check inputs - Omitted required arguments

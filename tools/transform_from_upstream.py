@@ -672,15 +672,26 @@ for _mod, _fn, _old, _new in HELP_SIGNATURES:
     assert _blk.count(_old) == 1, (_fn, _mod, "source", _blk.count(_old))
     mods[_mod]["text"] = _text[:_a] + _blk.replace(_old, _new) + _text[_b:]
 
+# IsInListλ also builds its help wrong. TEXTSPLIT takes the text, then a column
+# delimiter, then an optional row delimiter, and this call supplies only one: the
+# arrow that should separate the two columns was left concatenated onto the end of
+# the text, and the pilcrow that should end each row became the column delimiter. The
+# help therefore returns a single 11-column row instead of an 11-row table, and spills
+# sideways across the sheet. The other 125 functions supply both. Restore the column
+# delimiter; the trailing arrow stays, as the empty last row it was meant to be.
+TEXTSPLIT_ARGS = ('"→", "¶"', '"→", "→", "¶"')
+
 for _mod in ISINLIST:
     _a, _b = function_block(_mod, "IsInListλ")
     _text = mods[_mod]["text"]
     _blk, _n = re.subn(r"\bLIST\b", "List", _text[_a:_b])
     assert _n == 2, (_mod, "source", _n)      # the declaration and one of two references
-    mods[_mod]["text"] = _text[:_a] + _blk + _text[_b:]
+    _old, _new = TEXTSPLIT_ARGS
+    assert _blk.count(_old) == 1, (_mod, "source", "TEXTSPLIT", _blk.count(_old))
+    mods[_mod]["text"] = _text[:_a] + _blk.replace(_old, _new) + _text[_b:]
 
-print("corrected %d help signatures in the module sources, renamed IsInListλ's LIST parameter"
-      % len(HELP_SIGNATURES))
+print("corrected %d help signatures in the module sources, renamed IsInListλ's LIST "
+      "parameter and restored its help's column delimiter" % len(HELP_SIGNATURES))
 
 # fix upstream copy-paste bug: the u module's About suggested "nabla.e" (was BXE) as its own name
 assert "Suggested module name: nabla.e" in mods["nabla.u"]["text"]
@@ -763,14 +774,17 @@ for _mod in ISINLIST:
             return m.group(0)
         body, n = re.subn(r"(_xl(?:op|pm)\.)LIST\b", lambda k: k.group(1) + "List", m.group(2))
         _hit.append(n)
-        return m.group(0).replace(m.group(2), body)
+        # and its missing column delimiter, stored the same way it is written
+        _old, _new = TEXTSPLIT_ARGS
+        assert body.count(_old) == 1, (_mod, "defined name", "TEXTSPLIT", body.count(_old))
+        return m.group(0).replace(m.group(2), body.replace(_old, _new))
 
     _wbx = re.sub(r'<definedName name="([^"]+)"[^>]*>(.*?)</definedName>', _rename, _wbx, flags=re.S)
     assert _hit == [3], (_mod, "defined name", _hit)   # one declaration, two references
     _renamed += _hit[0]
 put("xl/workbook.xml", _wbx)
-print("corrected %d help signatures in the defined names, renamed %d LIST tokens"
-      % (len(HELP_SIGNATURES), _renamed))
+print("corrected %d help signatures in the defined names, renamed %d LIST tokens, "
+      "restored 2 column delimiters" % (len(HELP_SIGNATURES), _renamed))
 
 # Several of these functions are demonstrated on a sheet that calls them with no
 # arguments, so their help is spilled there and the old text sits in the file as a
