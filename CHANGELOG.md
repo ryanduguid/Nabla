@@ -1,6 +1,21 @@
 # Changelog
 
-## Unreleased
+## v2.3.0, 19 August 2026, a file that agrees with itself
+
+Two things this release does that no earlier one could. The workbook now holds the numbers
+its own formulas produce, rather than whatever the build last left in it: 3,193 cached
+cells across 43 of the 50 sheets were stale, and Excel hid every one of them by
+recalculating on open. And it no longer carries a path off the machine that built it,
+which every release since v1.2.0 has published.
+
+The rest came from a full audit: thirteen readers across the build, the gates, the
+workbook, the LAMBDA sources, the prose and the CI, each finding put to a second pass that
+tried to refute it. Two functions were comparing a raw date against a converted one, a
+worked example called a different function, `functions.csv` disagreed with the workbook it
+is generated from, and nine comment banners named or described the wrong function.
+
+Two gates are new or widened as a result, and one stopped asking for something that is no
+longer true.
 
 - **Every release since v1.2.0 published a path off the build machine.** Excel stamps
   `xl/workbook.xml` with the directory a file was last saved from, so `nabla.xlsx` carried
