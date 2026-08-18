@@ -92,7 +92,7 @@ Each module has its own tab colour, gridlines are hidden, and every sheet opens 
 
 ## Checks
 
-Three gates, because they answer different questions.
+Four gates, because they answer different questions.
 
 ```bash
 python tools/verify_workbook.py nabla.xlsx
@@ -105,6 +105,12 @@ python tools/verify_sources.py nabla.xlsx src
 ```
 
 Provenance: every function in `src/` must match the defined name that ships, and must be written in the form Excel accepts as typed input rather than the form the file format stores. The two differ in four ways, which it maps rather than ignores. Also runs in CI.
+
+```bash
+python tools/verify_signatures.py src
+```
+
+Documentation: every function's help opens with a signature, and that signature must name the function it belongs to and list the parameters the LAMBDA actually declares, character for character. Both are hand-written text inside a string literal, so nothing else in the build ever reads them and they drift silently. It reads all 117 signatures, accounts for every declaration in every module, and refuses to pass if it parsed too few. Also runs in CI.
 
 ```bash
 powershell -ExecutionPolicy Bypass -File tools/excel_selftest.ps1

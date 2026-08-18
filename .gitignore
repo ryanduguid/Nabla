@@ -1,0 +1,6 @@
+# verify_signatures.py imports verify_sources.py, so the tools directory gets one
+__pycache__/
+*.pyc
+
+# Excel's lock file, if the self-test or a manual open is interrupted
+~$*.xlsx

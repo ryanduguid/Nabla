@@ -134,7 +134,7 @@ QuickRatioλ = LAMBDA(
         [Liabilities],       
 //  Help
     LET(Help,   TRIM(TEXTSPLIT( 
-                        "FUNCTION:      →QuickRatioλ( LiquidAssets, Liabilities)¶" & 
+                        "FUNCTION:      →QuickRatioλ( QuickAssets, Liabilities)¶" & 
                         "DESCRIPTION:   →Measures ability to meet short-term obligations¶" & 
                                        "→(Quick Assets/Current Liabilities)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/q/quickratio.asp ¶" &
@@ -351,7 +351,7 @@ WorkingCapitalTurnoverRatioλ = LAMBDA(
         [WorkingCapital],    
 //  Help
     LET(Help,   TRIM(TEXTSPLIT( 
-                        "FUNCTION:         →WorkingCapitalTurnoverRatioλ( CostOfGoodsSold, AverageInventory)¶" & 
+                        "FUNCTION:         →WorkingCapitalTurnoverRatioλ( NetAnnualSales, WorkingCapital)¶" & 
                         "DESCRIPTION:      →Working Capital Turnover Ratio measures how efficiently a company ¶" &
                                           "→is using its working capital to support sales and growth ¶" &
                                           "→(Net Annual Sales/Average Working Capital). ¶" &
@@ -435,14 +435,14 @@ DSCRλ = LAMBDA(
         [TotalDebtService],    
 //  Help
     LET(Help,   TRIM(TEXTSPLIT( 
-                        "FUNCTION:          →DSCRλ( NetOperatingIncome, Totaldebtservice)¶" & 
+                        "FUNCTION:          →DSCRλ( NetOperatingIncome, TotalDebtService)¶" & 
                         "DESCRIPTION:       →Measures a firm’s available cash flow to pay its current debt obligations¶" &
                                            "→(Net Operating Income/Total Debt Service)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/d/dscr.asp ¶" &
                         "VERSION:           →18 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetOperatingIncome →(Required) Revenue - Certain Operating Expenses¶" & 
-                        "TotaldebtService   →(Required) Interest * (1-Tax Rate), principal, sinking fund,¶" &
+                        "TotalDebtService   →(Required) Interest * (1-Tax Rate), principal, sinking fund,¶" &
                                            "→and lease payments due in the coming year¶" & 
                         "EXAMPLES:          →Formula (nabla.r is assumed to be the module's name)¶" &
                         "6.142857           →=nabla.r.DSCRλ(2150.0, 350.0)", 
@@ -1037,7 +1037,7 @@ CashFlowMarginλ = LAMBDA(
         [Revenue],    
 //  Help
     LET(Help,   TRIM(TEXTSPLIT( 
-                        "FUNCTION:      →CashFlowMarginλ( NetIncome, Revenue)¶" & 
+                        "FUNCTION:      →CashFlowMarginλ( CashFlowFromOperatingActivities, Revenue)¶" & 
                         "DESCRIPTION:   →Cash Flow Margin is a trusted metric of a company’s profitability ¶" & 
                                        "→and efficiency and its earnings quality ¶" & 
                                        "→(Cash Flow From Operating Activities/Revenue).¶" & 
@@ -1272,7 +1272,7 @@ PriceToBookRatioλ = LAMBDA(
         [BookValuePerShare],    
 //  Help
     LET(Help,   TRIM(TEXTSPLIT( 
-                        "FUNCTION:          →PriceToBookRatioλ( MarketPricePerShare, BookValuePerShareBvps)¶" & 
+                        "FUNCTION:          →PriceToBookRatioλ( MarketPricePerShare, BookValuePerShare)¶" & 
                         "DESCRIPTION:       →Many investors use the price-to-book ratio (P/B ratio) to compare a ¶" & 
                                            "→firm's market capitalisation to its book value and locate undervalued companies.¶" & 
                                            "→(Market Price Per Share/Book Value Per Share)¶" & 
@@ -1349,7 +1349,7 @@ PriceToCashRatioλ = LAMBDA(
         [OperatingCashFlowPerShare],    
 //  Help
     LET(Help,   TRIM(TEXTSPLIT( 
-                        "FUNCTION:          →PriceToCashRatioλ( MarketPricePerShare, SalesPerShare)¶" & 
+                        "FUNCTION:          →PriceToCashRatioλ( MarketPricePerShare, OperatingCashFlowPerShare)¶" & 
                         "DESCRIPTION:       →Price to Cash (P/CF) Ratio  is a stock valuation indicator or multiple that ¶" & 
                                            "→measures the value of a stock’s price relative to its operating cash flow ¶" & 
                                            "→per share (Market Price Per Share/Operating Cash Flow Per Share).¶" & 

@@ -512,7 +512,7 @@ IsBetweenλ = LAMBDA(
 IsInListλ = LAMBDA(
 //  Parameter Declarations
     [Value],
-    [LIST],
+    [List],
 //  Help
     LET(Help,           TRIM(TEXTSPLIT( 
                             "FUNCTION:      →IsInListλ( Value, List)¶" &
@@ -530,7 +530,7 @@ IsInListλ = LAMBDA(
                         ),
     //  Check inputs - Omitted required arguments
         Help?,          OR( ISOMITTED( Value),
-                            ISOMITTED( LIST)
+                            ISOMITTED( List)
                         ),
     //  Procedure
         Result,         NOT( ISNA( MATCH( Value, List, 0))),

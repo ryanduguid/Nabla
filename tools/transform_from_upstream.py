@@ -601,6 +601,81 @@ for _wrong, _right in HELP_PARAM_TYPOS:
     print("fixed %s -> %s in %d sources, %d defined names, %d cached help output(s)"
           % (_wrong, _right, _in_src, _in_src, len(_cached)))
 
+
+# ---------- help signatures that describe a different function ----------
+# Each function's help opens with a signature, its name and parameter list, and repeats
+# the parameters as a table three rows below. Where the two disagree the table has been
+# right every time: it is what the LAMBDA declares. The signatures drifted by being
+# copied wholesale from a neighbour (four of the ratios document the neighbour's
+# arguments outright), by being left behind when a parameter was renamed, or by a plain
+# typing slip. None of it is reachable by any structural check, because every one of them
+# sits inside a string literal. tools/verify_signatures.py reads all 117 signatures back
+# out of src/ and fails the build on any that no longer matches its own function.
+#
+# Both stores are patched from this one table: the module source that src/ is exported
+# from, here, and the defined name Excel installs, further down. They are patched at
+# different points because they are swept for spelling and rebranded at different points,
+# and a fragment written in Australian English matches only after that sweep.
+HELP_SIGNATURES = [
+    # module,     function,          what the signature said,          what the function takes
+    ("nabla.f", "CorkScrewReversalλ", "( Opening, Flow1,", "( Opening, ReversalFlags, Flow1,"),
+    ("nabla.f", "Movementλ", "( [BeginningValue], Values)", "( [BeginningValues], Values)"),
+    ("nabla.f", "LabelAmortiseλ", "λ([LoanNames])",
+     "λ(LoanNames, [LoanAmounts], [LoanAPRs], [LoanTerms])"),
+    ("nabla.f", "Depreciateλ", "[Methods], [Factor])", "[Methods], [Factors])"),
+    ("nabla.f", "DBλ", "(Cost, Salvage, Life, [Month])", "(Cost, Salvage, Life, [Months])"),
+    ("nabla.f", "TimelineOffsetλ", "λ(ArrayStart, Timeline)", "λ(Date, Timeline)"),
+    ("nabla.f", "FilterContainsλ", "FilterByArray, Text,", "FilterByArray, FilterByText,"),
+    ("nabla.r", "QuickRatioλ", "λ( LiquidAssets, Liabilities)", "λ( QuickAssets, Liabilities)"),
+    ("nabla.r", "WorkingCapitalTurnoverRatioλ", "λ( CostOfGoodsSold, AverageInventory)",
+     "λ( NetAnnualSales, WorkingCapital)"),
+    ("nabla.r", "DSCRλ", "λ( NetOperatingIncome, Totaldebtservice)",
+     "λ( NetOperatingIncome, TotalDebtService)"),
+    ("nabla.r", "CashFlowMarginλ", "λ( NetIncome, Revenue)",
+     "λ( CashFlowFromOperatingActivities, Revenue)"),
+    ("nabla.r", "PriceToBookRatioλ", "BookValuePerShareBvps)", "BookValuePerShare)"),
+    ("nabla.r", "PriceToCashRatioλ", "λ( MarketPricePerShare, SalesPerShare)",
+     "λ( MarketPricePerShare, OperatingCashFlowPerShare)"),
+    # Two parameter tables spell an argument differently again, in the label column. The
+    # labels are padded to a fixed width, so the replacement keeps the column aligned.
+    ("nabla.f", "LabelAmortiseλ", '"LoanAPR       →', '"LoanAPRs      →'),
+    ("nabla.f", "LabelAmortiseλ", '"LoanTerm      →', '"LoanTerms     →'),
+    ("nabla.r", "DSCRλ", '"TotaldebtService   →', '"TotalDebtService   →'),
+]
+
+# IsInListλ is the one case where the declaration is the odd one out: it shouts LIST,
+# while its own signature, its parameter table and one of its two references all write
+# List. Excel resolves identifiers case-insensitively, so this renames the parameter to
+# match everything else rather than making the help shout back.
+ISINLIST = ("nabla.e", "nabla.u")
+
+
+def function_block(module, fn):
+    """The span of one function's definition in its module source."""
+    text = mods[module]["text"]
+    start = re.search(r"(?m)^%s\s*=\s*LAMBDA" % re.escape(fn), text)
+    assert start, (fn, module, "no declaration")
+    a = start.start()
+    return a, text.index("\n);", a) + 3
+
+
+for _mod, _fn, _old, _new in HELP_SIGNATURES:
+    _a, _b = function_block(_mod, _fn)
+    _text = mods[_mod]["text"]
+    _blk = _text[_a:_b]
+    assert _blk.count(_old) == 1, (_fn, _mod, "source", _blk.count(_old))
+    mods[_mod]["text"] = _text[:_a] + _blk.replace(_old, _new) + _text[_b:]
+
+for _mod in ISINLIST:
+    _a, _b = function_block(_mod, "IsInListλ")
+    _text = mods[_mod]["text"]
+    _blk, _n = re.subn(r"\bLIST\b", "List", _text[_a:_b])
+    assert _n == 2, (_mod, "source", _n)      # the declaration and one of two references
+    mods[_mod]["text"] = _text[:_a] + _blk + _text[_b:]
+
+print("corrected %d help signatures in the module sources, renamed IsInListλ's LIST parameter"
+      % len(HELP_SIGNATURES))
+
 # fix upstream copy-paste bug: the u module's About suggested "nabla.e" (was BXE) as its own name
 assert "Suggested module name: nabla.e" in mods["nabla.u"]["text"]
 mods["nabla.u"]["text"] = mods["nabla.u"]["text"].replace(
@@ -652,6 +727,73 @@ for n in list(parts):
     elif re.match(r'xl/customProperty\d+\.bin$', n):
         txt = parts[n].decode("utf-16-le")
         parts[n] = transform_text(txt).encode("utf-16-le")
+
+# ---------- help signatures, second store ----------
+# The module sources were corrected before the AFE store was written. The defined names
+# could not be, because until the sweep just above they still carried the upstream brand
+# and the upstream spelling: QuickRatioλ's help said Liabilites, and LabelAmortiseλ was
+# still LabelAmortizeλ. Now that both stores read the same, apply the same table.
+_wbx = get("xl/workbook.xml")
+for _mod, _fn, _old, _new in HELP_SIGNATURES:
+    _hit = []
+
+    def _fix(m, _old=_old, _new=_new, _hit=_hit):
+        if m.group(1).rsplit(".", 1)[-1] != _fn or _old not in m.group(2):
+            return m.group(0)
+        _hit.append(m.group(1))
+        return m.group(0).replace(_old, _new)
+
+    _wbx = re.sub(r'<definedName name="([^"]+)"[^>]*>(.*?)</definedName>', _fix, _wbx, flags=re.S)
+    assert len(_hit) == 1, (_fn, _mod, _old, _hit)
+
+# and the same parameter rename, which Excel stores prefixed: _xlop. on the declaration,
+# _xlpm. on the references, both already normalised to the declared spelling
+_renamed = 0
+for _mod in ISINLIST:
+    _hit = []
+
+    def _rename(m, _hit=_hit):
+        if m.group(1) != _mod + ".IsInListλ":
+            return m.group(0)
+        body, n = re.subn(r"(_xl(?:op|pm)\.)LIST\b", lambda k: k.group(1) + "List", m.group(2))
+        _hit.append(n)
+        return m.group(0).replace(m.group(2), body)
+
+    _wbx = re.sub(r'<definedName name="([^"]+)"[^>]*>(.*?)</definedName>', _rename, _wbx, flags=re.S)
+    assert _hit == [3], (_mod, "defined name", _hit)   # one declaration, two references
+    _renamed += _hit[0]
+put("xl/workbook.xml", _wbx)
+print("corrected %d help signatures in the defined names, renamed %d LIST tokens"
+      % (len(HELP_SIGNATURES), _renamed))
+
+# Several of these functions are demonstrated on a sheet that calls them with no
+# arguments, so their help is spilled there and the old text sits in the file as a
+# cached value. It would go on being displayed until something forced a recalculation.
+# A signature is cached whole; a parameter label is cached on its own, trimmed, because
+# the help is a two-column table and TRIM() has already run on it.
+
+
+def cached_forms(fragment):
+    """The fragment as it appears in a cached spill: a bare label, or the text itself."""
+    if fragment.startswith('"') and fragment.rstrip().endswith("→"):
+        return "<v>%s</v>" % fragment[1:].rstrip()[:-1].strip()
+    return fragment
+
+
+_refreshed = {}
+for _mod, _fn, _old, _new in HELP_SIGNATURES:
+    _co, _cn = cached_forms(_old), cached_forms(_new)
+    for _sheet in [n for n in list(parts) if re.match(r"xl/worksheets/sheet\d+\.xml$", n)]:
+        _text = get(_sheet)
+        if _co not in _text:
+            continue
+        put(_sheet, _text.replace(_co, _cn))
+        _refreshed.setdefault(_sheet, []).append(_fn)
+    assert not any(_co in get(n) for n in parts
+                   if re.match(r"xl/worksheets/sheet\d+\.xml$", n)), (_fn, _co)
+print("refreshed cached help on %d sheets: %s"
+      % (len(_refreshed), ", ".join("%s (%s)" % (s.rsplit("/", 1)[1], ", ".join(f))
+                                    for s, f in sorted(_refreshed.items()))))
 
 # cached spill copies of help version lines in worksheets -> today
 for n in list(parts):

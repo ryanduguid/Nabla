@@ -147,7 +147,7 @@ CorkScrewReversalλ=LAMBDA(
     [Flow4], 
     //  Help
     LET(Help,           TRIM(TEXTSPLIT(
-                        "FUNCTION:      →CorkScrewReversalλ( Opening, Flow1, [Flow2], [Flow3], [Flow4])¶" & 
+                        "FUNCTION:      →CorkScrewReversalλ( Opening, ReversalFlags, Flow1, [Flow2], [Flow3], [Flow4])¶" & 
                         "DESCRIPTION:   →Create a corkscrew where the opening balance is reversed in the next period based on a timing parameter¶" & 
                         "WEBPAGE:       →<Coming Soon>¶" &
                         "VERSION:       →18 Aug 2026¶" & 
@@ -301,7 +301,7 @@ Movementλ = LAMBDA(
     [Values],    
 //  Help
     LET(Help,       TRIM(TEXTSPLIT( 
-                            "FUNCTION:      →Movementλ( [BeginningValue], Values)¶" &
+                            "FUNCTION:      →Movementλ( [BeginningValues], Values)¶" &
                             "DESCRIPTION:   →Create a row of differences from column to column¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
@@ -901,15 +901,15 @@ LabelAmortiseλ = LAMBDA(
     LET(
     //  Help
         Help,           TRIM(TEXTSPLIT( 
-                            "FUNCTION:      →LabelAmortiseλ([LoanNames])¶" &
+                            "FUNCTION:      →LabelAmortiseλ(LoanNames, [LoanAmounts], [LoanAPRs], [LoanTerms])¶" &
                             "DESCRIPTION:   →Create row labels for the amortisation schedule array produced by Amortiseλ¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "LoanNames     →(Required) Names or descriptions of each loan in the amortisation schedule produced by Amortiseλ¶" &                  
                             "LoanAmounts   →(Optional) Amount borrowed¶" &                  
-                            "LoanAPR       →(Optional) Annual Percentage Interest Rate¶" &                  
-                            "LoanTerm      →(Optional) Number of months to repay¶" &                  
+                            "LoanAPRs      →(Optional) Annual Percentage Interest Rate¶" &                  
+                            "LoanTerms     →(Optional) Number of months to repay¶" &                  
                             "EXAMPLES:      →¶" &
                             "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
                                            "→=nabla.f.LabelAmortiseλ(tblLoans[Loan Name])", 
@@ -1025,7 +1025,7 @@ Depreciateλ = LAMBDA(
 //  Help
         Help,           TRIM(TEXTSPLIT( 
                             "FUNCTION:      →Depreciateλ(InitialValues, InServiceDates, LifeInYears, Timeline, ¶" &
-                            "               →[SalvageValues], [DisposalDates], [DisposalCosts], [Methods], [Factor])¶" &
+                            "               →[SalvageValues], [DisposalDates], [DisposalCosts], [Methods], [Factors])¶" &
                             "DESCRIPTION:   →Creates an array of CAPEX, depreciation, and book values for a model's timeline¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla ¶" & 
                             "VERSION:       →18 Aug 2026¶" &
@@ -1486,7 +1486,7 @@ DBλ = LAMBDA(
     LET(
     //  Help
         Help,           TRIM(TEXTSPLIT( 
-                            "FUNCTION:      →DBλ(Cost, Salvage, Life, [Month])¶" &
+                            "FUNCTION:      →DBλ(Cost, Salvage, Life, [Months])¶" &
                             "DESCRIPTION:   →Fixed declining balance depreciation method for one asset or asset class¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
                             "VERSION:       →18 Aug 2026¶" &
@@ -1894,7 +1894,7 @@ TimelineOffsetλ = LAMBDA(
     LET(
     //  Help
         Help,           TRIM(TEXTSPLIT( 
-                            "FUNCTION:      →TimelineOffsetλ(ArrayStart, Timeline)¶" &
+                            "FUNCTION:      →TimelineOffsetλ(Date, Timeline)¶" &
                             "DESCRIPTION:   →Determines in which period, relative to the timeline's start and interval,¶" &
                                            "→a date falls within.¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
@@ -2016,7 +2016,7 @@ FilterContainsλ = LAMBDA(
     LET(
     //  Help
         Help,           TRIM(TEXTSPLIT( 
-                            "FUNCTION:      →FilterContainsλ( ArrayToFilter, FilterByArray, Text, [IgnoreCase?] )¶" &
+                            "FUNCTION:      →FilterContainsλ( ArrayToFilter, FilterByArray, FilterByText, [IgnoreCase?] )¶" &
                             "DESCRIPTION:   →Filter an array by another array that contains specific text.¶" & 
                             "SEE ALSO:      →Excel 365 now has REGEXTEST and REGEXEXTRACT for pattern matching.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 

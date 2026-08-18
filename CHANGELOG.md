@@ -2,6 +2,36 @@
 
 ## Unreleased
 
+### Help that describes its own parameters
+
+Every function's help opens with a signature, and repeats the same parameters as a table three rows below. Where the two disagreed, the table was right every time: it matches what the LAMBDA declares. Thirteen signatures did not, and four of them documented a neighbouring function's arguments outright, which is how the wrong-name defect fixed in v1.2.3 got in as well. Both were the same copy: name and parameter list came across together, and only the name was corrected.
+
+| function | its signature said | its signature says now |
+|---|---|---|
+| `nabla.f.CorkScrewReversalλ` | `Opening, Flow1, ...` | `Opening, ReversalFlags, Flow1, ...` |
+| `nabla.f.Movementλ` | `BeginningValue` | `BeginningValues` |
+| `nabla.f.LabelAmortiseλ` | `[LoanNames]` alone | all four parameters |
+| `nabla.f.Depreciateλ` | `[Factor]` | `[Factors]` |
+| `nabla.f.DBλ` | `[Month]` | `[Months]` |
+| `nabla.f.TimelineOffsetλ` | `ArrayStart` | `Date` |
+| `nabla.f.FilterContainsλ` | `Text` | `FilterByText` |
+| `nabla.r.QuickRatioλ` | `LiquidAssets` | `QuickAssets` |
+| `nabla.r.WorkingCapitalTurnoverRatioλ` | `CostOfGoodsSold, AverageInventory` | `NetAnnualSales, WorkingCapital` |
+| `nabla.r.DSCRλ` | `Totaldebtservice` | `TotalDebtService` |
+| `nabla.r.CashFlowMarginλ` | `NetIncome` | `CashFlowFromOperatingActivities` |
+| `nabla.r.PriceToBookRatioλ` | `BookValuePerShareBvps` | `BookValuePerShare` |
+| `nabla.r.PriceToCashRatioλ` | `SalesPerShare` | `OperatingCashFlowPerShare` |
+
+Three parameter tables disagreed with their own LAMBDA too, and were corrected the same way: `LoanAPR` and `LoanTerm` in `LabelAmortiseλ`, and `TotaldebtService` in `DSCRλ`.
+
+`nabla.e.IsInListλ` and `nabla.u.IsInListλ` were the one case where the declaration was the odd one out. It shouts `LIST`, while the signature, the parameter table and one of the function's own two references all write `List`. Excel resolves identifiers case-insensitively, so the parameter is renamed to match the rest of the library rather than the help being made to shout back. Both functions were exercised in Excel afterwards, including the branch that calls `ISOMITTED()` on the renamed parameter.
+
+Each correction is applied in three places: the module source `src/` is exported from, the defined name Excel installs, and the help already spilled and cached on the demonstration sheets. Five sheets carried a stale copy. Every corrected signature was then read back out of a running Excel rather than trusted from the file.
+
+### Added
+
+- `tools/verify_signatures.py` reads every function's help signature and compares it against the LAMBDA's own declaration, character for character, since case is exactly the kind of difference that goes unnoticed. It accounts for every declaration in every module and prints the tally, and fails if it parsed too few, because a checker that reads nothing passes everything. Square brackets are ignored: upstream declares every parameter optional so a function called with no arguments can return its own help, so the declaration says nothing about which arguments a caller may omit. Run against the previous release it reports all 15 divergences. Now runs in CI.
+
 - **`FLow1` in the corkscrew signatures.** `nabla.f.Corkscrewλ` and `nabla.f.CorkScrewReversalλ` both spelled their second argument `FLow1` on the FUNCTION line of their help, with a capital L. The parameter table three rows below spelled it `Flow1`, and so did the LAMBDA, so anyone copying the signature was copying a name the function does not have. Corrected in the module source, in the defined name, in `functions.csv`, and in the help output already cached on the demonstration sheet, which would otherwise have kept showing the typo until something forced a recalculation. Read back out of Excel afterwards, both functions now report `( Opening, Flow1, ...)`.
 
 ## 2026-08-18, help that names itself

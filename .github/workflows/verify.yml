@@ -19,3 +19,5 @@ jobs:
         run: python tools/verify_workbook.py nabla.xlsx
       - name: Check src/ reproduces the shipped functions
         run: python tools/verify_sources.py nabla.xlsx src
+      - name: Check each function's help describes itself
+        run: python tools/verify_signatures.py src
