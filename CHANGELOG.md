@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **`FLow1` in the corkscrew signatures.** `nabla.f.Corkscrewλ` and `nabla.f.CorkScrewReversalλ` both spelled their second argument `FLow1` on the FUNCTION line of their help, with a capital L. The parameter table three rows below spelled it `Flow1`, and so did the LAMBDA, so anyone copying the signature was copying a name the function does not have. Corrected in the module source, in the defined name, in `functions.csv`, and in the help output already cached on the demonstration sheet, which would otherwise have kept showing the typo until something forced a recalculation. Read back out of Excel afterwards, both functions now report `( Opening, Flow1, ...)`.
+
 ## 2026-08-18, help that names itself
 
 Four functions announced a neighbour's name on the first line of their own inline help, because each was written by copying that neighbour and the name was never updated. The description and parameter list underneath were always correct, so only the leading name was wrong, but calling `nabla.f.DDBλ()` for help and being told you are looking at `DBλ` is worse than no help at all.

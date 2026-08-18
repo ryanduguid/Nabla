@@ -85,7 +85,7 @@ Corkscrewλ = LAMBDA(
     LET(
     //  Help
         Help,       TRIM(TEXTSPLIT( 
-                        "FUNCTION:      →Corkscrewλ( Opening, FLow1, [Flow2], [Flow3], [Flow4])¶" &
+                        "FUNCTION:      →Corkscrewλ( Opening, Flow1, [Flow2], [Flow3], [Flow4])¶" &
                         "DESCRIPTION:   →Create a corkscrew section that sums the opening balance and up to 4 independent flows¶" & 
                         "WEBPAGE:       →<Coming Soon>¶" & 
                         "VERSION:       →18 Aug 2026¶" &
@@ -147,7 +147,7 @@ CorkScrewReversalλ=LAMBDA(
     [Flow4], 
     //  Help
     LET(Help,           TRIM(TEXTSPLIT(
-                        "FUNCTION:      →CorkScrewReversalλ( Opening, FLow1, [Flow2], [Flow3], [Flow4])¶" & 
+                        "FUNCTION:      →CorkScrewReversalλ( Opening, Flow1, [Flow2], [Flow3], [Flow4])¶" & 
                         "DESCRIPTION:   →Create a corkscrew where the opening balance is reversed in the next period based on a timing parameter¶" & 
                         "WEBPAGE:       →<Coming Soon>¶" &
                         "VERSION:       →18 Aug 2026¶" & 

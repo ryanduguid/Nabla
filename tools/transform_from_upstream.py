@@ -578,6 +578,29 @@ for _fn, _wrong, _in_mods in HELP_NAMES_ITSELF:
 put("xl/workbook.xml", _wbx)
 print("help now names its own function in", sum(len(m) for _, _, m in HELP_NAMES_ITSELF), "definitions")
 
+# The Corkscrew pair's help signature spells its second parameter FLow1, with a capital L.
+# The parameter table below it spells the same argument Flow1, and so does the LAMBDA, so
+# the signature line is the one that is wrong. Nothing structural catches it, because it
+# lives inside a string literal. Fix it in all three places it is stored: the module
+# sources, the defined names, and the help output already cached on the demonstration
+# sheet, which would otherwise go on showing the typo until something forced a recalc.
+HELP_PARAM_TYPOS = [("FLow1", "Flow1")]
+for _wrong, _right in HELP_PARAM_TYPOS:
+    _in_src = sum(m["text"].count(_wrong) for m in mods.values())
+    assert _in_src, (_wrong, "not present in any module")
+    for _mod in mods:
+        mods[_mod]["text"] = mods[_mod]["text"].replace(_wrong, _right)
+
+    _wbx = get("xl/workbook.xml")
+    assert _wbx.count(_wrong) == _in_src, (_wrong, _in_src, _wbx.count(_wrong))
+    put("xl/workbook.xml", _wbx.replace(_wrong, _right))
+
+    _cached = [n for n in list(parts) if n.startswith("xl/worksheets/") and _wrong in get(n)]
+    for _sheet in _cached:
+        put(_sheet, get(_sheet).replace(_wrong, _right))
+    print("fixed %s -> %s in %d sources, %d defined names, %d cached help output(s)"
+          % (_wrong, _right, _in_src, _in_src, len(_cached)))
+
 # fix upstream copy-paste bug: the u module's About suggested "nabla.e" (was BXE) as its own name
 assert "Suggested module name: nabla.e" in mods["nabla.u"]["text"]
 mods["nabla.u"]["text"] = mods["nabla.u"]["text"].replace(

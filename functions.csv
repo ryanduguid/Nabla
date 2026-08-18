@@ -38,8 +38,8 @@ nabla.f.Aboutλ,nabla.f,Aboutλ,Displays this module's repository URL and functi
 nabla.f.Allocateλ,nabla.f,"Allocateλ(Amounts, [FromInterval], [ToInterval])",→Divide one or more amounts equally across smaller periods
 nabla.f.Amortiseλ,nabla.f,"Amortiseλ( Principals, APRs, Terms, StartDates, [Timeline])",Creates a corkscrew amortisation schedule
 nabla.f.AmortiseλDV,nabla.f,AmortiseλDV,Provides extended data validation of arguments for Amortiseλ()
-nabla.f.CorkScrewReversalλ,nabla.f,"CorkScrewReversalλ( Opening, FLow1, [Flow2], [Flow3], [Flow4])",Create a corkscrew where the opening balance is reversed in the next period based on a timing parameter.
-nabla.f.Corkscrewλ,nabla.f,"Corkscrewλ( Opening, FLow1, [Flow2], [Flow3], [Flow4])",Create a corkscrew section that sums the opening balance and up to 4 independent flows.
+nabla.f.CorkScrewReversalλ,nabla.f,"CorkScrewReversalλ( Opening, Flow1, [Flow2], [Flow3], [Flow4])",Create a corkscrew where the opening balance is reversed in the next period based on a timing parameter.
+nabla.f.Corkscrewλ,nabla.f,"Corkscrewλ( Opening, Flow1, [Flow2], [Flow3], [Flow4])",Create a corkscrew section that sums the opening balance and up to 4 independent flows.
 nabla.f.CorkscrewλDV,nabla.f,CorkscrewλDV,Provides extended data validation of arguments for Depreciateλ.
 nabla.f.Cumulativeλ,nabla.f,"Cumulativeλ( Totals, [OpeningBalance])",Creates a row or column of cumulative totals from a total row or column
 nabla.f.DBλ,nabla.f,"DBλ(Cost, Salvage, Life, [Month])",Fixed declining balance depreciation method for one asset or asset class.
