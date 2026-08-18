@@ -537,6 +537,47 @@ for _old, _new in (
     block = block.replace(_old, _new)
 mods["nabla.f"]["text"] = ftxt[:_s] + block + ftxt[_e:]
 
+# Four functions were written by copying a neighbour, and their help still announces the
+# neighbour's name on the FUNCTION line. The description and the parameter list below it
+# are their own, so only the name is wrong. AvgColsλ additionally defeated the collision
+# tagging further down, because the module text renames the bare name it finds there and
+# the defined name does not, leaving the shipped function and its published source
+# disagreeing. Name the function each one documents, in both representations.
+HELP_NAMES_ITSELF = [
+    # function,               the neighbour its help names,  modules holding it
+    ("AvgColsλ",            "SumColsλ",                ("nabla.e", "nabla.u")),
+    ("CorkScrewReversalλ",  "Corkscrewλ",              ("nabla.f",)),
+    ("DDBλ",                "DBλ",                     ("nabla.f",)),
+    ("EquityRatioλ",        "InterestCoverageRatioλ",  ("nabla.r",)),
+]
+
+_wbx = get("xl/workbook.xml")
+for _fn, _wrong, _in_mods in HELP_NAMES_ITSELF:
+    _from, _to = "→%s(" % _wrong, "→%s(" % _fn
+    for _mod in _in_mods:
+        _t = mods[_mod]["text"]
+        _d = re.search(r"(?m)^%s\s*=\s*LAMBDA" % re.escape(_fn), _t)   # not a longer name
+        assert _d, (_fn, _mod)
+        _a = _d.start()
+        _b = _t.index("\n);", _a) + 3
+        _blk = _t[_a:_b]
+        assert _blk.count(_from) == 1, (_fn, _mod)
+        mods[_mod]["text"] = _t[:_a] + _blk.replace(_from, _to) + _t[_b:]
+
+    _hits = []
+    def _name_itself(m, _from=_from, _to=_to, _hits=_hits):
+        body = m.group(2)
+        if _from in body:
+            _hits.append(m.group(1))
+            body = body.replace(_from, _to)
+        return m.group(1) + body + m.group(3)
+    # the module sources are already rebranded here, the workbook part is not: match either
+    _wbx = re.sub(r'(<definedName name="[A-Za-z0-9.]*\.%s"[^>]*>)(.*?)(</definedName>)'
+                  % re.escape(_fn), _name_itself, _wbx, flags=re.S)
+    assert len(_hits) == len(_in_mods), (_fn, _hits)
+put("xl/workbook.xml", _wbx)
+print("help now names its own function in", sum(len(m) for _, _, m in HELP_NAMES_ITSELF), "definitions")
+
 # fix upstream copy-paste bug: the u module's About suggested "nabla.e" (was BXE) as its own name
 assert "Suggested module name: nabla.e" in mods["nabla.u"]["text"]
 mods["nabla.u"]["text"] = mods["nabla.u"]["text"].replace(

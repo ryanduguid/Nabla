@@ -147,7 +147,7 @@ CorkScrewReversalλ=LAMBDA(
     [Flow4], 
     //  Help
     LET(Help,           TRIM(TEXTSPLIT(
-                        "FUNCTION:      →Corkscrewλ( Opening, FLow1, [Flow2], [Flow3], [Flow4])¶" & 
+                        "FUNCTION:      →CorkScrewReversalλ( Opening, FLow1, [Flow2], [Flow3], [Flow4])¶" & 
                         "DESCRIPTION:   →Create a corkscrew where the opening balance is reversed in the next period based on a timing parameter¶" & 
                         "WEBPAGE:       →<Coming Soon>¶" &
                         "VERSION:       →18 Aug 2026¶" & 
@@ -1534,7 +1534,7 @@ DDBλ = LAMBDA(
     LET(
     //  Help
         Help,           TRIM(TEXTSPLIT( 
-                            "FUNCTION:      →DBλ(Cost, Salvage, Life, [Factor])¶" &
+                            "FUNCTION:      →DDBλ(Cost, Salvage, Life, [Factor])¶" &
                             "DESCRIPTION:   →Double-declining balance depreciation method for one asset or asset class.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
                             "VERSION:       →18 Aug 2026¶" &

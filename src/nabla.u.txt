@@ -178,7 +178,7 @@ AvgColsλ = LAMBDA(
     [Array],
 //  Help
     LET(Help,       TRIM(TEXTSPLIT( 
-                            "FUNCTION:      →SumColsλ( Array)¶" &
+                            "FUNCTION:      →AvgColsλ( Array)¶" &
                             "DESCRIPTION:   →Get the average for each Column¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &

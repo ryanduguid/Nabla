@@ -669,7 +669,7 @@ EquityRatioλ = LAMBDA(
         [IntangibleAssets],
 //  Help
     LET(Help,   TRIM(TEXTSPLIT( 
-                        "FUNCTION:          →InterestCoverageRatioλ( ShareholdersEquity, TotalAssets, IntangibleAssets)¶" & 
+                        "FUNCTION:          →EquityRatioλ( ShareholdersEquity, TotalAssets, IntangibleAssets)¶" & 
                         "DESCRIPTION:       →Measures the long-term solvency of a company by comparing its shareholders’ ¶" &
                                            "→equity to its total assets (Shareholder's Equity/(Total Assets - Intangible Assets))¶" &
                         "WEBPAGE:           →https://www.wallstreetprep.com/knowledge/equity-ratio/ ¶" &

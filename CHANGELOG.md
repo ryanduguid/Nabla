@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-08-18, help that names itself
+
+Four functions announced a neighbour's name on the first line of their own inline help, because each was written by copying that neighbour and the name was never updated. The description and parameter list underneath were always correct, so only the leading name was wrong, but calling `nabla.f.DDBλ()` for help and being told you are looking at `DBλ` is worse than no help at all.
+
+| function | its help said | its help says now |
+|---|---|---|
+| `nabla.e.AvgColsλ` and `nabla.u.AvgColsλ` | `SumColsλ` | its own name |
+| `nabla.f.CorkScrewReversalλ` | `Corkscrewλ` | `CorkScrewReversalλ` |
+| `nabla.f.DDBλ` | `DBλ` | `DDBλ` |
+| `nabla.r.EquityRatioλ` | `InterestCoverageRatioλ` | `EquityRatioλ` |
+
+Applied to the module source and the defined name alike, so `src/` still reproduces what ships. No function in the library now names a different one in its own help. `functions.csv` picks the corrections up, since it reads its signature column from that line.
+
 ## 2026-08-18, importable sources
 
 `src/` exists so the library can be read, diffed and loaded back into Excel. Testing that last part for the first time found that one module could not be loaded at all.
