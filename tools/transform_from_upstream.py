@@ -965,6 +965,43 @@ for _entry in LOGIC_FIXES:
 print("fixed %d defects in the module sources across %d functions"
       % (len(LOGIC_FIXES), len({(e[0], e[1]) for e in LOGIC_FIXES})))
 
+# ---------- the debt module, which has no module source ----------
+# The five debt functions are recursive: each calls itself by name. The Advanced Formula
+# Environment takes a function's prefix from the container it is imported into, so a
+# recursive definition held in an AFE module would call a name that does not exist there.
+# Upstream leaves all five out of its project store for that reason and ships them as
+# defined names only, and so does this build. They therefore get the defined-name pass
+# alone: there is no module source to correct first, and no demonstration sheet has ever
+# called one, so nothing is cached either.
+DEBT_FIXES = [
+    # DebtSculptVariableLRVλ subtracted the interest when working out the payment and then
+    # added it back into the closing balance. Subtracting it is only right if the interest
+    # is paid out of the period's cash, which is what a debt service coverage ratio means;
+    # adding it back is only right if it is not. Both were there, so every closing balance
+    # carried one period's interest too much and the error compounded into the next opening
+    # balance. On 1,000 of debt at 6% with CFADS 300 and DSCR 1.2 over five periods it
+    # repaid 1,078.60 of a 1,000 loan and still showed 92.80 outstanding.
+    #
+    # The payment is the principal repayment, so cap it at the principal itself rather than
+    # at the principal less the interest, and take it off the balance. A negative repayment
+    # needs no special case: when the cash cannot cover the interest, subtracting a negative
+    # capitalises the shortfall, which is what should happen.
+    ("nabla.debt", "DebtSculptVariableLRVλ",
+     "MIN(_xlpm.PeriodCFADS / _xlpm.PeriodDSCR - _xlpm.Interest, _xlpm.Principal - _xlpm.Interest), "
+     "_xlpm.ClosingDebt, _xlpm.Principal + _xlpm.Interest - _xlpm.Payment",
+     "MIN(_xlpm.PeriodCFADS / _xlpm.PeriodDSCR - _xlpm.Interest, _xlpm.Principal), "
+     "_xlpm.ClosingDebt, _xlpm.Principal - _xlpm.Payment"),
+    # The other two sculpting functions compute the balance correctly, but their third row
+    # holds the whole debt service and both call it principal repayments. On the same
+    # figures that row reads 250 where the principal repaid is 190. Only the label is wrong.
+    # DebtSculptVariableLRVλ keeps the label, because with the fix above its third row is
+    # the principal repayment.
+    ("nabla.debt", "DebtSculptFixedλ",
+     "→Principal repayments¶", "→Debt service (interest and principal)¶"),
+    ("nabla.debt", "DebtSculptVariableλ",
+     "→Principal repayments¶", "→Debt service (interest and principal)¶"),
+]
+
 # fix upstream copy-paste bug: the u module's About suggested "nabla.e" (was BXE) as its own name
 assert "Suggested module name: nabla.e" in mods["nabla.u"]["text"]
 mods["nabla.u"]["text"] = mods["nabla.u"]["text"].replace(
@@ -1023,7 +1060,7 @@ for n in list(parts):
 # and the upstream spelling: QuickRatioλ's help said Liabilites, and LabelAmortiseλ was
 # still LabelAmortizeλ. Now that both stores read the same, apply the same table.
 _wbx = get("xl/workbook.xml")
-for _entry in HELP_SIGNATURES + LOGIC_FIXES:
+for _entry in HELP_SIGNATURES + LOGIC_FIXES + DEBT_FIXES:
     _mod, _fn, _, (_old, _new) = stores(_entry)
     _hit = []
 
@@ -1058,9 +1095,9 @@ for _mod in ISINLIST:
     assert _hit == [3], (_mod, "defined name", _hit)   # one declaration, two references
     _renamed += _hit[0]
 put("xl/workbook.xml", _wbx)
-print("corrected %d help signatures and %d defects in the defined names, renamed %d LIST "
-      "tokens, restored 2 column delimiters"
-      % (len(HELP_SIGNATURES), len(LOGIC_FIXES), _renamed))
+print("corrected %d help signatures and %d defects in the defined names, %d of them in the "
+      "debt module, renamed %d LIST tokens, restored 2 column delimiters"
+      % (len(HELP_SIGNATURES), len(LOGIC_FIXES) + len(DEBT_FIXES), len(DEBT_FIXES), _renamed))
 
 # Several of these functions are demonstrated on a sheet that calls them with no
 # arguments, so their help is spilled there and the old text sits in the file as a

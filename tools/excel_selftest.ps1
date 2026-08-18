@@ -98,6 +98,56 @@ Same 'Sheet: FY 1 Jul 2026'        "${au}B24" 'FY2027'
 Same 'Sheet: FY 15 Aug 2026'       "${au}B25" 'FY2027'
 Same 'Sheet: FY 31 Dec 2026'       "${au}B26" 'FY2027'
 
+# --- Debt sculpting. The debt module has never had a numeric check of any kind, which is
+# how DebtSculptVariableLRV shipped from v1.2.0 to v2.2.0 adding each period's interest
+# back into a balance the same period's cash had already paid. These are balance
+# identities rather than expected figures: a schedule that satisfies all of them cannot
+# be double-counting, whatever the inputs.
+$lrv = "nb.DebtSculptVariableLRV$L"
+$dsf = "nb.DebtSculptFixed$L"
+$dsv = "nb.DebtSculptVariable$L"
+$ilrv = "nb.InterestLRV$L"
+
+# 1,000 drawn in period 1, 300 of cash a period, 1.2 times covered, 6% a year, 5 years.
+# Rows are opening balance, interest, MINUS the principal repayment, closing balance.
+$sched = "$lrv(, {1000,0,0,0,0}, {300,300,300,300,300}, {1.2,1.2,1.2,1.2,1.2}, {0.06,0.06,0.06,0.06,0.06}, 12)"
+
+Near 'Debt: repayments retire the principal exactly' "SUM(INDEX($sched, 3, 0))" '-1000' '0.0000001'
+Near 'Debt: schedule ends at zero'                   "INDEX($sched, 4, 5)"      '0'     '0.0000001'
+Near 'Debt: closing = opening less repayment' `
+     "SUMPRODUCT(ABS(INDEX($sched,4,0) - INDEX($sched,1,0) - INDEX($sched,3,0)))" '0' '0.0000001'
+# No new debt after period 1, so every opening must be the previous closing. Line the two
+# rows up by dropping the first opening and the last closing rather than by position.
+Near 'Debt: each opening = the last closing' `
+     "SUMPRODUCT(ABS(DROP(INDEX($sched,1,0),,1) - DROP(INDEX($sched,4,0),,-1)))" '0' '0.0000001'
+Near 'Debt: cash used never exceeds CFADS/DSCR' `
+     "MAX(INDEX($sched,2,0) - INDEX($sched,3,0)) - 250" '0' '0.0000001'
+Near 'Debt: balance never goes negative'             "MIN(0, MIN(INDEX($sched, 4, 0)))" '0' '0.0000001'
+
+# Cash well over the debt must clear it in one period, not leave twice the interest behind.
+Near 'Debt: surplus cash clears the balance' `
+     "INDEX($lrv(, {1000,0}, {1800,1800}, {1.2,1.2}, {0.06,0.06}, 12), 4, 1)" '0' '0.0000001'
+# No cash must capitalise one period of interest, not two.
+Near 'Debt: no cash capitalises interest once' `
+     "LET(s, $lrv(, {1000,0}, {0,0}, {1.2,1.2}, {0.06,0.06}, 12), INDEX(s,4,1) - 1000 - INDEX(s,2,1))" '0' '0.0000001'
+
+# The other two sculpting functions pay the whole debt service, so their balances differ,
+# but the same roll-forward has to hold: closing = opening + interest - debt service.
+foreach ($fn in $dsf, $dsv) {
+    $arg = if ($fn -eq $dsf) { '1.2, 0.06' } else { '{1.2,1.2,1.2}, {0.06,0.06,0.06}' }
+    $s2 = "$fn(, {1000,0,0}, {300,300,300}, $arg, 12)"
+    Near "Debt: roll-forward holds for $fn" `
+         "SUMPRODUCT(ABS(INDEX($s2,4,0) - INDEX($s2,1,0) - INDEX($s2,2,0) - INDEX($s2,3,0)))" '0' '0.0000001'
+}
+
+# The row a reader is told to label. Only the LRV function reports a principal repayment.
+Same 'Debt: LRV row 3 is principal repayment' "INDEX($lrv(), 4, 2)" 'Principal repayments'
+Same 'Debt: fixed row 3 is debt service'      "INDEX($dsf(), 4, 2)" 'Debt service (interest and principal)'
+Same 'Debt: variable row 3 is debt service'   "INDEX($dsv(), 4, 2)" 'Debt service (interest and principal)'
+
+# The debt module's one worked example.
+Near 'Debt: InterestLRV worked example' "$ilrv(6666.37, 3.50, 90000, 0.03/12)" '222.90' '0.005'
+
 $xl = $null; $wb = $null; $tmp = $null; $exit = 0
 
 # Excel rejects incoming COM calls while it is mid-calculation (RPC_E_CALL_REJECTED),

@@ -142,7 +142,7 @@ Migration: v2.0.0 renamed every function, so `functions.csv` carries a `previous
 powershell -ExecutionPolicy Bypass -File tools/excel_selftest.ps1
 ```
 
-Arithmetic: opens the workbook in a real Excel, forces a full rebuild, fails on any error cell, then runs 138 assertions over the Australian functions and the worksheet that demonstrates them. Needs Excel with LAMBDA support, so it cannot run on GitHub's runners and stays a local gate. It opens Excel over COM and quits it when finished, so it refuses to start if Excel is already running rather than closing your workbooks; it never saves the file it tests.
+Arithmetic: opens the workbook in a real Excel, forces a full rebuild, fails on any error cell, then runs 152 assertions over the Australian functions, the worksheet that demonstrates them, and the balance identities of the debt sculpting schedules. Needs Excel with LAMBDA support, so it cannot run on GitHub's runners and stays a local gate. It opens Excel over COM and quits it when finished, so it refuses to start if Excel is already running rather than closing your workbooks; it never saves the file it tests.
 
 ## Worksheet catalogue
 

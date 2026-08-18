@@ -1,5 +1,58 @@
 # Changelog
 
+## Unreleased
+
+- **`nb.DebtSculptVariableLRVλ` added each period's interest back into a balance the same
+  period's cash had already paid.** It worked out the payment as the debt service less the
+  interest, which is only right if the interest is paid, and then set the closing balance to
+  the principal plus the interest less the payment, which is only right if it is not. Both
+  lines were there, so every closing balance carried one period's interest too much and the
+  error compounded into the next opening balance.
+
+  On 1,000 of debt at 6% with CFADS of 300 and a DSCR of 1.2 over five periods, it repaid
+  1,078.60 of a 1,000 loan and still reported 92.80 outstanding. The cash paid was 1,250
+  against 1,171.40 actually owed; the 78.60 overpaid plus the 92.80 still owing came to
+  171.40, which is the whole interest charge counted a second time.
+
+  The payment is the principal repayment, so it is now capped at the principal rather than
+  at the principal less the interest, and it comes off the balance rather than being added
+  to it. A negative repayment needs no special case: when the cash cannot cover the
+  interest, subtracting a negative capitalises the shortfall, which is what should happen.
+  The same schedule now repays exactly 1,000 and closes at 0. With no cash at all the debt
+  grows by one period of interest rather than two, and 1,500 of cash against 1,000 of debt
+  clears it in one period rather than leaving 30.93 behind.
+
+- **Two sculpting functions told the reader to label the wrong row.** `nb.DebtSculptFixedλ`
+  and `nb.DebtSculptVariableλ` both suggest "Principal repayments" for their third row,
+  which holds the whole debt service: on the figures above that row reads 250 where the
+  principal repaid is 190. Their arithmetic was never wrong, only the label, which now reads
+  "Debt service (interest and principal)". `nb.DebtSculptVariableLRVλ` keeps the original
+  label, because with the fix above its third row really is the principal repayment.
+
+- **The debt module had never had a numeric check of any kind,** which is how this shipped
+  from v1.2.0 to v2.2.0. `tools/excel_selftest.ps1` now runs 152 assertions rather than 138.
+  The fourteen new ones are balance identities rather than expected figures, so a schedule
+  that satisfies them cannot be double-counting whatever the inputs: repayments retire the
+  principal exactly, closing equals opening less repayment, each opening is the previous
+  closing, the cash used never exceeds CFADS over DSCR, the balance never goes negative, and
+  the same roll-forward holds for the two functions that pay the whole debt service. Run
+  against v2.2.0, seven of the fourteen fail, and they report the figures above by name.
+
+  Not fixed, and worth knowing before relying on the final period of a sculpted schedule:
+  `nb.InterestLRVλ` computes interest on the average balance over the period, but it is not
+  told about the repayment cap, so in the one period where the cap binds it still assumes
+  the larger uncapped repayment and understates the interest. In the five-period schedule
+  above that is 0.97 in the final period against 4.22; with 1,500 of cash against 1,000 of
+  debt it is 15.46 against 30.00. The balance is right either way, because the repayment is
+  capped at the principal.
+
+  The five debt functions also remain absent from the workbook's embedded Advanced Formula
+  Environment store, so the workbook still cannot be rebuilt from that store alone. They are
+  the only self-recursive functions in the library, each calling itself by name, and an
+  imported module takes its prefix from its container, so the recursion would call a name
+  that does not exist there. Upstream leaves the same five out for the same reason. `src/`
+  carries all 130 and `tools/verify_sources.py` checks all 130 on every push.
+
 ## v2.2.0, 18 August 2026, counting the way the help counts
 
 v2.1.0 listed what it knew was still wrong and left it, because each of these changes
