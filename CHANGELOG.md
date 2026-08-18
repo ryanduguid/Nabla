@@ -1,6 +1,16 @@
 # Changelog
 
-## Unreleased
+## v2.2.0, 18 August 2026, counting the way the help counts
+
+v2.1.0 listed what it knew was still wrong and left it, because each of these changes
+moves results for anyone already relying on them. This release makes them right.
+
+`nb.Periodsλ` now counts the way its own four examples count, which returns one more
+period wherever an end date falls part way through one. `nb.ScheduleValuesλ` and
+`nb.ScheduleRatesλ` now read the date conversions they were computing and throwing away,
+so both answer correctly when given dates written as text. Nothing is renamed, and
+formulas written against v2.1.0 keep working. Across all 20,813 recalculated cells in the
+workbook, four moved, all four on the Periods demonstration sheet.
 
 - **`nb.Periodsλ` returned one period fewer than its own examples claim.** It counted whole
   intervals, which is what `DATEDIF` returns, while every one of its four worked examples
