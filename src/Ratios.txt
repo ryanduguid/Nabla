@@ -619,7 +619,7 @@ DebtToAssetRatioλ = LAMBDA(
 
 
  
-/*  FUNCTION NAME:  InterestCoverateRatioλ
+/*  FUNCTION NAME:  InterestCoverageRatioλ
     DESCRIPTION:*//**Determines how easily a company can pay interest on its outstanding debt
 (Operating Income/Interest Expenses) */
 /*  REVISIONS:      Date        Developer       Description  
@@ -1337,7 +1337,7 @@ PriceToSalesRatioλ = LAMBDA(
 
 
 
-/*  FUNCTION NAME:  PriceToCashsRatioλ
+/*  FUNCTION NAME:  PriceToCashRatioλ
     DESCRIPTION:*//**Price to Cash (P/CF) Ratio is a stock valuation indicator or multiple that measures 
 the value of a stock’s price relative to its operating cash flow per share 
 (Market Price Per Share/Operating Cash Flow Per Share). */

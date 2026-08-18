@@ -2,6 +2,69 @@
 
 ## Unreleased
 
+- **Every release since v1.2.0 published a path off the build machine.** Excel stamps
+  `xl/workbook.xml` with the directory a file was last saved from, so `nabla.xlsx` carried
+  `C:\Users\<account>\Downloads\` and nothing in the pipeline knew the field
+  existed. On this machine the
+  account renders as a placeholder, so no name went out, but the same field built anywhere
+  else carries the account name into a public artefact. The build strips it, the refresh
+  strips it again because Excel puts it back on every save, and it joins the banned tokens
+  so CI fails rather than trusting either step to have run.
+
+- **Two more functions compared a raw date against a converted one,** the defect their
+  non-ByItems siblings had until v2.2.0. The check added then could not see these two: each
+  does read its conversion, but only to pass it to the recursive call, so the first row of
+  the result came from the raw argument and every row below it from the converted one, off
+  the same call. Given period bounds written as text, `nb.ScheduleValuesByItemsλ` returned
+  0 where the answer is 100, and `nb.ScheduleRatesByItemsλ` returned the 20 January rate
+  where the 1 January rate applies. Both now match their real-date answers exactly.
+
+- **`nb.DebtSculptVariableLRVλ`'s worked example called its sibling** and was missing its
+  closing bracket, so the one line a reader copies ran the other schedule, which after
+  v2.2.0 no longer means the same thing. `tools/verify_signatures.py` was added in v2.1.0
+  to catch exactly this and structurally could not: it skipped the text on the `EXAMPLES`
+  row itself and read only the rows below, which left **43 of the 119 example blocks
+  unread**, including every function that puts its example on the label row. It now reads
+  all 119, and against v2.2.0 it names this defect by function.
+
+- **`functions.csv` disagreed with the workbook it is generated from.** `nb.Depreciateλ`
+  published a signature cut off mid-parameter list with a bracket left open, because its
+  help wraps onto a second row and the exporter read only the first. 31 descriptions
+  carried `_x000a_`, the raw OOXML escape for a line break out of a Name Manager comment,
+  and two began with the help table's column delimiter. All fixed at the source, and
+  `tools/verify_previous_names.py` now checks the two columns nothing checked: brackets
+  balance, no raw escapes, no leading delimiter, nothing empty.
+
+- **`docProps/app.xml` described a 49-sheet workbook that has 50.** The build registered
+  the Australian tax worksheet in the content types, the relationships, the workbook, the
+  contents table and its table range, and not in the file-properties list, which is what a
+  reader's properties dialogue and any tool that trusts it will show. The build now lists
+  it, and `tools/verify_workbook.py` compares that list against the real sheets in order.
+
+- **`ATTRIBUTION.md` still called the depreciation helpers ATO methods.** v2.1.0 removed
+  that claim from the function help, the method codes, the Data Validation sheet, the
+  Australian tax worksheet and the README, and missed the one file that describes the
+  derivative to a stranger.
+
+- **Nine comment banners named or described the wrong function.** Every function is
+  introduced by a comment naming it and saying what it does. They are stripped before
+  anything reaches the workbook, so no part of the build and no gate has ever read them,
+  and they are the one piece of the published source that drifted with nothing watching.
+  Three misnamed their function: `→SumContainsλ` with the help table's arrow on it,
+  `InterestCoverateRatioλ` and `PriceToCashsRatioλ`. Six described a different one:
+  `CountColsλ` and `CountAColsλ` in both modules said "row" where they count columns, and
+  `IsInListλ` in both said it tests whether a value falls between two limits. Each is
+  anchored to the name above it, because the same wording is correct above `CountRowsλ`
+  and above `IsBetweenλ`.
+
+- **`nb.MaxColsλ` told the reader it returns the minimum,** copied from `nb.MinColsλ` and
+  never changed, in both the Essentials and Utilities copies. `nb.CountColsλ` published its
+  signature as `CountColsλ( Array,)`, with an empty second argument in it.
+
+  The last three entries came from an outside review, checked one by one against the
+  source. Six of its nine banner claims landed on wording that is correct where it sits, so
+  only the three it named plus the six that are genuinely wrong were changed.
+
 - **The workbook now ships the numbers its own formulas produce.** An `.xlsx` stores two
   things for every calculated cell, the formula and the answer Excel last got from it, and
   nothing keeps them in step. The build edits the workbook as XML and has no formula
@@ -42,6 +105,13 @@
 
 ### Changed
 
+- CI stopped installing `openpyxl`, which nothing has ever imported: the build is
+  deliberately pure zip and XML surgery, and the dependency was installed on every run to
+  be ignored. The workflow now also cancels a run its own successor supersedes, and asks
+  for read-only access to the repository rather than the default write scope.
+- `tools/verify_cache.py` fails when a sheet holding cached values contributes no
+  comparisons at all. A floor on the total is not enough on its own: one sheet dropping out
+  of the dump would still leave twenty thousand comparisons and look like a pass.
 - `tools/verify_workbook.py` no longer demands `fullCalcOnLoad`. There are two honest ways
   for a reader to see the right numbers, and that flag is only one of them. It now fails
   when a workbook has neither `fullCalcOnLoad` nor the calculation chain Excel leaves

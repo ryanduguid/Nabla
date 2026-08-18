@@ -82,6 +82,27 @@ def main():
                 failures.append("%s is not a renaming of %s: %s does not begin with %s"
                                 % (row["function"], was, new_bare, old_bare))
 
+    # The index is read by people and by machines, so the two columns nothing else checks
+    # get checked here. Each has shipped wrong: nb.Depreciateλ published a signature cut off
+    # mid-parameter-list because its help wraps onto a second row, and 31 descriptions
+    # carried the raw OOXML escape for a line break out of a Name Manager comment.
+    for row in rows:
+        sig = row.get("signature", "")
+        blurb = row.get("description", "")
+        if sig.count("(") != sig.count(")"):
+            failures.append("%s publishes a signature with unbalanced brackets: %s"
+                            % (row["function"], sig))
+        for field, text in (("signature", sig), ("description", blurb)):
+            if "_x00" in text:
+                failures.append("%s's %s carries a raw OOXML escape: %s"
+                                % (row["function"], field, text[:60]))
+        if blurb.startswith("→"):
+            failures.append("%s's description starts with the help table's column delimiter"
+                            % row["function"])
+        if not sig or not blurb:
+            failures.append("%s publishes an empty %s"
+                            % (row["function"], "signature" if not sig else "description"))
+
     for was in sorted(released - set(claimed)):
         failures.append("%s shipped in the baseline and no function claims it" % was)
 

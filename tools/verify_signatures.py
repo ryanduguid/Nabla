@@ -117,6 +117,10 @@ def worked_examples(body):
     for label, text in help_rows(body):
         if label.startswith("EXAMPLE"):
             started = True
+            # Some functions put the example on the EXAMPLE row itself rather than under
+            # it. Skipping this row's own text left 43 of the 119 example blocks unread,
+            # including the one that called the wrong function.
+            calls.extend(CALL.findall(text))
             continue
         if started and label.endswith(":"):
             break

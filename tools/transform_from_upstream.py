@@ -583,6 +583,19 @@ for _fn, _wrong, _in_mods in HELP_NAMES_ITSELF:
                   % re.escape(_fn), _name_itself, _wbx, flags=re.S)
     assert len(_hits) == len(_in_mods), (_fn, _hits)
 put("xl/workbook.xml", _wbx)
+
+# Excel stamps xl/workbook.xml with the directory the file was last saved from. That is a
+# fact about the build machine, not about the library, and every release up to v2.2.0
+# published one: on a machine whose account is not named "-" it carries the account name.
+# tools/refresh_cache.py strips it again after Excel puts it back, and the banned-token
+# gate fails on it, so it cannot come back quietly.
+_wbx = get("xl/workbook.xml")
+_wbx, _abs = re.subn(
+    r'<mc:AlternateContent[^>]*>\s*<mc:Choice Requires="x15">\s*<x15ac:absPath[^>]*/>\s*'
+    r"</mc:Choice>\s*</mc:AlternateContent>", "", _wbx, flags=re.S)
+assert _abs == 1, ("absPath", _abs)
+put("xl/workbook.xml", _wbx)
+print("stripped the build machine's path from the workbook")
 print("help now names its own function in", sum(len(m) for _, _, m in HELP_NAMES_ITSELF), "definitions")
 
 # The Corkscrew pair's help signature spells its second parameter FLow1, with a capital L.
@@ -687,6 +700,14 @@ HELP_SIGNATURES = [
     ("nabla.d", "ScheduleValuesByItemsλ", "ScheduleRatesByItemsλ(", "ScheduleValuesByItemsλ("),
     # and one help points the reader at a function that does not exist, by transposition
     ("nabla.f", "Amortiseλ", "LableAmortiseλ", "LabelAmortiseλ"),
+    # MaxColsλ's description was copied from MinColsλ and never changed, so both copies of
+    # the function tell the reader they return the minimum. The Utilities clone says it too.
+    ("nabla.e", "MaxColsλ", "→Get the minimum for each Column", "→Get the maximum for each Column"),
+    ("nabla.u", "MaxColsλ", "→Get the minimum for each Column", "→Get the maximum for each Column"),
+    # and CountColsλ's signature carries a trailing comma, so the printed call has an empty
+    # second argument in it
+    ("nabla.e", "CountColsλ", "CountColsλ( Array,)", "CountColsλ( Array)"),
+    ("nabla.u", "CountColsλ", "CountColsλ( Array,)", "CountColsλ( Array)"),
     ("nabla.r", "EquityRatioλ",
      '"OperatingIncome    →(Required) Operating Income (EBIT) ¶"',
      '"ShareholdersEquity →(Required) Shareholders\' Equity (total assets - total liabilities) ¶"'),
@@ -727,6 +748,45 @@ def function_block(module, fn):
     a = start.start()
     return a, text.index("\n);", a) + 3
 
+
+# ---------- the comment banners above each function ----------
+# Each function is introduced by a comment naming it and describing it. Those comments are
+# stripped before anything is stored in the workbook, so no part of the build and no gate
+# has ever read them, and they are the one piece of the published source that drifted with
+# nothing watching. Three name a function that does not exist and three describe a
+# different one. Each is anchored to the name above it, because the wording on its own is
+# also correct somewhere else: "Count numbers in each row" is right above CountRowsλ.
+BANNER_FIXES = [
+    ("nabla.e", "CountColsλ", "Count numbers in each row", "Count numbers in each column"),
+    ("nabla.u", "CountColsλ", "Count numbers in each row", "Count numbers in each column"),
+    ("nabla.e", "CountAColsλ", "Count everything in each row", "Count everything in each column"),
+    ("nabla.u", "CountAColsλ", "Count everything in each row", "Count everything in each column"),
+    ("nabla.e", "IsInListλ", "Determine if a value is between a lower and upper limit",
+     "Determine whether a value is one of a list of items"),
+    ("nabla.u", "IsInListλ", "Determine if a value is between a lower and upper limit",
+     "Determine whether a value is one of a list of items"),
+]
+
+# and three banners misspell the name they announce
+BANNER_NAMES = [
+    ("nabla.f", "FUNCTION NAME:  →SumContainsλ", "FUNCTION NAME:  SumContainsλ"),
+    ("nabla.r", "FUNCTION NAME:  InterestCoverateRatioλ", "FUNCTION NAME:  InterestCoverageRatioλ"),
+    ("nabla.r", "FUNCTION NAME:  PriceToCashsRatioλ", "FUNCTION NAME:  PriceToCashRatioλ"),
+]
+
+for _mod, _fn, _old, _new in BANNER_FIXES:
+    _pat = re.compile(r"(FUNCTION NAME:\s+%s\s+DESCRIPTION:\*//\*\*)%s(\*/)"
+                      % (re.escape(_fn), re.escape(_old)))
+    mods[_mod]["text"], _n = _pat.subn(lambda m, w=_new: m.group(1) + w + m.group(2),
+                                       mods[_mod]["text"])
+    assert _n == 1, (_mod, _fn, _n)
+
+for _mod, _old, _new in BANNER_NAMES:
+    assert mods[_mod]["text"].count(_old) == 1, (_mod, _old, mods[_mod]["text"].count(_old))
+    mods[_mod]["text"] = mods[_mod]["text"].replace(_old, _new)
+
+print("corrected %d comment banners that described the wrong function and %d that misnamed it"
+      % (len(BANNER_FIXES), len(BANNER_NAMES)))
 
 for _entry in HELP_SIGNATURES:
     _mod, _fn, (_old, _new), _ = stores(_entry)
@@ -952,6 +1012,20 @@ LOGIC_FIXES = [
      '"M", EDATE(_xlpm.CvtStart, _xlfn.SEQUENCE(1, _xlpm.Periods, _xlpm.EndDates, 1)) - _xlpm.EndDates, '
      '"W", _xlfn.SEQUENCE(1, _xlpm.Periods, _xlpm.CvtStart + IF(_xlpm.PeriodStarts?, 0, _xlpm.DPW - 1), _xlpm.DPW), '
      '"D", _xlfn.SEQUENCE(1, _xlpm.Periods, _xlpm.CvtStart, 1),'),
+    # The two ByItems functions carry the same defect their siblings had until v2.2.0, and
+    # the Cvt check added then does not see it: each one does read its conversion, but only
+    # to hand it to the recursive call, so the first row of the result is computed from the
+    # raw argument and every row below it from the converted one, off the same call.
+    ("nabla.d", "ScheduleValuesByItemsλ",
+     "(ItemDates >= PeriodStarts) * (ItemDates <= PeriodEnds)",
+     "(ItemDates >= CvtPrdStarts) * (ItemDates <= CvtPrdEnds)",
+     "(_xlpm.ItemDates &gt;= _xlpm.PeriodStarts) * (_xlpm.ItemDates &lt;= _xlpm.PeriodEnds)",
+     "(_xlpm.ItemDates &gt;= _xlpm.CvtPrdStarts) * (_xlpm.ItemDates &lt;= _xlpm.CvtPrdEnds)"),
+    ("nabla.d", "ScheduleRatesByItemsλ",
+     "XLOOKUP( PeriodEnds, ItemDates, ItemRates, 0, -1)",
+     "XLOOKUP( CvtPrdEnds, ItemDates, ItemRates, 0, -1)",
+     "_xlfn.XLOOKUP(_xlpm.PeriodEnds, _xlpm.ItemDates, _xlpm.ItemRates, 0, -1)",
+     "_xlfn.XLOOKUP(_xlpm.CvtPrdEnds, _xlpm.ItemDates, _xlpm.ItemRates, 0, -1)"),
 ]
 
 for _entry in LOGIC_FIXES:
@@ -1000,6 +1074,12 @@ DEBT_FIXES = [
      "→Principal repayments¶", "→Debt service (interest and principal)¶"),
     ("nabla.debt", "DebtSculptVariableλ",
      "→Principal repayments¶", "→Debt service (interest and principal)¶"),
+    # and the LRV function's one worked example calls its sibling rather than itself, with
+    # the closing bracket missing as well, so the line a reader copies runs the schedule
+    # this release has just made behave differently.
+    ("nabla.debt", "DebtSculptVariableLRVλ",
+     "→=DebtSculptVariableλ(, Debt, CFADS, DSCR, APR\"",
+     "→=DebtSculptVariableLRVλ(, Debt, CFADS, DSCR, APR)\""),
 ]
 
 # fix upstream copy-paste bug: the u module's About suggested "nabla.e" (was BXE) as its own name
@@ -1752,6 +1832,26 @@ assert 'hidden="1"' not in toc
 put("xl/worksheets/sheet2.xml", toc)
 print("added the Australian tax worksheet; cleared the TOC filter and unhid", unhidden, "rows")
 
+# docProps/app.xml repeats the sheet list for the file properties dialogue and for anything
+# that reads a workbook's shape without opening it. The new worksheet was registered in the
+# content types, the relationships, the workbook, the contents table and its table range,
+# and not here, so the part described a 49-sheet workbook that has 50. Excel rewrote it on
+# the first save, which is why it looked right in the shipped file and wrong in a fresh
+# build. Insert the title where the sheet sits, and bump both counts that describe it.
+_app = get("docProps/app.xml")
+assert "<vt:lpstr>Australian tax</vt:lpstr>" not in _app
+_needle = "<vt:lpstr>FMTs</vt:lpstr>"
+assert _app.count(_needle) == 1, "no FMTs entry to insert before"
+_app = _app.replace(_needle, "<vt:lpstr>Australian tax</vt:lpstr>" + _needle, 1)
+_app, _n = re.subn(r'(<TitlesOfParts><vt:vector size=")(\d+)("\s+baseType="lpstr")',
+                   lambda m: m.group(1) + str(int(m.group(2)) + 1) + m.group(3), _app, count=1)
+assert _n == 1, "no TitlesOfParts vector size"
+_app, _n = re.subn(r"(<vt:lpstr>Worksheets</vt:lpstr></vt:variant><vt:variant><vt:i4>)(\d+)(</vt:i4>)",
+                   lambda m: m.group(1) + str(int(m.group(2)) + 1) + m.group(3), _app, count=1)
+assert _n == 1, "no worksheet count in HeadingPairs"
+put("docProps/app.xml", _app)
+print("listed the new worksheet in docProps/app.xml")
+
 # ---------- 9g. Performance: freeze the volatile demo data ----------
 # 38 RANDBETWEEN formulas made 93% of the workbook's formula cells volatile, so every edit
 # recalculated almost everything. The sample data does not need to be random: fixed values
@@ -2244,6 +2344,7 @@ print("exported", len(exported), "module sources to", src_dir)
 
 SIG_RE = re.compile(r"FUNCTION:\s*→?\s*(.*?)¶")   # arrow optional: some upstream help omits it
 DESC_RE = re.compile(r"DESCRIPTION:\s*→(.*?)¶")
+ROW_RE = re.compile(r"→(.*?)¶")           # the next help row, label or not
 # every shipped name came from somewhere, so a missing entry is a build error rather
 # than an empty cell: index directly instead of .get()
 assert len(entries) == len(FLAT_PREVIOUS_OF), (len(entries), len(FLAT_PREVIOUS_OF))
@@ -2253,10 +2354,26 @@ with open(os.path.join(repo, "functions.csv"), "w", encoding="utf-8", newline=""
     for name, attrs, body in sorted(entries):
         bare = name.rsplit(".", 1)[1]
         sig = SIG_RE.search(body)
+        # A long signature wraps onto the next help row, which carries no label. Reading
+        # only the first row published nb.Depreciateλ with nine of its parameters missing
+        # and a bracket left open. Keep taking rows until the brackets balance.
+        text, end = (sig.group(1).strip(), sig.end()) if sig else (bare, 0)
+        while text.count("(") > text.count(")"):
+            more = ROW_RE.search(body, end)
+            if not more:
+                break
+            text = (text + " " + more.group(1).strip()).strip()
+            end = more.end()
+        assert text.count("(") == text.count(")"), (name, text)
+
         desc = re.search(r'comment="([^"]*)"', attrs)
         fallback = DESC_RE.search(body)
-        out.writerow([name, FLAT_MODULE_OF.get(name, ""), FLAT_PREVIOUS_OF[name],
-                      sig.group(1).strip() if sig else bare,
-                      html.unescape(desc.group(1)) if desc else
-                      (fallback.group(1).strip() if fallback else "")])
+        blurb = (html.unescape(desc.group(1)) if desc else
+                 (fallback.group(1).strip() if fallback else ""))
+        # A Name Manager comment stores a line break as the OOXML escape _x000a_, which is
+        # not an XML entity, so unescaping the attribute leaves the escape itself behind.
+        # And a description lifted from the help table can still carry its column delimiter.
+        blurb = blurb.replace("_x000a_", " ").replace("_x000D_", " ").lstrip("→").strip()
+        blurb = re.sub(r"\s{2,}", " ", blurb)
+        out.writerow([name, FLAT_MODULE_OF.get(name, ""), FLAT_PREVIOUS_OF[name], text, blurb])
 print("exported functions.csv,", len(entries), "functions")
