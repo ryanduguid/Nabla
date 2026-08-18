@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v2.5.0, 19 August 2026, an example that runs
 
 - **`nb.TimelineOffsetλ`'s worked example could not be run as printed.** The call was
   missing the two closing brackets that finish `EDATE` and the function call itself, so
