@@ -148,6 +148,84 @@ Same 'Debt: variable row 3 is debt service'   "INDEX($dsv(), 4, 2)" 'Debt servic
 # The debt module's one worked example.
 Near 'Debt: InterestLRV worked example' "$ilrv(6666.37, 3.50, 90000, 0.03/12)" '222.90' '0.005'
 
+# --- PeriodStart. A period anchored on a month end is defined by EDATE: the anchor's day
+# of the month where the target month has one, the month's own end where it does not, so
+# 31 January monthly runs 31 Jan, 28 Feb, 31 Mar. Up to v2.3.0 the function walked the
+# calendar and took a single day back off whatever overflowed, which put 5 March in a
+# period starting 2 March. Each grid check compares 180 dates at 13-day steps against
+# that EDATE schedule, which is stated here rather than borrowed from the function.
+$ps = "nb.PeriodStart$L"
+$psWant = 'MAP(ds, LAMBDA(d, LET(s, EDATE(a, SEQUENCE(121,1,-60) * m), MAX(IF(s <= d, s, 0)))))'
+
+foreach ($day in '31', '30', '29', '28', '15', '1') {
+    foreach ($m in '1', '3', '12') {
+        Near "PeriodStart: anchor 2026-01-$day, $m-month periods" `
+             ("LET(a, DATE(2026,1,$day), m, $m, ds, DATE(2024,1,1) + SEQUENCE(1,180,0,13), " +
+              "SUMPRODUCT(--(MAP(ds, LAMBDA(d, $ps(a, m, d))) <> $psWant)))") '0'
+    }
+}
+Near 'PeriodStart: anchor 29 Feb 2028, monthly' `
+     ("LET(a, DATE(2028,2,29), m, 1, ds, DATE(2024,1,1) + SEQUENCE(1,180,0,13), " +
+      "SUMPRODUCT(--(MAP(ds, LAMBDA(d, $ps(a, m, d))) <> $psWant)))") '0'
+
+# The reported case, its neighbours on either side, and the documented example.
+Same 'PeriodStart: 31 Jan monthly, 5 Mar' `
+     "TEXT($ps(`"31/1/2026`", 1, `"5/3/2026`"), `"yyyy-mm-dd`")" '2026-02-28'
+Same 'PeriodStart: 31 Jan monthly, 27 Feb' `
+     "TEXT($ps(`"31/1/2026`", 1, `"27/2/2026`"), `"yyyy-mm-dd`")" '2026-01-31'
+Same 'PeriodStart: 31 Jan monthly, 28 Feb' `
+     "TEXT($ps(`"31/1/2026`", 1, `"28/2/2026`"), `"yyyy-mm-dd`")" '2026-02-28'
+Same 'PeriodStart: 31 Jan monthly, 31 Mar' `
+     "TEXT($ps(`"31/1/2026`", 1, `"31/3/2026`"), `"yyyy-mm-dd`")" '2026-03-31'
+Same 'PeriodStart: 31 Dec monthly, 29 Feb 2028' `
+     "TEXT($ps(`"31/12/2025`", 1, `"29/2/2028`"), `"yyyy-mm-dd`")" '2028-02-29'
+Same 'PeriodStart: 30 Nov monthly, 15 Feb' `
+     "TEXT($ps(`"30/11/2025`", 1, `"15/2/2026`"), `"yyyy-mm-dd`")" '2026-01-30'
+Same 'PeriodStart: documented example' `
+     "TEXT($ps(`"2026-01-01`", 3, `"2026-04-15`"), `"yyyy-mm-dd`")" '2026-04-01'
+Same 'PeriodStart: date before the anchor' `
+     "TEXT($ps(DATE(2026,1,1), 3, DATE(2025,11,15)), `"yyyy-mm-dd`")" '2025-10-01'
+Same 'PeriodStart: date on the anchor' `
+     "TEXT($ps(DATE(2026,1,15), 3, DATE(2026,1,15)), `"yyyy-mm-dd`")" '2026-01-15'
+Same 'PeriodStart: help with no args' "INDEX($ps(),1,1)" 'FUNCTION:'
+
+# --- TimelineOffset. The interval is read off the timeline's first two dates and, up to
+# v2.3.0, converted to whole months and divided by. A daily, weekly or fortnightly
+# timeline rounds to no months at all, so every one of them returned #DIV/0!.
+$to = "nb.TimelineOffset$L"
+$daily = 'DATE(2026,1,1) + SEQUENCE(1,60,0,1)'
+$weekly = 'DATE(2026,1,1) + SEQUENCE(1,60,0,7)'
+$fortnightly = 'DATE(2026,1,1) + SEQUENCE(1,60,0,14)'
+
+Near 'TimelineOffset: daily, 10 days in'        "$to(DATE(2026,1,11), $daily)"        '10'
+Near 'TimelineOffset: daily, 3 days before'     "$to(DATE(2025,12,29), $daily)"       '-3'
+Near 'TimelineOffset: weekly, 20 days in'       "$to(DATE(2026,1,21), $weekly)"       '2'
+Near 'TimelineOffset: weekly, 3 days before'    "$to(DATE(2025,12,29), $weekly)"      '-1'
+Near 'TimelineOffset: weekly, one whole period before' "$to(DATE(2025,12,25), $weekly)" '-1'
+Near 'TimelineOffset: fortnightly, 30 days in'  "$to(DATE(2026,1,31), $fortnightly)"  '2'
+
+# A sub-monthly period is a fixed number of days, so the offset is the day difference
+# floored by that count. 200 dates at 3-day steps, starting three months before the
+# timeline does, so the negative side is covered too.
+foreach ($tl in @('daily', $daily, '1'), @('weekly', $weekly, '7'), @('fortnightly', $fortnightly, '14')) {
+    Near "TimelineOffset: $($tl[0]) counts whole periods" `
+         ("LET(t, $($tl[1]), ds, DATE(2025,10,1) + SEQUENCE(1,200,0,3), " +
+          "SUMPRODUCT(--(MAP(ds, LAMBDA(d, $to(d, t))) <> " +
+          "MAP(ds, LAMBDA(d, INT((d - INDEX(t,1)) / $($tl[2])))))))") '0'
+}
+
+# and the month path must answer exactly what it always did, month ends included.
+foreach ($tl in @('monthly', '1', '15'), @('quarterly', '3', '15'), @('yearly', '12', '15'),
+                @('monthly off a 31st', '1', '31')) {
+    Near "TimelineOffset: $($tl[0]) unchanged" `
+         ("LET(b, DATE(2026,1,$($tl[2])), mpp, $($tl[1]), t, EDATE(b, SEQUENCE(1,40,0,mpp)), " +
+          "ds, DATE(2024,1,1) + SEQUENCE(1,200,0,11), " +
+          "SUMPRODUCT(--(MAP(ds, LAMBDA(d, $to(d, t))) <> " +
+          "MAP(ds, LAMBDA(d, LET(ks, SEQUENCE(121,1,-60), s, EDATE(b, ks * mpp), " +
+          "MAX(IF(s <= d, ks, -9999))))))))") '0'
+}
+Same 'TimelineOffset: help with no args' "INDEX($to(),1,1)" 'FUNCTION:'
+
 $xl = $null; $wb = $null; $tmp = $null; $exit = 0
 
 # Excel rejects incoming COM calls while it is mid-calculation (RPC_E_CALL_REJECTED),

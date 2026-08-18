@@ -1920,7 +1920,9 @@ TimelineOffsetλ = LAMBDA(
     //  Determine timeline's interval (length of periods)
         Period1,        INDEX( Timeline, 1),
         Period2,        INDEX( Timeline, 2), 
-        MpP,            ROUND( (Period2 - Period1)/30.5, 0), //Months Per Period
+        DpP,            Period2 - Period1,                    //Days Per Period
+        MpP,            MAX( ROUND( DpP/30.5, 0), 1),         //Months Per Period, never zero
+        SubMonthly?,    ROUND( DpP/30.5, 0) = 0,
     //  Determine if Prior to timeline or after
         Direction,      IF(Date < Period1, -1, 1),
     //  Determine the number of months between timeline's start and the date's period start
@@ -1929,7 +1931,11 @@ TimelineOffsetλ = LAMBDA(
         PeriodDiff,     QUOTIENT( MonthDiff, MpP),
         PeriodSeq,      SEQUENCE( 1, PeriodDiff + 2, IF( Direction = 1, 0, -( PeriodDiff + 1))),
         SearchTimeline, EDATE( Period1, PeriodSeq * MpP),
-        Result,         MATCH( Date, SearchTimeline, 1) - IF( Direction = 1, 1, PeriodDiff + 2),        
+        ByMonth,        MATCH( Date, SearchTimeline, 1) - IF( Direction = 1, 1, PeriodDiff + 2),
+    //  A sub-monthly timeline is a fixed number of days per period, so the offset is the
+    //  whole number of periods between the timeline start and the date, floored, which
+    //  puts a date before the timeline in the period that ends where the timeline begins.
+        Result,         IF( SubMonthly?, INT( (Date - Period1) / DpP), ByMonth),
     //  Return Result or Help
         CHOOSE( Help? + 1, Result, Help)
     )
@@ -2127,18 +2133,19 @@ PeriodStartλ = LAMBDA(
     //  Constants
         MpY,                12, //Months Per Year
         MpP,                MonthsPerPeriod,
+    //  Check inputs - If a date is in text, convert to value
+        CvtStart,           IF( ISTEXT( AnyPeriodStart), DATEVALUE( AnyPeriodStart), AnyPeriodStart),
+        CvtDate,            IF( ISTEXT( DateOfInterest), DATEVALUE( DateOfInterest), DateOfInterest),
     //  Procedure
-        DateDay,            DAY(DateOfInterest), 
-        PeriodDay,          Day(AnyPeriodStart),
-        DateMonth,          MONTH(DateOfInterest), 
-        PeriodMonth,        MONTH(AnyPeriodStart),
-        MonthModDifference, MOD(DateMonth - PeriodMonth, MpP),
-        NeedPriorPeriod?,   AND( MonthModDifference = 0, DateDay < PeriodDay) * - MpP,
-        NewPeriodMonth,     MOD(DateMonth - MonthModDifference + NeedPriorPeriod? -1, MpY ) + 1,
-        YearCorrection,     -((DateMonth * 100 + DateDay) < (NewPeriodMonth * 100 + PeriodDay )),
-        PeriodDate,         DATE(YEAR(DateOfInterest) + YearCorrection,  NewPeriodMonth, PeriodDay),
-        LastDayOfMonthAdj,  PeriodDate - (MONTH(PeriodDate) <> NewPeriodMonth),
-        Result,             LastDayOfMonthAdj,
+    //  Count the whole periods from the anchor to the date of interest and step the
+    //  anchor on by that many.
+        MonthDiff,          (YEAR( CvtDate) - YEAR( CvtStart)) * MpY + MONTH( CvtDate) - MONTH( CvtStart),
+        WholePeriods,       QUOTIENT( MonthDiff, MpP),
+        Candidate,          EDATE( CvtStart, WholePeriods * MpP),
+    //  QUOTIENT truncates towards zero, and the day of the month can leave the candidate
+    //  past the date of interest, so step back a period where it does. One step is always
+    //  enough: a truncated quotient is never more than one period out.
+        Result,             IF( Candidate > CvtDate, EDATE( CvtStart, (WholePeriods - 1) * MpP), Candidate),
     //  Return Result or Help
         CHOOSE( Help? + 1, Result, Help)
     )

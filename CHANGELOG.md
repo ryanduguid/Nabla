@@ -1,5 +1,58 @@
 # Changelog
 
+## Unreleased
+
+- **`nb.PeriodStartλ` returned a date that is not a period start whenever the anchor is a
+  month end.** It walked the calendar to the period's month, rebuilt the date with the
+  anchor's day of the month, and corrected whatever overflowed by exactly one day. Anchored
+  on 31 January, monthly, that asks for 31 February: Excel reads it as 3 March, one day back
+  off it is 2 March, and 2 March is in neither the right month nor on any period boundary.
+  28 February, which is where that period does start, was unreachable.
+
+  A schedule anchored on a month end is what `EDATE` describes: the anchor's day of the
+  month where the target month has one, the month's own end where it does not, so 31 January
+  monthly runs 31 Jan, 28 Feb, 31 Mar. The procedure now counts the whole periods from the
+  anchor to the date of interest and steps the anchor on by that many, then steps back one
+  period where a truncated quotient overshoots.
+
+  Measured against that schedule over 9,900 cases, being eleven anchors by five period
+  lengths by 180 dates at 13-day steps from January 2024, the old procedure was wrong 169
+  times. Every one had an anchor on the 29th, 30th or 31st, 29 February included; anchors on
+  the 1st, 15th and 28th were already right and answer exactly as before.
+  `("31/1/2026", 1, "5/3/2026")` gave 2 March 2026 and now gives 28 February 2026.
+
+  The new procedure compares two dates rather than taking months and days out of them, and
+  Excel orders every number before any text, so a date written as text would never compare
+  as a date. Both date arguments are converted first, the same way the Dates module's
+  functions do it, and `tools/verify_sources.py` already fails a conversion that is bound
+  and never read.
+
+- **`nb.TimelineOffsetλ` divided by zero on every daily, weekly and fortnightly timeline.**
+  It reads the interval off the timeline's first two dates and rounds it to whole months,
+  which is zero for anything shorter than about a fortnight, and the next line divides by
+  it. Every such call returned `#DIV/0!`.
+
+  A sub-monthly period is a fixed number of days, which is what makes it easy: the offset is
+  now the day difference floored by that count, so a date 20 days into a weekly timeline is
+  in period 2 and one three days before it starts is in period -1. The month path is
+  untouched and answers exactly what it answered before on monthly, quarterly and yearly
+  timelines, month-end anchored ones included, over 200 dates at 11-day steps.
+
+  This does not make `nb.Amortiseλ` work on a sub-monthly timeline. It calls
+  `nb.TimelineOffsetλ` on whatever timeline it is handed, so it did inherit this failure,
+  but it rounds the same interval to months itself and then divides twelve by it, so a
+  weekly timeline still fails there on its own arithmetic. `nb.Depreciateλ` holds a third
+  copy of the rounding and turns nought months into `#N/A`. Neither is changed here.
+
+`tools/excel_selftest.ps1` now runs 195 assertions rather than 152. Of the 43 new ones, 19
+compare `nb.PeriodStartλ` against an `EDATE` schedule written out in the test rather than
+borrowed from the function, and 4 hold `nb.TimelineOffsetλ`'s month path to the same
+comparison, so a future change to either cannot quietly redefine what a period start is.
+
+Only `xl/workbook.xml` and the formula-environment store changed. No worksheet part differs
+from v2.3.0 and all 20,221 cached values are identical: the sheet that demonstrates
+`nb.TimelineOffsetλ` uses a monthly timeline, and no sheet calls `nb.PeriodStartλ`.
+
 ## v2.3.0, 19 August 2026, a file that agrees with itself
 
 Two things this release does that no earlier one could. The workbook now holds the numbers

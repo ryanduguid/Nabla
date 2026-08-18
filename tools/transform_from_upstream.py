@@ -1026,6 +1026,89 @@ LOGIC_FIXES = [
      "XLOOKUP( CvtPrdEnds, ItemDates, ItemRates, 0, -1)",
      "_xlfn.XLOOKUP(_xlpm.PeriodEnds, _xlpm.ItemDates, _xlpm.ItemRates, 0, -1)",
      "_xlfn.XLOOKUP(_xlpm.CvtPrdEnds, _xlpm.ItemDates, _xlpm.ItemRates, 0, -1)"),
+    # PeriodStartλ walks the calendar a month at a time and then repairs what that walk
+    # got wrong, and the repair is a single day: where the anchor is the 31st and the
+    # month it lands in is shorter, DATE() rolls the date into the next month and the
+    # correction takes one day back off it. Anchored on 31 January, monthly, the period
+    # containing 5 March came back as 2 March, which is neither a period start nor even
+    # in the right month, and 28 February, which is, was unreachable. Anchors on the 29th,
+    # 30th and 31st are all affected, and 29 February with them; every other anchor was
+    # already right. Step the anchor by whole periods with EDATE instead, which is what
+    # defines a monthly schedule off a month end: it holds the day where the target month
+    # has one and clamps to the month's end where it does not. Checked against every date
+    # from 2024 to 2030 at 13-day steps, for eleven anchors and five period lengths: 169
+    # of 9,900 came back wrong, all of them month-end anchors.
+    ("nabla.f", "PeriodStartλ",
+     '    //  Procedure\n'
+     '        DateDay,            DAY(DateOfInterest), \n'
+     '        PeriodDay,          Day(AnyPeriodStart),\n'
+     '        DateMonth,          MONTH(DateOfInterest), \n'
+     '        PeriodMonth,        MONTH(AnyPeriodStart),\n'
+     '        MonthModDifference, MOD(DateMonth - PeriodMonth, MpP),\n'
+     '        NeedPriorPeriod?,   AND( MonthModDifference = 0, DateDay < PeriodDay) * - MpP,\n'
+     '        NewPeriodMonth,     MOD(DateMonth - MonthModDifference + NeedPriorPeriod? -1, MpY ) + 1,\n'
+     '        YearCorrection,     -((DateMonth * 100 + DateDay) < (NewPeriodMonth * 100 + PeriodDay )),\n'
+     '        PeriodDate,         DATE(YEAR(DateOfInterest) + YearCorrection,  NewPeriodMonth, PeriodDay),\n'
+     '        LastDayOfMonthAdj,  PeriodDate - (MONTH(PeriodDate) <> NewPeriodMonth),\n'
+     '        Result,             LastDayOfMonthAdj,\n',
+     '    //  Check inputs - If a date is in text, convert to value\n'
+     '        CvtStart,           IF( ISTEXT( AnyPeriodStart), DATEVALUE( AnyPeriodStart), AnyPeriodStart),\n'
+     '        CvtDate,            IF( ISTEXT( DateOfInterest), DATEVALUE( DateOfInterest), DateOfInterest),\n'
+     '    //  Procedure\n'
+     '    //  Count the whole periods from the anchor to the date of interest and step the\n'
+     '    //  anchor on by that many.\n'
+     '        MonthDiff,          (YEAR( CvtDate) - YEAR( CvtStart)) * MpY + MONTH( CvtDate) - MONTH( CvtStart),\n'
+     '        WholePeriods,       QUOTIENT( MonthDiff, MpP),\n'
+     '        Candidate,          EDATE( CvtStart, WholePeriods * MpP),\n'
+     '    //  QUOTIENT truncates towards zero, and the day of the month can leave the candidate\n'
+     '    //  past the date of interest, so step back a period where it does. One step is always\n'
+     '    //  enough: a truncated quotient is never more than one period out.\n'
+     '        Result,             IF( Candidate > CvtDate, EDATE( CvtStart, (WholePeriods - 1) * MpP), Candidate),\n',
+     '_xlpm.DateDay, DAY(_xlpm.DateOfInterest), _xlpm.PeriodDay, DAY(_xlpm.AnyPeriodStart), '
+     '_xlpm.DateMonth, MONTH(_xlpm.DateOfInterest), _xlpm.PeriodMonth, MONTH(_xlpm.AnyPeriodStart), '
+     '_xlpm.MonthModDifference, MOD(_xlpm.DateMonth - _xlpm.PeriodMonth, _xlpm.MpP), '
+     '_xlpm.NeedPriorPeriod?, AND(_xlpm.MonthModDifference = 0, _xlpm.DateDay &lt; _xlpm.PeriodDay) '
+     '* -_xlpm.MpP, _xlpm.NewPeriodMonth, MOD(_xlpm.DateMonth - _xlpm.MonthModDifference + '
+     '_xlpm.NeedPriorPeriod? - 1, _xlpm.MpY) + 1, _xlpm.YearCorrection, '
+     '-((_xlpm.DateMonth * 100 + _xlpm.DateDay) &lt; (_xlpm.NewPeriodMonth * 100 + _xlpm.PeriodDay)), '
+     '_xlpm.PeriodDate, DATE(YEAR(_xlpm.DateOfInterest) + _xlpm.YearCorrection, _xlpm.NewPeriodMonth, '
+     '_xlpm.PeriodDay), _xlpm.LastDayOfMonthAdj, _xlpm.PeriodDate - (MONTH(_xlpm.PeriodDate) '
+     '&lt;&gt; _xlpm.NewPeriodMonth), _xlpm.Result, _xlpm.LastDayOfMonthAdj, ',
+     '_xlpm.CvtStart, IF(ISTEXT(_xlpm.AnyPeriodStart), DATEVALUE(_xlpm.AnyPeriodStart), '
+     '_xlpm.AnyPeriodStart), _xlpm.CvtDate, IF(ISTEXT(_xlpm.DateOfInterest), '
+     'DATEVALUE(_xlpm.DateOfInterest), _xlpm.DateOfInterest), _xlpm.MonthDiff, '
+     '(YEAR(_xlpm.CvtDate) - YEAR(_xlpm.CvtStart)) * _xlpm.MpY + MONTH(_xlpm.CvtDate) '
+     '- MONTH(_xlpm.CvtStart), _xlpm.WholePeriods, QUOTIENT(_xlpm.MonthDiff, _xlpm.MpP), '
+     '_xlpm.Candidate, EDATE(_xlpm.CvtStart, _xlpm.WholePeriods * _xlpm.MpP), _xlpm.Result, '
+     'IF(_xlpm.Candidate &gt; _xlpm.CvtDate, EDATE(_xlpm.CvtStart, (_xlpm.WholePeriods - 1) '
+     '* _xlpm.MpP), _xlpm.Candidate), '),
+    # TimelineOffsetλ reads a timeline's interval off its first two dates and converts it
+    # to whole months. A daily, weekly or fortnightly timeline is no whole number of months
+    # long, so that rounds to zero and the next line divides by it: every such call returned
+    # #DIV/0!, and nb.Amortiseλ calls this on every timeline it is given. Those intervals are
+    # a fixed number of days, which is exactly what makes them easy: count the days instead.
+    # The month path is untouched, and gives the same answer it always did on monthly,
+    # quarterly and yearly timelines, including those anchored on a month end.
+    ("nabla.f", "TimelineOffsetλ",
+     '        MpP,            ROUND( (Period2 - Period1)/30.5, 0), //Months Per Period\n',
+     '        DpP,            Period2 - Period1,                    //Days Per Period\n'
+     '        MpP,            MAX( ROUND( DpP/30.5, 0), 1),         //Months Per Period, never zero\n'
+     '        SubMonthly?,    ROUND( DpP/30.5, 0) = 0,\n',
+     '_xlpm.MpP, ROUND((_xlpm.Period2 - _xlpm.Period1) / 30.5, 0), ',
+     '_xlpm.DpP, _xlpm.Period2 - _xlpm.Period1, _xlpm.MpP, MAX(ROUND(_xlpm.DpP / 30.5, 0), 1), '
+     '_xlpm.SubMonthly?, ROUND(_xlpm.DpP / 30.5, 0) = 0, '),
+    ("nabla.f", "TimelineOffsetλ",
+     '        Result,         MATCH( Date, SearchTimeline, 1) - IF( Direction = 1, 1, PeriodDiff + 2),        \n',
+     '        ByMonth,        MATCH( Date, SearchTimeline, 1) - IF( Direction = 1, 1, PeriodDiff + 2),\n'
+     '    //  A sub-monthly timeline is a fixed number of days per period, so the offset is the\n'
+     '    //  whole number of periods between the timeline start and the date, floored, which\n'
+     '    //  puts a date before the timeline in the period that ends where the timeline begins.\n'
+     '        Result,         IF( SubMonthly?, INT( (Date - Period1) / DpP), ByMonth),\n',
+     '_xlpm.Result, MATCH(_xlpm.Date, _xlpm.SearchTimeline, 1) - IF(_xlpm.Direction = 1, 1, '
+     '_xlpm.PeriodDiff + 2), ',
+     '_xlpm.ByMonth, MATCH(_xlpm.Date, _xlpm.SearchTimeline, 1) - IF(_xlpm.Direction = 1, 1, '
+     '_xlpm.PeriodDiff + 2), _xlpm.Result, IF(_xlpm.SubMonthly?, INT((_xlpm.Date - _xlpm.Period1) '
+     '/ _xlpm.DpP), _xlpm.ByMonth), '),
 ]
 
 for _entry in LOGIC_FIXES:
