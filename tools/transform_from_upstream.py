@@ -3,6 +3,12 @@
 import zipfile, re, shutil, io, sys, datetime
 import base64, json
 
+# The progress lines name functions, and every function name carries a λ, which a Windows
+# console's cp1252 cannot encode: without this the build dies partway through reporting
+# what it just did, having already done it.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
 SRC = sys.argv[1] if len(sys.argv) > 1 else "2024-07-06.xlsx"
 DST = sys.argv[2] if len(sys.argv) > 2 else "nabla.xlsx"
 REPO_URL = "https://github.com/ryanduguid/Nabla"
