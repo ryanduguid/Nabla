@@ -818,11 +818,11 @@ FinancialYearλ = LAMBDA(
                             "→", "¶"
                         )),
     //  Check inputs - Omitted required arguments
-        Help?,          ISOMITTED( Dates),
+        Help?,          ISOMITTED(Dates),
     //  Set defaults
-        FYStart,        IF( ISOMITTED( StartMonth), 7, StartMonth),
-    //  Procedure
-        Result,         "FY" & TEXT( YEAR( Dates) + N( MONTH( Dates) >= FYStart), "0000"), 
+        FYStart,        IF(ISOMITTED(StartMonth), 7, StartMonth),
+    //  Multiply rather than AND, which would collapse a range of dates to one answer
+        Result,         IF(N(Dates)=0, "", "FY" & TEXT(YEAR(Dates) + (FYStart>1) * (MONTH(Dates) >= FYStart), "0000")),
     //  Return Result or Help
         CHOOSE( Help? + 1, Result, Help)
     )

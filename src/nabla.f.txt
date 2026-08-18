@@ -528,7 +528,7 @@ RollingMinλ = LAMBDA(
     [Size],
 //  Help
     LET(Help,       TRIM(TEXTSPLIT( 
-                            "FUNCTION:      RollingMinλ( Values, Size)¶" &
+                            "FUNCTION:      →RollingMinλ( Values, Size)¶" &
                             "DESCRIPTION:   →Creates the minimum for preceding values of a set size moving from beginning to end over a row of values.¶" &
                                            "→from beginning to end over a row of values¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
@@ -2171,15 +2171,17 @@ DiminishingValueλ = LAMBDA(
                             "→", "¶"
                         )),
     //  Check inputs - Omitted required arguments
-        Help?,          OR( ISOMITTED( Cost), ISOMITTED( Life)),
+        Help?,          OR(ISOMITTED(Cost), ISOMITTED(Life)),
+    //  Rate is capped: a life under two years would otherwise exceed 100%
+        Rate,           MIN(2/Life, 1),
+    //  Whole periods, so a part-year effective life still gets its final period
+        Count,          MAX(1, ROUNDUP(Life, 0)),
     //  Set Constants
-        Rate,           MIN( 2 / Life, 1),
-    //  Set Constants
-        Periods,        SEQUENCE( , Life),
-    //  Procedure
-        Raw,            Cost * Rate * (1 - Rate)^(Periods - 1),
+        Periods,        SEQUENCE(, Count),
+    //  The Periods=1 guard avoids 0^0, which Excel returns as #NUM! once Rate reaches 1
+        Raw,            Cost * Rate * IF(Periods = 1, 1, (1-Rate)^(Periods-1)),
     //  Write the undeducted residual off in the final period
-        Result,         Raw + (Periods = Life) * (Cost - SUM( Raw)), 
+        Result,         Raw + (Periods = Count) * (Cost - SUM(Raw)),
     //  Return Result or Help
         CHOOSE( Help? + 1, Result, Help)
     )
@@ -2215,11 +2217,13 @@ PrimeCostλ = LAMBDA(
                             "→", "¶"
                         )),
     //  Check inputs - Omitted required arguments
-        Help?,          OR( ISOMITTED( Cost), ISOMITTED( Life)),
+        Help?,          OR(ISOMITTED(Cost), ISOMITTED(Life)),
     //  Set Constants
-        Annual,         Cost / Life,
-    //  Procedure
-        Result,         EXPAND( Annual, 1, Life, Annual), 
+        Annual,         Cost/Life,
+    //  Whole periods, so a part-year effective life still gets its final period
+        Count,          MAX(1, ROUNDUP(Life, 0)),
+    //  The final period carries the part-year remainder, so the schedule sums to cost
+        Result,         IF(SEQUENCE(, Count) = Count, Cost - Annual * (Count - 1), Annual),
     //  Return Result or Help
         CHOOSE( Help? + 1, Result, Help)
     )
@@ -2255,11 +2259,11 @@ GSTAddλ = LAMBDA(
                             "→", "¶"
                         )),
     //  Check inputs - Omitted required arguments
-        Help?,          ISOMITTED( Amounts),
-    //  Set defaults
-        GSTRate,        IF( OR( ISOMITTED( Rate), TRIM( Rate & "") = ""), 0.1, Rate),
-    //  Procedure
-        Result,         Amounts * (1 + GSTRate), 
+        Help?,          ISOMITTED(Amounts),
+    //  A blank Rate cell is not an omitted argument, so test for both
+        GSTRate,        IF(OR(ISOMITTED(Rate), TRIM(Rate & "")=""), 0.1, Rate),
+    //  Blanks stay blank, so a part-filled column of amounts does not fill with zeros
+        Result,         IF(TRIM(Amounts & "")="", "", Amounts * (1 + GSTRate)),
     //  Return Result or Help
         CHOOSE( Help? + 1, Result, Help)
     )
@@ -2295,11 +2299,11 @@ GSTExtractλ = LAMBDA(
                             "→", "¶"
                         )),
     //  Check inputs - Omitted required arguments
-        Help?,          ISOMITTED( Amounts),
-    //  Set defaults
-        GSTRate,        IF( OR( ISOMITTED( Rate), TRIM( Rate & "") = ""), 0.1, Rate),
-    //  Procedure
-        Result,         Amounts * GSTRate / (1 + GSTRate), 
+        Help?,          ISOMITTED(Amounts),
+    //  A blank Rate cell is not an omitted argument, so test for both
+        GSTRate,        IF(OR(ISOMITTED(Rate), TRIM(Rate & "")=""), 0.1, Rate),
+    //  Blanks stay blank, so a part-filled column of amounts does not fill with zeros
+        Result,         IF(TRIM(Amounts & "")="", "", Amounts * GSTRate / (1 + GSTRate)),
     //  Return Result or Help
         CHOOSE( Help? + 1, Result, Help)
     )

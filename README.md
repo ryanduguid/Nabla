@@ -84,9 +84,27 @@ Each module has its own tab colour, gridlines are hidden, and every sheet opens 
 | `src/nabla.*.txt` | Plain-text LAMBDA source per module, diffable and importable |
 | `ATTRIBUTION.md` | Provenance and upstream copyright |
 | `functions.csv` | Machine-readable index of every function |
-| `tools/` | The build pipeline: rebuilds the workbook from upstream and verifies it |
+| `tools/` | The build pipeline: rebuilds the workbook from upstream and checks it |
 | `CHANGELOG.md` | What changed in this release |
 | `assets/` | Logo |
+
+`src/` and `functions.csv` are generated from `nabla.xlsx` by the build, not edited by hand, so the published source of a function is always the definition that ships.
+
+## Checks
+
+Two gates, because they answer different questions.
+
+```bash
+python tools/verify_workbook.py nabla.xlsx
+```
+
+Structure: XML well-formedness, undefined names, `#REF!`, volatile functions, stray always-calculate flags, slicer-cache bindings, and tokens that must never reappear. Runs in CI on every push.
+
+```bash
+powershell -ExecutionPolicy Bypass -File tools/excel_selftest.ps1
+```
+
+Arithmetic: opens the workbook in a real Excel, forces a full rebuild, fails on any error cell, then runs 138 assertions over the Australian functions and the worksheet that demonstrates them. Needs Excel with LAMBDA support, so it cannot run on GitHub's runners and stays a local gate. It opens Excel over COM and quits it when finished, so it refuses to start if Excel is already running rather than closing your workbooks; it never saves the file it tests.
 
 ## Worksheet catalogue
 

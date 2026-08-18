@@ -1,5 +1,30 @@
 # Changelog
 
+## 2026-08-18, later
+
+### Run in Excel for the first time
+
+Every prior release was reasoned about statically. Opening `nabla.xlsx` in Excel 365 and executing the functions found four defects that no amount of file inspection would have caught. The workbook itself recalculated cleanly: 1,129 formulas, no error cells.
+
+- `DiminishingValueλ` returned `#NUM!` for an effective life of two years or less. Capping the rate at 100% drives `(1-Rate)` to zero, and Excel evaluates `0^0` as `#NUM!` rather than 1. Two years is an ordinary ATO effective life, so the function was unusable for a common case.
+- `DiminishingValueλ` and `PrimeCostλ` silently under-depreciated any fractional effective life. `SEQUENCE` and `EXPAND` truncate a length of 6⅔ to six periods, and the residual write-off tested for the final period by comparing against the life rather than the period count, so it never fired. A 1,000 asset over 6⅔ years wrote off 882.34 and 899.96 respectively instead of 1,000, with no error shown. ATO effective lives are routinely fractional.
+- `FinancialYearλ` gave the wrong answer for a range of dates, which is its headline use. `AND` is an aggregate: it collapsed the whole column to a single true or false, so every date inherited the first one's financial year. Labelling a column spanning 30 June produced one financial year for all of it.
+- The published module source in `src/` had drifted from the compiled function. `FinancialYearλ` shipped one definition inside the workbook and a different, older one in `src/nabla.d.txt`. Anyone importing the source got a function that behaved differently from the one being documented.
+
+### Fixes
+
+- `DiminishingValueλ` guards the first period against `0^0`, derives its period count with `ROUNDUP` so a part year gets its own period, and writes the residual off against that count. Schedules now sum to cost for every life tested from one to forty years, whole or fractional.
+- `PrimeCostλ` derives its period count the same way and puts the part-year remainder in the final period.
+- `FinancialYearλ` multiplies instead of using `AND`, so each date is evaluated on its own.
+- `GSTAddλ` and `GSTExtractλ` return blank for a blank amount, so a part-filled column no longer fills with zeros.
+- The compiled name and the readable module source are now generated from one expression per function, and `src/` and `functions.csv` are exported from the built workbook. They regenerate byte-identical to the previous hand-written files apart from the fixes above, so the drift was confined to `FinancialYearλ`.
+- Restored the missing help-column delimiter in `RollingMinλ`, an upstream defect that collapsed its signature row.
+
+### Added
+
+- `tools/excel_selftest.ps1`: opens the workbook in Excel, forces a full rebuild, fails on any error cell, and runs 138 assertions covering all sixteen effective lives, the GST and financial-year edge cases, and the demonstration worksheet. Every one of the four defects above fails this test on the previous build.
+- The **Australian tax** worksheet now shows the totals written off by both depreciation methods, which is the property a bad effective life breaks, and labels its dates with a single spilled call so the array path is demonstrated rather than sidestepped by four separate scalar calls.
+
 ## 2026-08-18
 
 ### Verification round

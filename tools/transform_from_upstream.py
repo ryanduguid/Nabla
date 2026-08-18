@@ -167,6 +167,7 @@ TYPOS = [("equally equally", "equally"),
          ("randomly generated", "sample"), ("Randomly generated", "Sample"),
          ("\"FUNCTION:      FilterContains", "\"FUNCTION:      →FilterContains"),
          ("\"FUNCTION:      PeriodDiff", "\"FUNCTION:      →PeriodDiff"),
+         ("\"FUNCTION:      RollingMin", "\"FUNCTION:      →RollingMin"),
          ("Liabilites", "Liabilities"),
          ('lang="en-US"', 'lang="en-AU"'),
          # unfulfilled upstream placeholder in 46 help blocks
@@ -295,10 +296,16 @@ def help_lines(spec):
             '→=%s¶' % spec["example"], '→Result¶', '→%s' % spec["result"]]
     return out
 
+# The compiled name and the readable module source are generated from ONE expression each.
+# They used to be two hand-kept lists, which is how the shipped FinancialYearλ and its
+# published source silently drifted apart; de-prefixing makes that impossible.
+DEPREFIX = re.compile(r"_xl[a-z]+\.")   # _xlfn. _xlpm. _xlop. _xlws. and friends
+
 def build_xml(spec):
     hl = help_lines(spec)
     help_expr = ('TRIM(_xlfn.TEXTSPLIT(' + " &amp; ".join('"%s"' % xesc(l) for l in hl) + ', "→", "¶"))')
-    lets = ['_xlpm.Help, ' + help_expr] + [xesc(x) for x in spec["xml_lets"]]
+    lets = ['_xlpm.Help, ' + help_expr, '_xlpm.Help?, ' + xesc(spec["help_test"])]
+    lets += ['_xlpm.%s, %s' % (n, xesc(e)) for _, n, e in spec["lets"]]
     return '_xlfn.LAMBDA(%s, _xlfn.LET(%s, CHOOSE(_xlpm.Help? + 1, _xlpm.Result, _xlpm.Help)))' % (
         spec["xml_decl"], ', '.join(lets))
 
@@ -306,7 +313,8 @@ def build_afe(spec):
     hl = help_lines(spec)
     body = "".join('                            "%s"%s\n' % (l, ' &' if i < len(hl) - 1 else ',')
                    for i, l in enumerate(hl))
-    lets = "".join("    //  %s\n        %-16s%s\n" % (c, n + ",", e) for c, n, e in spec["afe_lets"])
+    lets = "".join("    //  %s\n        %-16s%s,\n" % (c, n + ",", DEPREFIX.sub("", e))
+                   for c, n, e in spec["lets"])
     return (
         "/*  FUNCTION NAME:  %s\n" % spec["name"]
         + "    DESCRIPTION:*//**%s*/\n" % spec["desc"].rstrip(".")
@@ -322,7 +330,7 @@ def build_afe(spec):
         + '                            "→", "¶"\n'
         + "                        )),\n"
         + "    //  Check inputs - Omitted required arguments\n"
-        + "        Help?,          %s,\n" % spec["afe_help_test"]
+        + "        Help?,          %s,\n" % DEPREFIX.sub("", spec["help_test"])
         + lets
         + "    //  Return Result or Help\n"
         + "        CHOOSE( Help? + 1, Result, Help)\n"
@@ -339,17 +347,18 @@ FUNCS = [
         "example": "nabla.f.DiminishingValueλ(1000, 5)",
         "result": "400.00,240.00,144.00,86.40,129.60",
         "xml_decl": "_xlop.Cost,_xlop.Life",
-        "xml_lets": ["_xlpm.Help?, OR(_xlfn.ISOMITTED(_xlpm.Cost), _xlfn.ISOMITTED(_xlpm.Life))",
-                     "_xlpm.Rate, MIN(2/_xlpm.Life, 1)",
-                     "_xlpm.Periods, _xlfn.SEQUENCE(, _xlpm.Life)",
-                     "_xlpm.Raw, _xlpm.Cost * _xlpm.Rate * (1-_xlpm.Rate)^(_xlpm.Periods-1)",
-                     "_xlpm.Result, _xlpm.Raw + (_xlpm.Periods = _xlpm.Life) * (_xlpm.Cost - SUM(_xlpm.Raw))"],
-        "afe_help_test": "OR( ISOMITTED( Cost), ISOMITTED( Life))",
-        "afe_lets": [("Set Constants", "Rate", "MIN( 2 / Life, 1),"),
-                     ("Set Constants", "Periods", "SEQUENCE( , Life),"),
-                     ("Procedure", "Raw", "Cost * Rate * (1 - Rate)^(Periods - 1),"),
-                     ("Write the undeducted residual off in the final period",
-                      "Result", "Raw + (Periods = Life) * (Cost - SUM( Raw)), ")],
+        "help_test": "OR(_xlfn.ISOMITTED(_xlpm.Cost), _xlfn.ISOMITTED(_xlpm.Life))",
+        "lets": [
+            ("Rate is capped: a life under two years would otherwise exceed 100%",
+             "Rate", "MIN(2/_xlpm.Life, 1)"),
+            ("Whole periods, so a part-year effective life still gets its final period",
+             "Count", "MAX(1, ROUNDUP(_xlpm.Life, 0))"),
+            ("Set Constants", "Periods", "_xlfn.SEQUENCE(, _xlpm.Count)"),
+            ("The Periods=1 guard avoids 0^0, which Excel returns as #NUM! once Rate reaches 1",
+             "Raw", "_xlpm.Cost * _xlpm.Rate * IF(_xlpm.Periods = 1, 1, (1-_xlpm.Rate)^(_xlpm.Periods-1))"),
+            ("Write the undeducted residual off in the final period",
+             "Result", "_xlpm.Raw + (_xlpm.Periods = _xlpm.Count) * (_xlpm.Cost - SUM(_xlpm.Raw))"),
+        ],
     },
     {
         "module": "nabla.f", "name": "PrimeCostλ",
@@ -360,12 +369,15 @@ FUNCS = [
         "example": "nabla.f.PrimeCostλ(1000, 5)",
         "result": "200.00,200.00,200.00,200.00,200.00",
         "xml_decl": "_xlop.Cost,_xlop.Life",
-        "xml_lets": ["_xlpm.Help?, OR(_xlfn.ISOMITTED(_xlpm.Cost), _xlfn.ISOMITTED(_xlpm.Life))",
-                     "_xlpm.Annual, _xlpm.Cost/_xlpm.Life",
-                     "_xlpm.Result, _xlfn.EXPAND(_xlpm.Annual, 1, _xlpm.Life, _xlpm.Annual)"],
-        "afe_help_test": "OR( ISOMITTED( Cost), ISOMITTED( Life))",
-        "afe_lets": [("Set Constants", "Annual", "Cost / Life,"),
-                     ("Procedure", "Result", "EXPAND( Annual, 1, Life, Annual), ")],
+        "help_test": "OR(_xlfn.ISOMITTED(_xlpm.Cost), _xlfn.ISOMITTED(_xlpm.Life))",
+        "lets": [
+            ("Set Constants", "Annual", "_xlpm.Cost/_xlpm.Life"),
+            ("Whole periods, so a part-year effective life still gets its final period",
+             "Count", "MAX(1, ROUNDUP(_xlpm.Life, 0))"),
+            ("The final period carries the part-year remainder, so the schedule sums to cost",
+             "Result", "IF(_xlfn.SEQUENCE(, _xlpm.Count) = _xlpm.Count, "
+                       "_xlpm.Cost - _xlpm.Annual * (_xlpm.Count - 1), _xlpm.Annual)"),
+        ],
     },
     {
         "module": "nabla.f", "name": "GSTAddλ",
@@ -376,12 +388,13 @@ FUNCS = [
         "example": "nabla.f.GSTAddλ(100)",
         "result": "110",
         "xml_decl": "_xlop.Amounts,_xlop.Rate",
-        "xml_lets": ["_xlpm.Help?, _xlfn.ISOMITTED(_xlpm.Amounts)",
-                     "_xlpm.GSTRate, IF(OR(_xlfn.ISOMITTED(_xlpm.Rate), TRIM(_xlpm.Rate & \"\")=\"\"), 0.1, _xlpm.Rate)",
-                     "_xlpm.Result, _xlpm.Amounts * (1 + _xlpm.GSTRate)"],
-        "afe_help_test": "ISOMITTED( Amounts)",
-        "afe_lets": [("Set defaults", "GSTRate", "IF( OR( ISOMITTED( Rate), TRIM( Rate & \"\") = \"\"), 0.1, Rate),"),
-                     ("Procedure", "Result", "Amounts * (1 + GSTRate), ")],
+        "help_test": "_xlfn.ISOMITTED(_xlpm.Amounts)",
+        "lets": [
+            ("A blank Rate cell is not an omitted argument, so test for both",
+             "GSTRate", 'IF(OR(_xlfn.ISOMITTED(_xlpm.Rate), TRIM(_xlpm.Rate & "")=""), 0.1, _xlpm.Rate)'),
+            ("Blanks stay blank, so a part-filled column of amounts does not fill with zeros",
+             "Result", 'IF(TRIM(_xlpm.Amounts & "")="", "", _xlpm.Amounts * (1 + _xlpm.GSTRate))'),
+        ],
     },
     {
         "module": "nabla.f", "name": "GSTExtractλ",
@@ -392,12 +405,14 @@ FUNCS = [
         "example": "nabla.f.GSTExtractλ(110)",
         "result": "10",
         "xml_decl": "_xlop.Amounts,_xlop.Rate",
-        "xml_lets": ["_xlpm.Help?, _xlfn.ISOMITTED(_xlpm.Amounts)",
-                     "_xlpm.GSTRate, IF(OR(_xlfn.ISOMITTED(_xlpm.Rate), TRIM(_xlpm.Rate & \"\")=\"\"), 0.1, _xlpm.Rate)",
-                     "_xlpm.Result, _xlpm.Amounts * _xlpm.GSTRate / (1 + _xlpm.GSTRate)"],
-        "afe_help_test": "ISOMITTED( Amounts)",
-        "afe_lets": [("Set defaults", "GSTRate", "IF( OR( ISOMITTED( Rate), TRIM( Rate & \"\") = \"\"), 0.1, Rate),"),
-                     ("Procedure", "Result", "Amounts * GSTRate / (1 + GSTRate), ")],
+        "help_test": "_xlfn.ISOMITTED(_xlpm.Amounts)",
+        "lets": [
+            ("A blank Rate cell is not an omitted argument, so test for both",
+             "GSTRate", 'IF(OR(_xlfn.ISOMITTED(_xlpm.Rate), TRIM(_xlpm.Rate & "")=""), 0.1, _xlpm.Rate)'),
+            ("Blanks stay blank, so a part-filled column of amounts does not fill with zeros",
+             "Result", 'IF(TRIM(_xlpm.Amounts & "")="", "", '
+                       '_xlpm.Amounts * _xlpm.GSTRate / (1 + _xlpm.GSTRate))'),
+        ],
     },
     {
         "module": "nabla.d", "name": "FinancialYearλ",
@@ -408,12 +423,13 @@ FUNCS = [
         "example": 'nabla.d.FinancialYearλ(DATE(2026,8,15))',
         "result": "FY2027",
         "xml_decl": "_xlop.Dates,_xlop.StartMonth",
-        "xml_lets": ["_xlpm.Help?, _xlfn.ISOMITTED(_xlpm.Dates)",
-                     "_xlpm.FYStart, IF(_xlfn.ISOMITTED(_xlpm.StartMonth), 7, _xlpm.StartMonth)",
-                     '_xlpm.Result, IF(N(_xlpm.Dates)=0, "", "FY" & TEXT(YEAR(_xlpm.Dates) + --(AND(_xlpm.FYStart>1, MONTH(_xlpm.Dates) >= _xlpm.FYStart)), "0000"))'],
-        "afe_help_test": "ISOMITTED( Dates)",
-        "afe_lets": [("Set defaults", "FYStart", "IF( ISOMITTED( StartMonth), 7, StartMonth),"),
-                     ("Procedure", "Result", '"FY" & TEXT( YEAR( Dates) + N( MONTH( Dates) >= FYStart), "0000"), ')],
+        "help_test": "_xlfn.ISOMITTED(_xlpm.Dates)",
+        "lets": [
+            ("Set defaults", "FYStart", "IF(_xlfn.ISOMITTED(_xlpm.StartMonth), 7, _xlpm.StartMonth)"),
+            ("Multiply rather than AND, which would collapse a range of dates to one answer",
+             "Result", 'IF(N(_xlpm.Dates)=0, "", "FY" & TEXT(YEAR(_xlpm.Dates) '
+                       '+ (_xlpm.FYStart>1) * (MONTH(_xlpm.Dates) >= _xlpm.FYStart), "0000"))'),
+        ],
     },
 ]
 
@@ -934,24 +950,41 @@ AU_ROWS = {
         + fml("B8", MONEY, "nabla.f.DiminishingValueλ($A$6,$B$6)", spill="B8:F8"),
     9:  txt("A9", 0, "Prime cost (ATO straight line)")
         + fml("B9", MONEY, "nabla.f.PrimeCostλ($A$6,$B$6)", spill="B9:F9"),
-    11: txt("A11", H, "GST"),
-    12: txt("A12", H, "GST-exclusive amount") + txt("B12", H, "Plus GST"),
-    13: num("A13", MONEY, 1000) + fml("B13", MONEY, "nabla.f.GSTAddλ(A13)"),
-    15: txt("A15", H, "GST-inclusive amount") + txt("B15", H, "GST included"),
-    16: num("A16", MONEY, 1100) + fml("B16", MONEY, "nabla.f.GSTExtractλ(A16)"),
-    18: txt("A18", H, "FINANCIAL YEAR"),
-    19: txt("A19", H, "Date") + txt("B19", H, "Financial year"),
-    20: num("A20", DATE, 46203) + fml("B20", 0, "nabla.d.FinancialYearλ(A20)"),   # 30 Jun 2026
-    21: num("A21", DATE, 46204) + fml("B21", 0, "nabla.d.FinancialYearλ(A21)"),   # 1 Jul 2026
-    22: num("A22", DATE, 46249) + fml("B22", 0, "nabla.d.FinancialYearλ(A22)"),   # 15 Aug 2026
+    # Both schedules must write off the whole cost, whatever the effective life. Shown on
+    # the sheet because it is the property that a part-year or sub-two-year life breaks.
+    10: txt("A10", 0, "Total written off, diminishing value")
+        + fml("B10", MONEY, "SUM(_xlfn.ANCHORARRAY(B8))"),
+    11: txt("A11", 0, "Total written off, prime cost")
+        + fml("B11", MONEY, "SUM(_xlfn.ANCHORARRAY(B9))"),
+    12: txt("A12", 0, "Both totals equal the cost above for any effective life, "
+                      "including part years such as 6 2/3 and lives under 2 years."),
+    14: txt("A14", H, "GST"),
+    15: txt("A15", H, "GST-exclusive amount") + txt("B15", H, "Plus GST"),
+    # marked as dynamic-array cells so Excel does not store them as legacy formulas and
+    # display an implicit-intersection @ in front of a function documented to take a range
+    16: num("A16", MONEY, 1000)
+        + fml("B16", MONEY, "nabla.f.GSTAddλ(A16)", spill="B16:B16"),
+    18: txt("A18", H, "GST-inclusive amount") + txt("B18", H, "GST included"),
+    19: num("A19", MONEY, 1100)
+        + fml("B19", MONEY, "nabla.f.GSTExtractλ(A19)", spill="B19:B19"),
+    21: txt("A21", H, "FINANCIAL YEAR"),
+    # One spilled call over the whole column, which is how the function is meant to be
+    # used. Labelling dates one cell at a time would not exercise the array path.
+    22: txt("A22", H, "Date") + txt("B22", H, "Financial year"),
+    23: num("A23", DATE, 46203)                                                  # 30 Jun 2026
+        + fml("B23", 0, "nabla.d.FinancialYearλ(A23:A26)", spill="B23:B26"),
+    24: num("A24", DATE, 46204),                                                 # 1 Jul 2026
+    25: num("A25", DATE, 46249),                                                 # 15 Aug 2026
+    26: num("A26", DATE, 46387),                                                 # 31 Dec 2026
 }
-assert (EPOCH + datetime.timedelta(days=46203)) == datetime.datetime(2026, 6, 30)
-assert (EPOCH + datetime.timedelta(days=46204)) == datetime.datetime(2026, 7, 1)
+for _serial, _date in ((46203, (2026, 6, 30)), (46204, (2026, 7, 1)),
+                       (46249, (2026, 8, 15)), (46387, (2026, 12, 31))):
+    assert (EPOCH + datetime.timedelta(days=_serial)) == datetime.datetime(*_date), _serial
 AU_SHEET = (
     '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
     '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
     'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
-    '<dimension ref="A1:F22"/>'
+    '<dimension ref="A1:F26"/>'
     '<sheetViews><sheetView showGridLines="0" workbookViewId="0">'
     '<selection activeCell="A1" sqref="A1"/></sheetView></sheetViews>'
     '<sheetFormatPr defaultRowHeight="15"/>'
@@ -1198,3 +1231,57 @@ with zipfile.ZipFile(DST, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zout:
         zout.writestr(n, parts[n])
 zin.close()
 print("written", DST, os.path.getsize(DST), "bytes,", len(order), "parts")
+
+# ---------- 11. export src/ and functions.csv FROM the built workbook ----------
+# Both used to be maintained by hand, which is how the shipped FinancialYearλ and its
+# published source drifted apart. Generating them from the artefact removes that class of bug.
+import csv, html
+
+repo = os.path.dirname(os.path.abspath(DST))
+src_dir = os.path.join(repo, "src")
+os.makedirs(src_dir, exist_ok=True)
+
+store = json.loads(base64.b64decode(
+    re.search(r">([A-Za-z0-9+/=]{100,})<",
+              parts["customXml/item1.xml"].decode("utf-8")).group(1)).decode("utf-16-le"))
+exported = []
+for f in store["files"]:
+    mod = f["path"].rsplit("/", 1)[-1]
+    if not mod.startswith("nabla."):
+        continue                      # /projects/Workbook is a stub, not a module
+    with open(os.path.join(src_dir, mod + ".txt"), "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(f["text"])
+    exported.append(mod)
+
+wbx_final = parts["xl/workbook.xml"].decode("utf-8")
+NAME_RE = re.compile(r'<definedName name="(nabla\.[^"]+)"([^>]*)>(.*?)</definedName>', re.S)
+entries = [(n, a, html.unescape(b)) for n, a, b in NAME_RE.findall(wbx_final)]
+
+# nabla.debt is recursive, so Excel Labs cannot hold it; export it from the names instead.
+debt = [(n, b) for n, _, b in entries if n.startswith("nabla.debt.")]
+with open(os.path.join(src_dir, "nabla.debt.txt"), "w", encoding="utf-8", newline="\n") as fh:
+    fh.write("//  nabla.debt module - debt sculpting and amortisation functions\n"
+             "//  Exported from the workbook's defined names. These are recursive and are not part\n"
+             "//  of the Advanced Formula Environment project store, so import them by pasting each\n"
+             "//  definition into Name Manager rather than through the AFE module importer.\n\n")
+    for n, body in sorted(debt):
+        # trailing ; so each block can be pasted straight into Name Manager
+        fh.write("%s =\n%s;\n\n" % (n.rsplit(".", 1)[1], DEPREFIX.sub("", body).lstrip("=")))
+exported.append("nabla.debt")
+print("exported", len(exported), "module sources to", src_dir)
+
+SIG_RE = re.compile(r"FUNCTION:\s*→?\s*(.*?)¶")   # arrow optional: some upstream help omits it
+DESC_RE = re.compile(r"DESCRIPTION:\s*→(.*?)¶")
+with open(os.path.join(repo, "functions.csv"), "w", encoding="utf-8", newline="") as fh:
+    out = csv.writer(fh, lineterminator="\n")
+    out.writerow(["function", "module", "signature", "description"])
+    for name, attrs, body in sorted(entries):
+        bare = name.rsplit(".", 1)[1]
+        sig = SIG_RE.search(body)
+        desc = re.search(r'comment="([^"]*)"', attrs)
+        fallback = DESC_RE.search(body)
+        out.writerow([name, name.rsplit(".", 1)[0],
+                      sig.group(1).strip() if sig else bare,
+                      html.unescape(desc.group(1)) if desc else
+                      (fallback.group(1).strip() if fallback else "")])
+print("exported functions.csv,", len(entries), "functions")
