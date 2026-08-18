@@ -2,6 +2,44 @@
 
 ## Unreleased
 
+- **`nb.OverLapDaysλ` compared its dates as text.** It converts all four arguments, so that
+  a date written as text becomes a serial number, and then compared the raw arguments
+  anyway. The four conversions were never read. Two text dates therefore compared as
+  strings, which ranks `"7/1/2025"` after `"17/1/2025"`, so the function picked the wrong
+  start and end and the subtraction that follows coerced them back to dates. Its own third
+  example claimed 12 shared days for two January 2025 periods that share 2. The comparison
+  now reads the converted values and the example says 2. Numbers
+  and real dates are unaffected, because converting one returns it unchanged, which is why
+  the rental schedule on the function's own demonstration sheet was right all along.
+- **`nb.Periodsλ` could not return a negative.** Its description promises "Returns negative
+  values if Date1 is after Date2" and two of its four examples show one, but the difference
+  was floored at 1 before `SIGN` saw it, so the sign was always `+1`.
+  `=nb.Periodsλ("15/5/2025", "31/3/2025")` returned 1 where it should return -1. The sign
+  now comes from the difference itself. Equal dates give a sign of 0 rather than 1, which
+  changes nothing: the interval count is 0 either way.
+- **`nb.VDBλ` ignored its `No_Switch` argument.** It declares the argument and defaults it
+  to `FALSE`, then called Excel's `VDB` without it, so passing `TRUE` did nothing. Its help
+  demonstrates the function with `No_Switch` set to `TRUE` and printed the `FALSE` answer,
+  which is why nothing looked wrong. `=nb.VDBλ(1000, 100, 5, 1.5, TRUE)` now gives 300.00,
+  210.00, 147.00, 102.90 and 72.03, against the 121.50, 121.50 tail that switching to
+  straight line produces. Calls that omit the argument are unaffected, including
+  `nb.Depreciateλ`'s `VDB` method, which never passed one.
+
+  All three came from the same external audit of v1.2.6, and each was confirmed in Excel
+  before it was fixed. Two of them were hidden by their own worked example, which printed
+  the answer the bug produces. Every other cached value in the workbook is byte-identical
+  to v2.0.0; the one cell that moved is the corrected example result on
+  `nb.OverLapDaysλ`'s sheet.
+
+  Three defects in the same functions are **not** fixed here, because each changes results
+  for anyone already relying on them and none is a one-line correction. `nb.Periodsλ`
+  counts complete intervals where its examples count boundaries crossed, so its forward
+  example returns 1 against the 2 it claims, and its `W` example 52 against 53. It also
+  returns `#VALUE!` for the range arguments its help says it takes, which is what the
+  demonstration sheet has been caching. And four more functions ignore their date
+  conversions the way `nb.OverLapDaysλ` did: `nb.PeriodLabelλ`, `nb.ScheduleRatesλ`,
+  `nb.ScheduleValuesλ` and `nb.Timelineλ`, six dead conversions between them, all in Dates.
+
 - **The depreciation helpers no longer claim to be ATO methods.** `nb.DiminishingValueλ` described itself as the ATO 200% diminishing value method and `nb.PrimeCostλ` as the ATO prime cost method. Neither is one. They take a cost and an effective life and nothing else: no acquisition date, no income year, no days held, no disposal. `nb.DiminishingValueλ` also writes the entire undeducted residual off in its final period, so for a cost of 1,000 over five years it returns 400, 240, 144, 86.40 and 129.60, where a diminishing-balance calculation would deduct 51.84 that year and carry the rest forward. The schedules are unchanged and still useful for modelling; what changes is that they are now described as modelling schedules rather than tax calculations, in the function help, the method codes on `nb.Depreciateλ`, the Data Validation sheet, the Australian tax worksheet and the README. The worksheet now says so on its face, and the README says plainly not to use them to prepare a return.
 
   Raised by an external audit of v1.2.6. Its arithmetic checks out: the fifth-year deduction under a plain diminishing-balance calculation is 51.84, not the 129.60 residual the function returns.

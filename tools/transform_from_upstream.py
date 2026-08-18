@@ -757,6 +757,70 @@ for _mod in ISINLIST:
 print("corrected %d help signatures in the module sources, renamed IsInListλ's LIST "
       "parameter and restored its help's column delimiter" % len(HELP_SIGNATURES))
 
+# ---------- three defects in the functions themselves ----------
+# Everything above corrects what a function says about itself. These three change what a
+# function computes. All three were reported by an outside review of v1.2.6 and confirmed
+# in Excel, and in two of them the workbook's own worked example is the evidence: the
+# printed answer is the answer the bug produces.
+#
+# They take the same shape as the table above, so they run through the same two passes:
+# the module source here, the defined name Excel installs further down. The entries that
+# carry six values give the stored form separately, because Excel prefixes every parameter
+# with _xlpm. and writes < and > as XML entities.
+LOGIC_FIXES = [
+    # OverLapDaysλ converts all four of its dates, so that a date written as text becomes
+    # a serial number, and then compares the raw arguments anyway. The four conversions
+    # are never read. Two text dates therefore compare as text, which orders "17/1/2025"
+    # before "7/1/2025", and the help's own third example claims 12 shared days for two
+    # January 2025 periods that share 2. Compare the converted values, which is what they
+    # are for. Numbers and real dates are unaffected: converting one returns it unchanged.
+    ("nabla.d", "OverLapDaysλ",
+     "IF(Period2End <= Period1End, Period2End, Period1End)",
+     "IF(CvtP2End <= CvtP1End, CvtP2End, CvtP1End)",
+     "IF(_xlpm.Period2End &lt;= _xlpm.Period1End, _xlpm.Period2End, _xlpm.Period1End)",
+     "IF(_xlpm.CvtP2End &lt;= _xlpm.CvtP1End, _xlpm.CvtP2End, _xlpm.CvtP1End)"),
+    ("nabla.d", "OverLapDaysλ",
+     "IF(Period2Start >= Period1Start, Period2Start, Period1Start)",
+     "IF(CvtP2Start >= CvtP1Start, CvtP2Start, CvtP1Start)",
+     "IF(_xlpm.Period2Start &gt;= _xlpm.Period1Start, _xlpm.Period2Start, _xlpm.Period1Start)",
+     "IF(_xlpm.CvtP2Start &gt;= _xlpm.CvtP1Start, _xlpm.CvtP2Start, _xlpm.CvtP1Start)"),
+    ("nabla.d", "OverLapDaysλ",
+     '"12             →=nabla.d.OverLapDaysλ', '"2              →=nabla.d.OverLapDaysλ'),
+    # Periodsλ promises "Returns negative values if Date1 is after Date2" and cannot: the
+    # difference is floored at 1 before SIGN sees it, so the sign is always +1 and the two
+    # negative examples in its own help are unreachable. Take the sign of the difference
+    # itself. Equal dates now give SIGN 0 rather than 1, which changes nothing, because
+    # DATEDIF of a date with itself is 0 either way.
+    ("nabla.d", "Periodsλ",
+     "SIGN(Max(DateTwo - DateOne, 1))", "SIGN(DateTwo - DateOne)",
+     "SIGN(MAX(_xlpm.DateTwo - _xlpm.DateOne, 1))", "SIGN(_xlpm.DateTwo - _xlpm.DateOne)"),
+    # VDBλ declares No_Switch, defaults it to FALSE, and then calls VDB without it, so the
+    # argument does nothing. Its help demonstrates the function with No_Switch TRUE and
+    # prints the FALSE answer, which is how it went unnoticed. Excel gives 300.00, 210.00,
+    # 147.00, 102.90, 72.03 once the argument is passed, against the 121.50, 121.50 tail
+    # that switching to straight line produces.
+    ("nabla.f", "VDBλ",
+     "VDB( Cost, Salvage, Life, SEQUENCE( , Life, 0), SEQUENCE( , Life), Factor)",
+     "VDB( Cost, Salvage, Life, SEQUENCE( , Life, 0), SEQUENCE( , Life), Factor, No_Switch)",
+     "VDB(_xlpm.Cost, _xlpm.Salvage, _xlpm.Life, _xlfn.SEQUENCE(, _xlpm.Life, 0), "
+     "_xlfn.SEQUENCE(, _xlpm.Life), _xlpm.Factor)",
+     "VDB(_xlpm.Cost, _xlpm.Salvage, _xlpm.Life, _xlfn.SEQUENCE(, _xlpm.Life, 0), "
+     "_xlfn.SEQUENCE(, _xlpm.Life), _xlpm.Factor, _xlpm.No_Switch)"),
+    ("nabla.f", "VDBλ",
+     "→300.00,210.00,147.00,121.50,121.50", "→300.00,210.00,147.00,102.90,72.03"),
+]
+
+for _entry in LOGIC_FIXES:
+    _mod, _fn, (_old, _new), _ = stores(_entry)
+    _a, _b = function_block(_mod, _fn)
+    _text = mods[_mod]["text"]
+    _blk = _text[_a:_b]
+    assert _blk.count(_old) == 1, (_fn, _mod, "source", _old, _blk.count(_old))
+    mods[_mod]["text"] = _text[:_a] + _blk.replace(_old, _new) + _text[_b:]
+
+print("fixed %d defects in the module sources: OverLapDaysλ's ignored date conversions, "
+      "Periodsλ's unreachable sign and VDBλ's ignored No_Switch" % len(LOGIC_FIXES))
+
 # fix upstream copy-paste bug: the u module's About suggested "nabla.e" (was BXE) as its own name
 assert "Suggested module name: nabla.e" in mods["nabla.u"]["text"]
 mods["nabla.u"]["text"] = mods["nabla.u"]["text"].replace(
@@ -815,7 +879,7 @@ for n in list(parts):
 # and the upstream spelling: QuickRatioλ's help said Liabilites, and LabelAmortiseλ was
 # still LabelAmortizeλ. Now that both stores read the same, apply the same table.
 _wbx = get("xl/workbook.xml")
-for _entry in HELP_SIGNATURES:
+for _entry in HELP_SIGNATURES + LOGIC_FIXES:
     _mod, _fn, _, (_old, _new) = stores(_entry)
     _hit = []
 
@@ -850,8 +914,9 @@ for _mod in ISINLIST:
     assert _hit == [3], (_mod, "defined name", _hit)   # one declaration, two references
     _renamed += _hit[0]
 put("xl/workbook.xml", _wbx)
-print("corrected %d help signatures in the defined names, renamed %d LIST tokens, "
-      "restored 2 column delimiters" % (len(HELP_SIGNATURES), _renamed))
+print("corrected %d help signatures and %d defects in the defined names, renamed %d LIST "
+      "tokens, restored 2 column delimiters"
+      % (len(HELP_SIGNATURES), len(LOGIC_FIXES), _renamed))
 
 # Several of these functions are demonstrated on a sheet that calls them with no
 # arguments, so their help is spilled there and the old text sits in the file as a
@@ -921,6 +986,52 @@ for _entry in HELP_SIGNATURES:
 print("refreshed cached help on %d sheets: %s"
       % (len(_refreshed), ", ".join("%s (%s)" % (s.rsplit("/", 1)[1], ", ".join(f))
                                     for s, f in sorted(_refreshed.items()))))
+
+
+def left_of(ref):
+    """The cell one column to the left of an A1-style reference."""
+    col, row = re.match(r"([A-Z]+)(\d+)$", ref).groups()
+    n = 0
+    for ch in col:
+        n = n * 26 + ord(ch) - 64
+    n -= 1
+    assert n >= 1, ref
+    out = ""
+    while n:
+        n, rem = divmod(n - 1, 26)
+        out = chr(65 + rem) + out
+    return out + row
+
+
+# One corrected example result is also cached: OverLapDaysλ has a demonstration sheet, so
+# its help is spilled there and the old answer would go on being displayed until something
+# forced a recalculation. It cannot be matched the way the help corrections above are. The
+# help is a two-column table, the result spills into a cell of its own, and a bare 12 is
+# not distinctive: forty-odd cells across the workbook cache that number. Find the row by
+# the formula beside it, which names the function and its arguments, and rewrite only the
+# cell to its left. The marker leaves off the module prefix, because this runs before the
+# flat rename and the cell still reads nabla.d. rather than the nb. it ships as.
+CACHED_EXAMPLES = [('OverLapDaysλ("17/1/2025"', "12", "2")]
+
+CELL = re.compile(r'<c r="([A-Z]+\d+)"[^>]*>((?:(?!<c[ /]).)*?)</c>', re.S)
+
+for _marker, _was, _now in CACHED_EXAMPLES:
+    _found = []
+    for _sheet in [n for n in list(parts) if re.match(r"xl/worksheets/sheet\d+\.xml$", n)]:
+        _text = get(_sheet)
+        if _marker not in _text:
+            continue
+        _cells = {m.group(1): m.group(2) for m in CELL.finditer(_text)}
+        _rows = [r for r, body in _cells.items() if _marker in body]
+        assert len(_rows) == 1, (_sheet, _marker, _rows)
+        _label = left_of(_rows[0])
+        assert _cells[_label] == "<v>%s</v>" % _was, (_sheet, _label, _cells[_label])
+        _open = re.search(r'<c r="%s"[^>]*>' % _label, _text).group(0)
+        _text = _text.replace(_open + _cells[_label], _open + "<v>%s</v>" % _now, 1)
+        put(_sheet, _text)
+        _found.append("%s!%s" % (_sheet.rsplit("/", 1)[1], _label))
+    assert len(_found) == 1, (_marker, _found)
+    print("refreshed the cached example result at %s: %s -> %s" % (_found[0], _was, _now))
 
 # cached spill copies of help version lines in worksheets -> today
 for n in list(parts):

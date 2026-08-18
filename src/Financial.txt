@@ -1598,7 +1598,7 @@ VDBλ = LAMBDA(
                                            "→Formula (nb is assumed to be the module's name)¶" &
                                            "→=nb.VDBλ(1000, 100, 5, 1.5, TRUE)¶" &
                                            "→Result¶" &
-                                           "→300.00,210.00,147.00,121.50,121.50", 
+                                           "→300.00,210.00,147.00,102.90,72.03", 
                             "→", "¶"
                             )
                         ),
@@ -1611,7 +1611,7 @@ VDBλ = LAMBDA(
         Factor,         IF( ISOMITTED( Factor), 2, Factor),
         No_Switch,      IF( ISOMITTED( No_Switch), FALSE, No_Switch),
     //  Procedure
-        Result,         VDB( Cost, Salvage, Life, SEQUENCE( , Life, 0), SEQUENCE( , Life), Factor),   
+        Result,         VDB( Cost, Salvage, Life, SEQUENCE( , Life, 0), SEQUENCE( , Life), Factor, No_Switch),   
     //  Return Result or Help
         CHOOSE( Help? + 1, Result, Help)
     )

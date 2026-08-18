@@ -277,7 +277,7 @@ OverLapDaysλ = LAMBDA(
                         "Result         →Formula (nb is assumed to be the module's name)¶" &
                         "5              →=nb.OverLapDaysλ(08, 14, 10, 17)¶" & 
                         "8              →=nb.OverLapDaysλ(10, 20, 11, 18)¶" & 
-                        "12             →=nb.OverLapDaysλ(""17/1/2025"", ""25/1/2025"", ""7/1/2025"", ""18/1/2025"")", 
+                        "2              →=nb.OverLapDaysλ(""17/1/2025"", ""25/1/2025"", ""7/1/2025"", ""18/1/2025"")", 
                         "→", "¶"
                         )
                     ),
@@ -305,8 +305,8 @@ OverLapDaysλ = LAMBDA(
                             IF( ISNUMBER( Period2End), Period2End, DATEVALUE( Period2End))
                         ),
     //  Procedure
-        MinOfEnd,   IF(Period2End <= Period1End, Period2End, Period1End),
-        MaxOfStart, IF(Period2Start >= Period1Start, Period2Start, Period1Start),
+        MinOfEnd,   IF(CvtP2End <= CvtP1End, CvtP2End, CvtP1End),
+        MaxOfStart, IF(CvtP2Start >= CvtP1Start, CvtP2Start, CvtP1Start),
         Days,       MinOfEnd - MaxOfStart + 1,
         Result,     IF(Days > 0, Days, 0),
     //  Return Result
@@ -440,7 +440,7 @@ Periodsλ = LAMBDA(
                                 Interval,   IF( COUNTA( Intervals) = 1, Intervals, INDEX( Intervals, R, C)),
                                 Earliest,   MIN(DateOne, DateTwo),
                                 Latest,     MAX(DateOne, DateTwo) , //+ 1,
-                                Sign,       SIGN(Max(DateTwo - DateOne, 1)),
+                                Sign,       SIGN(DateTwo - DateOne),
                                 Periods,    Switch(Interval,   
                                                 "D", DATEDIF(Earliest, Latest, "D"),
                                                 "W", INT(DATEDIF(Earliest, Latest, "D")/DPW),
