@@ -92,13 +92,19 @@ Each module has its own tab colour, gridlines are hidden, and every sheet opens 
 
 ## Checks
 
-Two gates, because they answer different questions.
+Three gates, because they answer different questions.
 
 ```bash
 python tools/verify_workbook.py nabla.xlsx
 ```
 
 Structure: XML well-formedness, undefined names, `#REF!`, volatile functions, stray always-calculate flags, slicer-cache bindings, and tokens that must never reappear. Runs in CI on every push.
+
+```bash
+python tools/verify_sources.py nabla.xlsx src
+```
+
+Provenance: every function in `src/` must match the defined name that ships, and must be written in the form Excel accepts as typed input rather than the form the file format stores. The two differ in four ways, which it maps rather than ignores. Also runs in CI.
 
 ```bash
 powershell -ExecutionPolicy Bypass -File tools/excel_selftest.ps1

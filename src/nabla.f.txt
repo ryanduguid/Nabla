@@ -1237,7 +1237,8 @@ SumDepreciateλ = LAMBDA(
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
-                            "DepreciationSchedule→(Required) An array produced by Depreciateλ¶" &                 
+                            "DepreciationSchedule→(Required) An array produced by Depreciateλ¶" &
+                            "→¶" &                 
                             "EXAMPLES:      →¶" &
                             "Result         →Formula (nabla.f is assumed to be the module's name)¶" &
                                            "→=nabla.f.SumDepreciateλ(DepreciationSchedule)",
@@ -1245,7 +1246,8 @@ SumDepreciateλ = LAMBDA(
                             )
                         ),
     //  Check inputs - Omitted required arguments
-        Help?,          ISOMITTED( DepreciationSchedule),
+        OmittedArgs,    VSTACK(ISOMITTED( DepreciationSchedule)),
+        Help?,          AND( OmittedArgs),
     //  Procedure
         Result,         MAKEARRAY(ROWS(DepreciationSchedule), 1, 
                             LAMBDA( R, C,
@@ -1259,7 +1261,8 @@ SumDepreciateλ = LAMBDA(
                             )
                         ),
     //  Return Result
-        CHOOSE(Help? + 1, Result, Help)
+        Return,         IF( Help?, 2, 1),
+        CHOOSE(Return, Result, Help)
     )
 );
 

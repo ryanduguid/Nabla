@@ -514,6 +514,29 @@ for full, note in SEE_ALSO.items():
 assert see_afe == len(SEE_ALSO), see_afe
 print("SEE ALSO added to", see_afe, "module sources")
 
+# Upstream's installed SumDepreciateλ is a later revision than its own module source:
+# the name carries a blank help row and a different (behaviour-identical) way of
+# testing for the omitted argument. Bring the source up to the version that ships, so
+# what is published is what people actually get.
+ftxt = mods["nabla.f"]["text"]
+_s = ftxt.index("SumDepreciateλ = LAMBDA")
+_e = ftxt.index("\n);", _s) + 3
+block = ftxt[_s:_e]
+for _old, _new in (
+    ('"DepreciationSchedule→(Required) An array produced by Depreciateλ¶" &',
+     '"DepreciationSchedule→(Required) An array produced by Depreciateλ¶" &\n'
+     + " " * 28 + '"→¶" &'),
+    ("        Help?,          ISOMITTED( DepreciationSchedule),\n",
+     "        OmittedArgs,    VSTACK(ISOMITTED( DepreciationSchedule)),\n"
+     "        Help?,          AND( OmittedArgs),\n"),
+    ("        CHOOSE(Help? + 1, Result, Help)",
+     "        Return,         IF( Help?, 2, 1),\n"
+     "        CHOOSE(Return, Result, Help)"),
+):
+    assert block.count(_old) == 1, _old[:40]
+    block = block.replace(_old, _new)
+mods["nabla.f"]["text"] = ftxt[:_s] + block + ftxt[_e:]
+
 # fix upstream copy-paste bug: the u module's About suggested "nabla.e" (was BXE) as its own name
 assert "Suggested module name: nabla.e" in mods["nabla.u"]["text"]
 mods["nabla.u"]["text"] = mods["nabla.u"]["text"].replace(
@@ -1282,6 +1305,19 @@ NAME_RE = re.compile(r'<definedName name="(nabla\.[^"]+)"([^>]*)>(.*?)</definedN
 entries = [(n, a, html.unescape(b)) for n, a, b in NAME_RE.findall(wbx_final)]
 
 # nabla.debt is recursive, so Excel Labs cannot hold it; export it from the names instead.
+# Two tokens in the stored form are NOT valid to type back in, and both have to be
+# translated or the exported module cannot be imported at all:
+#   _xlop.Name   marks an OPTIONAL parameter. Stripping the prefix leaves a required
+#                one, and the body's ISOMITTED() calls then make Excel reject the
+#                whole definition. The typed form is [Name].
+#   [0]!         is the internal token for "a name in this workbook". The typed form
+#                is a bare reference.
+OPTIONAL = re.compile(r"_xlop\.([A-Za-z_][A-Za-z0-9_]*)")
+
+def as_typed(body):
+    body = OPTIONAL.sub(r"[\1]", body)
+    return DEPREFIX.sub("", body).replace("[0]!", "").lstrip("=")
+
 debt = [(n, b) for n, _, b in entries if n.startswith("nabla.debt.")]
 with open(os.path.join(src_dir, "nabla.debt.txt"), "w", encoding="utf-8", newline="\n") as fh:
     fh.write("//  nabla.debt module - debt sculpting and amortisation functions\n"
@@ -1289,8 +1325,10 @@ with open(os.path.join(src_dir, "nabla.debt.txt"), "w", encoding="utf-8", newlin
              "//  of the Advanced Formula Environment project store, so import them by pasting each\n"
              "//  definition into Name Manager rather than through the AFE module importer.\n\n")
     for n, body in sorted(debt):
+        typed = as_typed(body)
+        assert "_xl" not in typed and "[0]!" not in typed, n
         # trailing ; so each block can be pasted straight into Name Manager
-        fh.write("%s =\n%s;\n\n" % (n.rsplit(".", 1)[1], DEPREFIX.sub("", body).lstrip("=")))
+        fh.write("%s =\n%s;\n\n" % (n.rsplit(".", 1)[1], typed))
 exported.append("nabla.debt")
 print("exported", len(exported), "module sources to", src_dir)
 

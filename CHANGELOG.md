@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-08-18, importable sources
+
+`src/` exists so the library can be read, diffed and loaded back into Excel. Testing that last part for the first time found that one module could not be loaded at all.
+
+- **The five `nabla.debt.*` functions could not be imported.** The exporter wrote them by stripping the internal prefixes off the stored definitions, which destroyed two things. `_xlop.Name` marks an **optional** parameter; stripping the prefix leaves a required one, and since every one of those functions calls `ISOMITTED()` on its parameters, Excel rejected each definition outright. `[0]!` is the internal token for "a name in this workbook" and is not something you can type back in. The exporter now maps them to `[Name]` and to a bare reference. Measured in Excel: **nil of five accepted before, five of five after**, and swapping the published definitions into the workbook in place of the shipped ones leaves all 17,003 numeric cells identical.
+- **`nabla.f.SumDepreciateλ` shipped a later revision than its own published source**, inherited from upstream: the installed function carries a blank help row and a different, behaviour-identical test for its omitted argument. The source is brought up to the version that ships.
+
+### Added
+
+- `tools/verify_sources.py` compares every function in `src/` against the defined name that ships, and now runs in CI. It maps the four conventions that separate the stored form from the typed form rather than ignoring them: the `_xlfn.`/`_xlpm.`/`_xlws.` markers, `_xlop.Name` against `[Name]`, `[0]!Name` against a bare reference, and `SINGLE(x)` against `@x`. Mapping the parameter marker rather than stripping it is the point: stripping is what hid the defect above. Run against the previous release it reports all six divergences.
+
 ## 2026-08-18, TOC filter
 
 - **The table of contents opened filtered.** Upstream saved it with the Type slicer restricted to `Worksheet`, so 16 of the 66 entries, every one describing a table, were hidden on open with nothing to indicate they existed. The filter criteria and the row visibility stored alongside them also disagreed, because the row retyped from Worksheet to Function in the first round kept its old visibility. Both are cleared: the workbook now opens showing all 66 entries with every slicer button selected.

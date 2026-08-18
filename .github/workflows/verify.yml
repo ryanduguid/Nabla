@@ -17,3 +17,5 @@ jobs:
       - run: pip install openpyxl
       - name: Check workbook integrity
         run: python tools/verify_workbook.py nabla.xlsx
+      - name: Check src/ reproduces the shipped functions
+        run: python tools/verify_sources.py nabla.xlsx src
