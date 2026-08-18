@@ -1,35 +1,38 @@
-"""Check that each function's help signature matches the function it belongs to.
+"""Check that each function's help describes the function it belongs to.
 
 Usage: python tools/verify_signatures.py [src dir]
 
-Every function carries its own help, and the first line of that help is a signature:
-the function's name, then its parameter list. Both halves are hand-written text inside
-a string literal, so no structural check ever reads them, and both halves drift. A
-function written by copying a neighbour keeps the neighbour's name, its parameter list,
-or both. A parameter renamed in the LAMBDA is not renamed in the help. A capital lands
-one key early and Flow1 becomes FLow1. Every one of those shipped at least once.
+Every function carries its own help, and states its parameters twice: once on the
+FUNCTION line as a signature, and again as a table below it, one row per parameter.
+Both are hand-written text inside a string literal, so no structural check ever reads
+them, and both drift, separately. A function written by copying a neighbour keeps the
+neighbour's name, its signature, its table, or all three. A parameter renamed in the
+LAMBDA is not renamed in the help. A capital lands one key early and Flow1 becomes
+FLow1. Every one of those shipped at least once, and one function's table described a
+different function's arguments for six releases, leaving its own three undocumented.
 
-The LAMBDA's own declaration is the ground truth: it is what the function actually
-takes. The comparison is character for character, because case is exactly the kind of
-difference that goes unnoticed by eye.
+The LAMBDA's own declaration is the ground truth for both: it is what the function
+actually takes. The comparisons are character for character, because case is exactly
+the kind of difference that goes unnoticed by eye.
 
-Three conventions are honoured rather than reported:
+Four conventions are honoured rather than reported:
 
-  * a trailing DoNotUse parameter is an internal period counter, deliberately left out
-    of the signature although the parameter table below still explains it
-  * help is a two-column table, so a long signature wraps onto a row with an empty
-    label, and the rows must be rejoined before the signature can be read
-  * square brackets are ignored on both sides. Upstream declares every parameter
-    optional so that a function called with no arguments can return its own help and
-    police the omissions itself, so the declaration's brackets say nothing about which
-    arguments a caller may leave out. Only the help distinguishes them, and there is
-    nothing to check it against. Names are compared; requiredness is not.
+  * the internal DoNotUse parameter is a period counter, kept out of the signature; the
+    table may explain it or leave it out, and both are accepted
+  * help is a two-column table, so a long row wraps onto one with an empty label, and
+    the rows must be rejoined before either can be read
+  * a table row whose label ends in ! is an aside, not a parameter: NOTE!, NOTES!
+  * square brackets are ignored. Upstream declares every parameter optional so that a
+    function called with no arguments can return its own help and police the omissions
+    itself, so the declaration's brackets say nothing about which arguments a caller may
+    leave out. Only the help distinguishes them, and there is nothing to check that
+    against. Names are compared; requiredness is not.
 
-Every declaration in every module is accounted for, and the counts are printed. A
-function with no FUNCTION line in its help is listed, not failed: the debt module has
-never carried one. Anything that is not a LAMBDA at all, such as the About tables, is
-listed separately. The three totals must add up to the declarations read, and too few
-declarations is itself a failure, since a checker that reads nothing passes everything.
+The two checks are independent, because the parts they read are independent: the debt
+module has never carried a FUNCTION line, but it does carry parameter tables, and those
+are checked. Every declaration in every module is accounted for and the counts are
+printed. Too few is itself a failure, since a checker that reads nothing passes
+everything.
 """
 import glob
 import os
@@ -100,12 +103,32 @@ def declared(body):
     return names(head[:cut] if cut != -1 else head)
 
 
+def parameter_table(body):
+    """The labels of the help's parameter table, or None if it has no such table.
+
+    The table runs from the PARAMETERS row to the next section heading, which is any
+    label ending in a colon. Asides are dropped: a row labelled NOTE! explains something
+    about the function rather than naming one of its arguments.
+    """
+    labels, started = [], False
+    for label, _text in help_rows(body):
+        if not started:
+            started = label.startswith("PARAMETERS")
+            continue
+        if label.endswith(":"):
+            break
+        if not label.endswith("!"):
+            labels.append(label)
+    return labels if started else None
+
+
 def main():
     paths = sorted(glob.glob(os.path.join(SRC, "*.txt")))
     if not paths:
         sys.exit("no source modules found in %s/" % SRC)
 
-    failures, no_signature, not_lambda, checked, read = [], [], [], 0, 0
+    failures, no_signature, no_table, not_lambda = [], [], [], []
+    signatures = tables = read = 0
     for path in paths:
         for st in statements(open(path, encoding="utf-8").read()):
             m = NAME.match(st)
@@ -117,41 +140,58 @@ def main():
                 not_lambda.append(name)
                 continue
 
+            real = declared(body)
+            without_internal = [p for p in real if p != INTERNAL]
+
             row = next((t for label, t in help_rows(body) if label == "FUNCTION:"), None)
             if row is None:
                 no_signature.append(name)
-                continue
-            checked += 1
+            else:
+                signatures += 1
+                sig = SIGNATURE.match(row.strip())
+                if not sig:
+                    failures.append("%s: the help's FUNCTION line is not a signature: %r"
+                                    % (name, row.strip()[:70]))
+                else:
+                    if sig.group(1) != name:
+                        failures.append("%s: its help names %s" % (name, sig.group(1)))
+                    claimed = names(sig.group(2))
+                    if claimed != without_internal:
+                        failures.append("%s: its signature says (%s) but it takes (%s)"
+                                        % (name, ", ".join(claimed),
+                                           ", ".join(without_internal)))
 
-            sig = SIGNATURE.match(row.strip())
-            if not sig:
-                failures.append("%s: the help's FUNCTION line is not a signature: %r"
-                                % (name, row.strip()[:70]))
-                continue
-            if sig.group(1) != name:
-                failures.append("%s: its help names %s" % (name, sig.group(1)))
+            listed = parameter_table(body)
+            if listed is None:
+                no_table.append(name)
+            else:
+                tables += 1
+                # the internal counter may be documented or not, so accept either
+                if listed not in (real, without_internal):
+                    failures.append("%s: its parameter table describes (%s) but it takes (%s)"
+                                    % (name, ", ".join(listed) or "nothing",
+                                       ", ".join(real)))
 
-            claimed = names(sig.group(2))
-            real = [p for p in declared(body) if p != INTERNAL]
-            if claimed != real:
-                failures.append("%s: its signature says (%s) but it takes (%s)"
-                                % (name, ", ".join(claimed), ", ".join(real)))
+    print("%d declarations read: %d signatures and %d parameter tables checked" % (read, signatures, tables))
+    print("   no FUNCTION line (%d): %s" % (len(no_signature),
+                                            ", ".join(sorted(set(no_signature))) or "none"))
+    print("   no parameter table (%d): %s" % (len(no_table),
+                                              ", ".join(sorted(set(no_table))) or "none"))
+    print("   not a LAMBDA (%d): %s" % (len(not_lambda),
+                                        ", ".join(sorted(set(not_lambda))) or "none"))
+    assert signatures + len(no_signature) + len(not_lambda) == read
+    assert tables + len(no_table) + len(not_lambda) == read
 
-    print("%d declarations read: %d signatures checked, %d without a FUNCTION line (%s), "
-          "%d not a LAMBDA (%s)"
-          % (read, checked, len(no_signature), ", ".join(sorted(set(no_signature))) or "none",
-             len(not_lambda), ", ".join(sorted(set(not_lambda))) or "none"))
-    assert checked + len(no_signature) + len(not_lambda) == read
-
-    if checked < FLOOR:
-        sys.exit("only %d signatures parsed from %d module(s): the parser is not reading them"
-                 % (checked, len(paths)))
+    if signatures < FLOOR or tables < FLOOR:
+        sys.exit("only %d signatures and %d tables parsed from %d module(s): "
+                 "the parser is not reading them" % (signatures, tables, len(paths)))
     if failures:
-        print("FAIL: %d signature problem(s)" % len(failures))
+        print("FAIL: %d help problem(s)" % len(failures))
         for item in failures:
             print("  - %s" % item)
         return 1
-    print("OK: all %d help signatures name their own function and its real parameters" % checked)
+    print("OK: all %d signatures and %d parameter tables describe their own function's "
+          "real parameters" % (signatures, tables))
     return 0
 
 

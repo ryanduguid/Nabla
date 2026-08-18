@@ -110,7 +110,7 @@ Provenance: every function in `src/` must match the defined name that ships, and
 python tools/verify_signatures.py src
 ```
 
-Documentation: every function's help opens with a signature, and that signature must name the function it belongs to and list the parameters the LAMBDA actually declares, character for character. Both are hand-written text inside a string literal, so nothing else in the build ever reads them and they drift silently. It reads all 117 signatures, accounts for every declaration in every module, and refuses to pass if it parsed too few. Also runs in CI.
+Documentation: every function states its parameters twice, once as the signature on its help's FUNCTION line and again as a table below it, and both must match what the LAMBDA declares, character for character. Both are hand-written text inside a string literal, so nothing else in the build ever reads them and they drift separately: one function's table described a different function's arguments for six releases. It reads 117 signatures and 122 parameter tables, accounts for every declaration in every module, and refuses to pass if it parsed too few. Also runs in CI.
 
 ```bash
 powershell -ExecutionPolicy Bypass -File tools/excel_selftest.ps1
