@@ -226,6 +226,13 @@ foreach ($tl in @('monthly', '1', '15'), @('quarterly', '3', '15'), @('yearly', 
 }
 Same 'TimelineOffset: help with no args' "INDEX($to(),1,1)" 'FUNCTION:'
 
+# The two worked examples printed in the function's own help, which a reader is meant to
+# copy. Neither could be run as printed: the call was missing its two closing brackets.
+Near 'TimelineOffset: documented example, inside the timeline' `
+     "$to(`"15/2/2026`", EDATE(`"1/1/2026`", SEQUENCE( , 12, 0)))" '1'
+Near 'TimelineOffset: documented example, before the timeline' `
+     "$to(`"15/2/2025`", EDATE(`"1/1/2026`", SEQUENCE( , 12, 0)))" '-11'
+
 $xl = $null; $wb = $null; $tmp = $null; $exit = 0
 
 # Excel rejects incoming COM calls while it is mid-calculation (RPC_E_CALL_REJECTED),

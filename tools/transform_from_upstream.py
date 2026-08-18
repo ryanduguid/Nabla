@@ -720,6 +720,30 @@ HELP_SIGNATURES = [
      '"InterestExpenses   →(Required) Interest Expense ¶"',
      '"TotalAssets        →(Required) Both current and long-term assets¶" &amp; '
      '"IntangibleAssets   →(Required) Deducted from total assets before the comparison¶"'),
+    # TimelineOffsetλ's worked example is the one line in the library a reader cannot copy:
+    # the call is missing the two closing brackets that finish EDATE and the function call
+    # itself, so pasting it gets a syntax error rather than an answer, and the Result column
+    # beside it is empty where every other example prints what it returns. Upstream wrote it
+    # against 2/15/2022 and a timeline starting 1/1/2023; the date sweep moved both forward
+    # two years with everything else, which still left it two years behind the 1 Jan 2026
+    # timeline the demonstration sheet builds. Rewritten as two rows against that same
+    # timeline, one date inside it and one before it, since a date before the timeline is
+    # what the function's own DISCUSSION comment is for. Both results are checked in a real
+    # Excel by tools/excel_selftest.ps1. The name is still the module-qualified one here:
+    # the flat nb. namespace is applied much further down.
+    ("nabla.f", "TimelineOffsetλ",
+     '                                           "→=nabla.f.TimelineOffsetλ(""15/2/2024"", '
+     'EDATE(""1/1/2025"", SEQUENCE( , 12, 0)"',
+     '                            "1              →=nabla.f.TimelineOffsetλ(""15/2/2026"", '
+     'EDATE(""1/1/2026"", SEQUENCE( , 12, 0)))¶" &\n'
+     '                            "-11            →=nabla.f.TimelineOffsetλ(""15/2/2025"", '
+     'EDATE(""1/1/2026"", SEQUENCE( , 12, 0)))"',
+     '"→=nabla.f.TimelineOffsetλ(""15/2/2024"", EDATE(""1/1/2025"", SEQUENCE( , 12, 0)"',
+     '"1              →=nabla.f.TimelineOffsetλ(""15/2/2026"", EDATE(""1/1/2026"", '
+     'SEQUENCE( , 12, 0)))¶" &amp; "-11            →=nabla.f.TimelineOffsetλ(""15/2/2025"", '
+     'EDATE(""1/1/2026"", SEQUENCE( , 12, 0)))"'),
+    # and its parameter table misspells the word the function is named after
+    ("nabla.f", "TimelineOffsetλ", "A model's timline (Row", "A model's timeline (Row"),
 ]
 
 

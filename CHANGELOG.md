@@ -1,5 +1,28 @@
 # Changelog
 
+## Unreleased
+
+- **`nb.TimelineOffsetλ`'s worked example could not be run as printed.** The call was
+  missing the two closing brackets that finish `EDATE` and the function call itself, so
+  copying the one line a reader is meant to copy got a syntax error rather than an answer.
+  The Result column beside it was empty, where every other example in the library prints
+  what it returns, which is how the missing brackets went unseen: there was no answer to
+  disagree with. Upstream wrote it against 2/15/2022 and a timeline starting 1/1/2023, and
+  the date sweep moved both forward two years with everything else, which still left the
+  example two years behind the 1 January 2026 timeline the demonstration sheet builds.
+
+  It is now two rows against that same timeline, one date inside it and one before it,
+  because a date falling before a model's timeline is what the function's own discussion
+  comment is written for. `tools/excel_selftest.ps1` runs both and holds them to the
+  printed results, 1 and -11, so the example cannot drift from what it claims again. The
+  parameter table above it also spelled "timline", which is now the word the function is
+  named after.
+
+  Five cells changed, all of them on the sheet that displays this function's own help. No
+  other sheet, no formula and no defined name's behaviour differs from v2.4.0.
+  `nb.TimelinePositionλ`'s parameter table carries the same "timline" spelling and is
+  untouched.
+
 ## v2.4.0, 19 August 2026, period starts that exist
 
 - **`nb.PeriodStartλ` returned a date that is not a period start whenever the anchor is a
