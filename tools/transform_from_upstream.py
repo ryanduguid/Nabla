@@ -562,6 +562,25 @@ for part, cell, old in ANCHOR_CHECKS:
     assert re.search(r'<c r="%s"[^>]*><v>%s</v></c>' % (cell, want), d), (part, cell, old, want)
 print("anchor checks pass:", len(ANCHOR_CHECKS))
 
+# ---------- 8a4. Amortiseλ demo: start the first loan inside the timeline ----------
+# Upstream started it 12 months before the model timeline with a 10-month term, so the loan
+# was fully repaid before the first period and its six rows rendered as zeros. Starting it
+# 1 March 2026 puts a partial schedule on screen. The caption is restated to match.
+OLD_START, NEW_START = "45658", "46082"      # 1 Jan 2025 -> 1 Mar 2026
+assert (EPOCH + datetime.timedelta(days=int(NEW_START))) == datetime.datetime(2026, 3, 1)
+for sheet in ("sheet16", "sheet17", "sheet18"):
+    p = "xl/worksheets/%s.xml" % sheet
+    d = get(p)
+    d2, n = re.subn(r'(<c r="E24"[^>]*>)<v>%s</v>' % OLD_START, r'\g<1><v>%s</v>' % NEW_START, d)
+    assert n == 1, sheet
+    put(p, d2)
+d13 = get("xl/drawings/drawing13.xml")
+d13b = d13.replace("The first one predates our model's timeline.",
+                   "The first one starts partway through our model's first period.")
+assert d13b != d13
+put("xl/drawings/drawing13.xml", d13b)
+print("Amortiseλ demo: first loan moved to 1 Mar 2026, caption restated")
+
 # ---------- 8a5. sheet32: repair inherited #REF! Timeline argument ----------
 s32 = get("xl/worksheets/sheet32.xml")
 s32b = s32.replace('nabla.d.Timelineλ( E23, D23, "Y",#REF!)', 'nabla.d.Timelineλ( E23, D23, "Y")')
