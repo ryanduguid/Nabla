@@ -2,6 +2,19 @@
 
 ## 2026-08-18
 
+### Verification round
+- Added an **Australian tax** worksheet demonstrating all five Australian functions, with a table-of-contents entry and its own tab colour. They previously had no on-sheet presence at all.
+- `DiminishingValueλ` now caps its rate at 100% (a life under two years previously wrote off more than cost) and writes the undeducted residual off in the final period, so a schedule sums to cost. The documented example changes to 400.00, 240.00, 144.00, 86.40, 129.60.
+- `GSTAddλ` and `GSTExtractλ` no longer treat a blank Rate cell as nil GST; a blank now falls back to the 10% default.
+- `FinancialYearλ` returns blank rather than FY1900 for empty cells, uses array-safe coercion, and handles a January financial-year start correctly.
+- The `SEE ALSO` lines existed only in the compiled names, so an Excel Labs save would have silently deleted them. They are now in the module sources too.
+- Fixed worked examples the two-year date shift had invalidated: `CountDOWλ` stated 2 where it now returns 3, and `PeriodLabelλ` stated 2023 results against a 2025 input.
+- Fixed frozen sample data that produced uninformative demonstrations: the `Periodsλ` yearly row spanned one day short of a year and returned 0, and the onboarding dates were spaced 30 days apart against a twelve-year timeline so every customer landed in the first period.
+- Replaced the 13 volatile `RANDARRAY` grids that the first performance pass missed, so no formula in the workbook is volatile except the sheet-name titles.
+- Corrected upstream help defects: two missing column delimiters that collapsed a help row, and the misspelt `Liabilites` parameter.
+- The GST helpers are listed under their own AUSTRALIAN TAX heading in the module index rather than inside the depreciation suite.
+- Only the cover opens selected, and the table-of-contents columns were widened for the longer `nabla.*` names.
+
 First nabla release, derived from the upstream 6 July 2024 workbook.
 
 ### Rebranding

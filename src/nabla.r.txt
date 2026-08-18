@@ -81,10 +81,10 @@ Aboutλ = TRIM(
 CurrentRatioλ = LAMBDA(
 //  Parameter Declarations
         [Assets],  
-        [Liabilites],    
+        [Liabilities],    
 //  Help
     LET(Help,   TRIM(TEXTSPLIT( 
-                        "FUNCTION:      →CurrentRatioλ( Assets, Liabilites)¶" & 
+                        "FUNCTION:      →CurrentRatioλ( Assets, Liabilities)¶" & 
                         "DESCRIPTION:   →Measures a company’s ability to pay short-term obligations  ¶" & 
                                        "→(Current Assets/Liabilities)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/c/cash-ratio.asp ¶" &
@@ -100,7 +100,7 @@ CurrentRatioλ = LAMBDA(
                                        "→Property, Plant and equipment (PPE) ¶" & 
                                        "→Marketable securities ¶" & 
                                        "→Assets expected to liquidated in the current year ¶" & 
-                        "Liabilites     →(Required) Current Liabilites. Includes: ¶" & 
+                        "Liabilities     →(Required) Current Liabilities. Includes: ¶" & 
                                        "→Accounts payable ¶" & 
                                        "→Wages ¶" & 
                                        "→Taxes payable ¶" & 
@@ -112,10 +112,10 @@ CurrentRatioλ = LAMBDA(
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
         Help?,          OR( ISOMITTED( Assets),
-                            ISOMITTED( Liabilites )
+                            ISOMITTED( Liabilities )
                         ),
     //  Procedure
-        Result,         Assets/Liabilites,
+        Result,         Assets/Liabilities,
     //  Return Result
         CHOOSE(Help? + 1, Result, Help)        
     )
@@ -131,10 +131,10 @@ CurrentRatioλ = LAMBDA(
 QuickRatioλ = LAMBDA(
 //  Parameter Declarations
         [QuickAssets],  
-        [Liabilites],       
+        [Liabilities],       
 //  Help
     LET(Help,   TRIM(TEXTSPLIT( 
-                        "FUNCTION:      →QuickRatioλ( LiquidAssets, Liabilites)¶" & 
+                        "FUNCTION:      →QuickRatioλ( LiquidAssets, Liabilities)¶" & 
                         "DESCRIPTION:   →Measures ability to meet short-term obligations¶" & 
                                        "→(Quick Assets/Current Liabilities)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/q/quickratio.asp ¶" &
@@ -148,7 +148,7 @@ QuickRatioλ = LAMBDA(
                                        "→• Current assets ¶" & 
                                        "→• Less inventory ¶" & 
                                        "→• Less prepaid expenses ¶" & 
-                        "Liabilites     →(Required) Current Liabilites. Includes: ¶" & 
+                        "Liabilities     →(Required) Current Liabilities. Includes: ¶" & 
                                        "→Accounts payable ¶" & 
                                        "→Wages ¶" & 
                                        "→Taxes payable ¶" & 
@@ -160,10 +160,10 @@ QuickRatioλ = LAMBDA(
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
         Help?,          OR( ISOMITTED( QuickAssets),
-                            ISOMITTED( Liabilites )
+                            ISOMITTED( Liabilities )
                         ),
     //  Procedure
-        Result,         QuickAssets/Liabilites,
+        Result,         QuickAssets/Liabilities,
     //  Return Result
         CHOOSE(Help? + 1, Result, Help)        
     )
@@ -180,17 +180,17 @@ QuickRatioλ = LAMBDA(
 CashRatioλ = LAMBDA(
 //  Parameter Declarations
         [Cash],  
-        [Liabilites],    
+        [Liabilities],    
 //  Help
     LET(Help,   TRIM(TEXTSPLIT( 
-                        "FUNCTION:      →CashRatioλ( Cash, Liabilites)¶" & 
+                        "FUNCTION:      →CashRatioλ( Cash, Liabilities)¶" & 
                         "DESCRIPTION:   →Evaluates ability to repay short-term debt w/cash or near-cash resources" & 
                                        "→(Cash and Cash Equivalents / Current Liabilities)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/c/cash-ratio.asp ¶" &
                         "VERSION:       →18 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "Cash           →(Required) Cash and Cash Equivalents¶" & 
-                        "Liabilites     →(Required) Current Liabilites. Includes: ¶" & 
+                        "Liabilities     →(Required) Current Liabilities. Includes: ¶" & 
                                        "→Accounts payable ¶" & 
                                        "→Wages ¶" & 
                                        "→Taxes payable ¶" & 
@@ -202,10 +202,10 @@ CashRatioλ = LAMBDA(
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
         Help?,          OR( ISOMITTED( Cash),
-                            ISOMITTED( Liabilites )
+                            ISOMITTED( Liabilities )
                         ),
     //  Procedure
-        Result,         Cash/Liabilites,
+        Result,         Cash/Liabilities,
     //  Return Result
         CHOOSE(Help? + 1, Result, Help)        
     )
@@ -221,12 +221,12 @@ CashRatioλ = LAMBDA(
 OperatingCashFlowRatioλ = LAMBDA(
 //  Parameter Declarations
         [OperatingCashFlow],  
-        [Liabilites],    
+        [Liabilities],    
 //  Help
     LET(Help,   TRIM(TEXTSPLIT( 
-                        "FUNCTION:          →OperatingCashFlowRatioλ( OperatingCashFlow, Liabilites)¶" & 
+                        "FUNCTION:          →OperatingCashFlowRatioλ( OperatingCashFlow, Liabilities)¶" & 
                         "DESCRIPTION:       →Measures how readily current liabilities are covered by cash flows generated from operations.¶" & 
-                                           "→(OperatingCashFlow/Liabilites)¶" & 
+                                           "→(OperatingCashFlow/Liabilities)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/o/ocfratio.asp ¶" &
                         "VERSION:           →18 Aug 2026¶" &
                         "PARAMETERS:        →¶" & 
@@ -238,7 +238,7 @@ OperatingCashFlowRatioλ = LAMBDA(
                                            "→Direct method includes: ¶" & 
                                            "→• Cash revenue ¶" & 
                                            "→• Less Operating expenses paid in cash¶" & 
-                        "Liabilites         →(Required) Current Liabilites. Includes: ¶" & 
+                        "Liabilities         →(Required) Current Liabilities. Includes: ¶" & 
                                            "→Accounts payable ¶" & 
                                            "→Wages ¶" & 
                                            "→Taxes payable ¶" & 
@@ -250,10 +250,10 @@ OperatingCashFlowRatioλ = LAMBDA(
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
         Help?,          OR( ISOMITTED( OperatingCashFlow),
-                            ISOMITTED( Liabilites )
+                            ISOMITTED( Liabilities )
                         ),
     //  Procedure
-        Result,         OperatingCashFlow/Liabilites,
+        Result,         OperatingCashFlow/Liabilities,
     //  Return Result
         CHOOSE(Help? + 1, Result, Help)        
     )

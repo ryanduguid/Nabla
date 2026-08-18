@@ -78,7 +78,7 @@ CountDOWλ = LAMBDA(
                         "DayOfWeek      →(Required) 1=Sunday, 7=Saturday.¶" &
                         "EXAMPLES:      →¶" & 
                         "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
-                        "2              →=nabla.d.CountDOWλ(""22/3/2012"", ""10/4/2012"",  1)", 
+                        "3              →=nabla.d.CountDOWλ(""22/3/2012"", ""10/4/2012"",  1)", 
                         "→", "¶"
                         )
                     ),
@@ -344,9 +344,9 @@ PeriodLabelλ = LAMBDA(
                                        "→A or Y=Annually¶" & 
                         "EXAMPLES:      →¶" & 
                         "Result         →Formula (nabla.d is assumed to be the module's name)¶" &
-                        "2023-Feb-26    →=nabla.d.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""D"")¶" &
+                        "2025-Feb-26    →=nabla.d.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""D"")¶" &
                         "2023-Feb       →=nabla.d.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""M"")¶" & 
-                        "2023:Q01       →=nabla.d.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""Q"")¶" & 
+                        "2025:Q1       →=nabla.d.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""Q"")¶" & 
                         "2023           →=nabla.d.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""Y"")", 
                         "→", "¶"
                         )

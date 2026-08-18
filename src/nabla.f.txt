@@ -45,8 +45,10 @@ Aboutλ = TRIM(TEXTSPLIT(
     "DBλ                →Fixed declining balance depreciation method for one asset or asset class.¶" & 
     "DDBλ               →Double-declining balance depreciation method for one asset or asset class.¶" & 
     "VDBλ               →Variable declining balance depreciation method for one asset or asset class.¶" & 
-                                           "DiminishingValueλ  →Diminishing value depreciation (ATO 200% method) for one asset or asset class.¶" & 
+                                           "DiminishingValueλ  →Diminishing value depreciation (ATO 200% method), writing the residual off in the final period.¶" & 
                                            "PrimeCostλ         →Prime cost (straight line) depreciation, ATO method, for one asset or asset class.¶" & 
+                                           "→¶" & 
+                                           "AUSTRALIAN TAX     →¶" & 
                                            "GSTAddλ            →Adds GST to one or more GST-exclusive amounts.¶" & 
                                            "GSTExtractλ        →Returns the GST contained in one or more GST-inclusive amounts.¶" & 
                                            
@@ -637,6 +639,7 @@ SumContainsλ = LAMBDA(
                             "FUNCTION:      →SumContainsλ(ValuesToFilter, ValueLabels, FilterByText, [IgnoreCase?])¶" &
                             "DESCRIPTION:   →Creates a row of column totals for each row in an array where¶" & 
                                            "→its labels contain a unique letter, word, or phrase.¶" & 
+                            "SEE ALSO:      →Excel 365 now has GROUPBY and PIVOTBY for formula-driven aggregation.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
@@ -687,6 +690,7 @@ SumPeriodsλ = LAMBDA(
                             "FUNCTION:      →SumPeriodsλ( Values, Dates, PeriodStarts)¶" &
                             "DESCRIPTION:   →Summarises values where each value column is for one day ¶" & 
                                            "→into one column for each period. ¶" & 
+                            "SEE ALSO:      →Excel 365 now has GROUPBY and PIVOTBY for formula-driven aggregation.¶" &
                             "VERSION:       →18 Aug 2026¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "PARAMETERS:→¶" & 
@@ -1342,7 +1346,7 @@ PeriodDiffλ = LAMBDA(
     LET(
     //  Help
         Help,           TRIM(TEXTSPLIT( 
-                            "FUNCTION:      PeriodDiffλ(StartDate, EndDate, Interval)¶" &
+                            "FUNCTION:      →PeriodDiffλ(StartDate, EndDate, Interval)¶" &
                             "DESCRIPTION:   →Determine the number of periods between two dates.¶" &
                             "NOTES!         →This improves on, and corrects problems w/Excel's deprecated DATEDIF() function.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
@@ -2009,8 +2013,9 @@ FilterContainsλ = LAMBDA(
     LET(
     //  Help
         Help,           TRIM(TEXTSPLIT( 
-                            "FUNCTION:      FilterContainsλ( ArrayToFilter, FilterByArray, Text, [IgnoreCase?] )¶" &
+                            "FUNCTION:      →FilterContainsλ( ArrayToFilter, FilterByArray, Text, [IgnoreCase?] )¶" &
                             "DESCRIPTION:   →Filter an array by another array that contains specific text.¶" & 
+                            "SEE ALSO:      →Excel 365 now has REGEXTEST and REGEXEXTRACT for pattern matching.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
@@ -2058,6 +2063,7 @@ RangeToDAλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →RangeToDAλ( Cell, [Rows], [Columns])¶" &
                             "DESCRIPTION:   →Create a dynamic array from a static range¶" & 
+                            "SEE ALSO:      →Excel 365 now has TRIMRANGE and trim references (.:.) for this.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
@@ -2138,7 +2144,7 @@ PeriodStartλ = LAMBDA(
 
 
 /*  FUNCTION NAME:  DiminishingValueλ
-    DESCRIPTION:*//**Diminishing value depreciation (ATO 200% method) for one asset or asset class*/
+    DESCRIPTION:*//**Diminishing value depreciation (ATO 200% method), writing the residual off in the final period*/
 /*  REVISIONS:      Date        Developer       Description  
                     18 Aug 2026 nabla           Original development
 */
@@ -2151,7 +2157,7 @@ DiminishingValueλ = LAMBDA(
     //  Help
         Help,           TRIM(TEXTSPLIT(
                             "FUNCTION:      →DiminishingValueλ(Cost, Life)¶" &
-                            "DESCRIPTION:   →Diminishing value depreciation (ATO 200% method) for one asset or asset class.¶" &
+                            "DESCRIPTION:   →Diminishing value depreciation (ATO 200% method), writing the residual off in the final period.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" &
@@ -2161,15 +2167,19 @@ DiminishingValueλ = LAMBDA(
                             "→Formula (nabla.f is assumed to be the module's name)¶" &
                             "→=nabla.f.DiminishingValueλ(1000, 5)¶" &
                             "→Result¶" &
-                            "→400.00,240.00,144.00,86.40,51.84",
+                            "→400.00,240.00,144.00,86.40,129.60",
                             "→", "¶"
                         )),
     //  Check inputs - Omitted required arguments
         Help?,          OR( ISOMITTED( Cost), ISOMITTED( Life)),
     //  Set Constants
-        Rate,           2 / Life,
+        Rate,           MIN( 2 / Life, 1),
+    //  Set Constants
+        Periods,        SEQUENCE( , Life),
     //  Procedure
-        Result,         Cost * Rate * (1 - Rate)^(SEQUENCE( , Life) - 1), 
+        Raw,            Cost * Rate * (1 - Rate)^(Periods - 1),
+    //  Write the undeducted residual off in the final period
+        Result,         Raw + (Periods = Life) * (Cost - SUM( Raw)), 
     //  Return Result or Help
         CHOOSE( Help? + 1, Result, Help)
     )
@@ -2247,7 +2257,7 @@ GSTAddλ = LAMBDA(
     //  Check inputs - Omitted required arguments
         Help?,          ISOMITTED( Amounts),
     //  Set defaults
-        GSTRate,        IF( ISOMITTED( Rate), 0.1, Rate),
+        GSTRate,        IF( OR( ISOMITTED( Rate), TRIM( Rate & "") = ""), 0.1, Rate),
     //  Procedure
         Result,         Amounts * (1 + GSTRate), 
     //  Return Result or Help
@@ -2287,7 +2297,7 @@ GSTExtractλ = LAMBDA(
     //  Check inputs - Omitted required arguments
         Help?,          ISOMITTED( Amounts),
     //  Set defaults
-        GSTRate,        IF( ISOMITTED( Rate), 0.1, Rate),
+        GSTRate,        IF( OR( ISOMITTED( Rate), TRIM( Rate & "") = ""), 0.1, Rate),
     //  Procedure
         Result,         Amounts * GSTRate / (1 + GSTRate), 
     //  Return Result or Help

@@ -154,11 +154,20 @@ BRAND = [
 ]
 BRAND_BARE = [("BXD", "nabla.d"), ("BXE", "nabla.e"), ("BXF", "nabla.f"),
               ("BXR", "nabla.r"), ("BXU", "nabla.u"), ("5g", "nabla"), ("5G", "nabla")]
-TYPOS = [("equally equally", "equally"), ("specifice text", "specific text"),
+TYPOS = [("equally equally", "equally"),
+         # worked-example results the +2 year date shift invalidated
+         ('"→2¶" &amp; "→=nabla.d.CountDOWλ', '"→3¶" &amp; "→=nabla.d.CountDOWλ'),
+         ('"→2¶" & "→=nabla.d.CountDOWλ', '"→3¶" & "→=nabla.d.CountDOWλ'),
+         ("2023-Feb-26", "2025-Feb-26"), ("2023-Feb¶", "2025-Feb¶"),
+         ("2023:Q01", "2025:Q1"), ("→2023¶", "→2025¶"), ("specifice text", "specific text"),
          ("dynamice", "dynamic"), ("a lable for", "a label for"),
          # double substitution artefact: upstream read "every BXL 5g Library"
          ("nabla nabla Library", "nabla library"),
          ("Every Workday (USA normal)", "Every Workday (Monday to Friday)"),
+         ("randomly generated", "sample"), ("Randomly generated", "Sample"),
+         ("\"FUNCTION:      FilterContains", "\"FUNCTION:      →FilterContains"),
+         ("\"FUNCTION:      PeriodDiff", "\"FUNCTION:      →PeriodDiff"),
+         ("Liabilites", "Liabilities"),
          ('lang="en-US"', 'lang="en-AU"'),
          # unfulfilled upstream placeholder in 46 help blocks
          ("&lt;coming soon&gt;", REPO_URL), ("<coming soon>", REPO_URL),
@@ -252,6 +261,8 @@ def transform_text(s):
         s = re.sub(r'\b%s\b' % old, new, s)
     for old, new in AU_DATA:
         s = s.replace(old, new)
+    # CountDOWλ's worked example: shifting its dates +2 years changed the answer from 2 to 3
+    s = re.sub(r'"2(\s+)→=nabla\.d\.CountDOWλ', r'"3\g<1>→=nabla.d.CountDOWλ', s)
     s = re.sub(r'(?i)(ersion:\s*→\s*)[A-Z][a-z]{2} \d{1,2} \d{4}', r'\g<1>' + TODAY_AU, s)
     # sample dates: quoted or cell-value m/d/yyyy -> +2y, AU day-first
     # (trailing char may be a backslash inside JSON-escaped AFE text)
@@ -322,18 +333,23 @@ FUNCS = [
     {
         "module": "nabla.f", "name": "DiminishingValueλ",
         "sig": "DiminishingValueλ(Cost, Life)",
-        "desc": "Diminishing value depreciation (ATO 200% method) for one asset or asset class.",
+        "desc": "Diminishing value depreciation (ATO 200% method), writing the residual off in the final period.",
         "params": [("Cost", "(Required) Asset's cost."),
                    ("Life", "(Required) Asset's effective life in years.")],
         "example": "nabla.f.DiminishingValueλ(1000, 5)",
-        "result": "400.00,240.00,144.00,86.40,51.84",
+        "result": "400.00,240.00,144.00,86.40,129.60",
         "xml_decl": "_xlop.Cost,_xlop.Life",
         "xml_lets": ["_xlpm.Help?, OR(_xlfn.ISOMITTED(_xlpm.Cost), _xlfn.ISOMITTED(_xlpm.Life))",
-                     "_xlpm.Rate, 2/_xlpm.Life",
-                     "_xlpm.Result, _xlpm.Cost * _xlpm.Rate * (1-_xlpm.Rate)^(_xlfn.SEQUENCE(, _xlpm.Life)-1)"],
+                     "_xlpm.Rate, MIN(2/_xlpm.Life, 1)",
+                     "_xlpm.Periods, _xlfn.SEQUENCE(, _xlpm.Life)",
+                     "_xlpm.Raw, _xlpm.Cost * _xlpm.Rate * (1-_xlpm.Rate)^(_xlpm.Periods-1)",
+                     "_xlpm.Result, _xlpm.Raw + (_xlpm.Periods = _xlpm.Life) * (_xlpm.Cost - SUM(_xlpm.Raw))"],
         "afe_help_test": "OR( ISOMITTED( Cost), ISOMITTED( Life))",
-        "afe_lets": [("Set Constants", "Rate", "2 / Life,"),
-                     ("Procedure", "Result", "Cost * Rate * (1 - Rate)^(SEQUENCE( , Life) - 1), ")],
+        "afe_lets": [("Set Constants", "Rate", "MIN( 2 / Life, 1),"),
+                     ("Set Constants", "Periods", "SEQUENCE( , Life),"),
+                     ("Procedure", "Raw", "Cost * Rate * (1 - Rate)^(Periods - 1),"),
+                     ("Write the undeducted residual off in the final period",
+                      "Result", "Raw + (Periods = Life) * (Cost - SUM( Raw)), ")],
     },
     {
         "module": "nabla.f", "name": "PrimeCostλ",
@@ -361,10 +377,10 @@ FUNCS = [
         "result": "110",
         "xml_decl": "_xlop.Amounts,_xlop.Rate",
         "xml_lets": ["_xlpm.Help?, _xlfn.ISOMITTED(_xlpm.Amounts)",
-                     "_xlpm.GSTRate, IF(_xlfn.ISOMITTED(_xlpm.Rate), 0.1, _xlpm.Rate)",
+                     "_xlpm.GSTRate, IF(OR(_xlfn.ISOMITTED(_xlpm.Rate), TRIM(_xlpm.Rate & \"\")=\"\"), 0.1, _xlpm.Rate)",
                      "_xlpm.Result, _xlpm.Amounts * (1 + _xlpm.GSTRate)"],
         "afe_help_test": "ISOMITTED( Amounts)",
-        "afe_lets": [("Set defaults", "GSTRate", "IF( ISOMITTED( Rate), 0.1, Rate),"),
+        "afe_lets": [("Set defaults", "GSTRate", "IF( OR( ISOMITTED( Rate), TRIM( Rate & \"\") = \"\"), 0.1, Rate),"),
                      ("Procedure", "Result", "Amounts * (1 + GSTRate), ")],
     },
     {
@@ -377,10 +393,10 @@ FUNCS = [
         "result": "10",
         "xml_decl": "_xlop.Amounts,_xlop.Rate",
         "xml_lets": ["_xlpm.Help?, _xlfn.ISOMITTED(_xlpm.Amounts)",
-                     "_xlpm.GSTRate, IF(_xlfn.ISOMITTED(_xlpm.Rate), 0.1, _xlpm.Rate)",
+                     "_xlpm.GSTRate, IF(OR(_xlfn.ISOMITTED(_xlpm.Rate), TRIM(_xlpm.Rate & \"\")=\"\"), 0.1, _xlpm.Rate)",
                      "_xlpm.Result, _xlpm.Amounts * _xlpm.GSTRate / (1 + _xlpm.GSTRate)"],
         "afe_help_test": "ISOMITTED( Amounts)",
-        "afe_lets": [("Set defaults", "GSTRate", "IF( ISOMITTED( Rate), 0.1, Rate),"),
+        "afe_lets": [("Set defaults", "GSTRate", "IF( OR( ISOMITTED( Rate), TRIM( Rate & \"\") = \"\"), 0.1, Rate),"),
                      ("Procedure", "Result", "Amounts * GSTRate / (1 + GSTRate), ")],
     },
     {
@@ -394,7 +410,7 @@ FUNCS = [
         "xml_decl": "_xlop.Dates,_xlop.StartMonth",
         "xml_lets": ["_xlpm.Help?, _xlfn.ISOMITTED(_xlpm.Dates)",
                      "_xlpm.FYStart, IF(_xlfn.ISOMITTED(_xlpm.StartMonth), 7, _xlpm.StartMonth)",
-                     '_xlpm.Result, "FY" & TEXT(YEAR(_xlpm.Dates) + N(MONTH(_xlpm.Dates) >= _xlpm.FYStart), "0000")'],
+                     '_xlpm.Result, IF(N(_xlpm.Dates)=0, "", "FY" & TEXT(YEAR(_xlpm.Dates) + --(AND(_xlpm.FYStart>1, MONTH(_xlpm.Dates) >= _xlpm.FYStart)), "0000"))'],
         "afe_help_test": "ISOMITTED( Dates)",
         "afe_lets": [("Set defaults", "FYStart", "IF( ISOMITTED( StartMonth), 7, StartMonth),"),
                      ("Procedure", "Result", '"FY" & TEXT( YEAR( Dates) + N( MONTH( Dates) >= FYStart), "0000"), ')],
@@ -428,6 +444,14 @@ AFE_MACRS_RE = [
      + ' ' * 56 + 'PrimeCostλ( InitialValue, Years),'),
 ]
 
+SEE_ALSO = {
+    "nabla.e.RangeToDAλ": "Excel 365 now has TRIMRANGE and trim references (.:.) for this.",
+    "nabla.u.RangeToDAλ": "Excel 365 now has TRIMRANGE and trim references (.:.) for this.",
+    "nabla.f.RangeToDAλ": "Excel 365 now has TRIMRANGE and trim references (.:.) for this.",
+    "nabla.f.FilterContainsλ": "Excel 365 now has REGEXTEST and REGEXEXTRACT for pattern matching.",
+    "nabla.f.SumPeriodsλ": "Excel 365 now has GROUPBY and PIVOTBY for formula-driven aggregation.",
+    "nabla.f.SumContainsλ": "Excel 365 now has GROUPBY and PIVOTBY for formula-driven aggregation.",
+}
 # AFE (Excel Labs) project store: base64-wrapped UTF-16 JSON holding LAMBDA source
 afe = get("customXml/item1.xml")
 m = re.search(r'>([A-Za-z0-9+/=]{100,})<', afe)
@@ -456,6 +480,24 @@ ftext = ftext[:i_mac] + ftext[i_next:]
 assert "MACRS" not in ftext
 mods["nabla.f"]["text"] = ftext
 
+# the SEE ALSO lines must live in the module source too, or an Excel Labs save drops them
+see_afe = 0
+for full, note in SEE_ALSO.items():
+    mod, fname = full.split(".")[1], full.split(".")[2]
+    text = mods["nabla." + mod]["text"]
+    # anchor on the help signature line: not every function has a FUNCTION NAME header
+    sig = re.search(r'"FUNCTION:\s*→?\s*%s\(' % re.escape(fname), text)
+    assert sig, full
+    start = sig.start()
+    label = re.compile(r'\n(\s*)"(?:WEBPAGE|WEBSITE|VERSION|PARAMETERS):')
+    lab = label.search(text, start)   # not `m`: that still holds the project-store blob match
+    assert lab, full
+    line = '\n%s"SEE ALSO:      →%s¶" &' % (lab.group(1), note)
+    mods["nabla." + mod]["text"] = text[:lab.start()] + line + text[lab.start():]
+    see_afe += 1
+assert see_afe == len(SEE_ALSO), see_afe
+print("SEE ALSO added to", see_afe, "module sources")
+
 # fix upstream copy-paste bug: the u module's About suggested "nabla.e" (was BXE) as its own name
 assert "Suggested module name: nabla.e" in mods["nabla.u"]["text"]
 mods["nabla.u"]["text"] = mods["nabla.u"]["text"].replace(
@@ -465,9 +507,11 @@ mods["nabla.u"]["text"] = mods["nabla.u"]["text"].replace(
 for spec in FUNCS:
     mod = spec["module"].split(".", 1)[1]
     mods["nabla." + mod]["text"] = mods["nabla." + mod]["text"].rstrip() + "\n\n\n\n" + build_afe(spec)
-about_add = "".join(
-    '"%-19s→%s¶" & \n%s' % (s["name"], s["desc"], " " * 43)
-    for s in FUNCS if s["module"] == "nabla.f")
+_dep = [f for f in FUNCS if f["module"] == "nabla.f" and "GST" not in f["name"]]
+_gst = [f for f in FUNCS if f["module"] == "nabla.f" and "GST" in f["name"]]
+about_add = "".join('"%-19s→%s¶" & \n%s' % (f["name"], f["desc"], " " * 43) for f in _dep)
+about_add += '"→¶" & \n%s"AUSTRALIAN TAX     →¶" & \n%s' % (" " * 43, " " * 43)
+about_add += "".join('"%-19s→%s¶" & \n%s' % (f["name"], f["desc"], " " * 43) for f in _gst)
 anchor = '"VDBλ               →Variable declining balance depreciation method for one asset or asset class.¶" & '
 assert mods["nabla.f"]["text"].count(anchor) == 1
 mods["nabla.f"]["text"] = mods["nabla.f"]["text"].replace(anchor, anchor + "\n" + " " * 43 + about_add)
@@ -728,8 +772,10 @@ assert n == 1
 anchor = ('"VDBλ               →Variable declining balance depreciation method for one asset '
           'or asset class.¶" &amp; ')
 assert wb.count(anchor) == 1
-wb = wb.replace(anchor, anchor + "".join(
-    '"%-19s→%s¶" &amp; ' % (s["name"], xesc(s["desc"])) for s in FUNCS if s["module"] == "nabla.f"))
+wb = wb.replace(anchor, anchor
+    + "".join('"%-19s→%s¶" &amp; ' % (f["name"], xesc(f["desc"])) for f in _dep)
+    + '"→¶" &amp; "AUSTRALIAN TAX     →¶" &amp; '
+    + "".join('"%-19s→%s¶" &amp; ' % (f["name"], xesc(f["desc"])) for f in _gst))
 # register every new function as a defined name
 for spec in FUNCS:
     full = spec["module"] + "." + spec["name"]
@@ -793,14 +839,6 @@ print("Data Validation sheet: PC row added, tblMethods extended")
 # Excel 365 has gained functions since the upstream release that do natively what a few of
 # these helpers were written to work around. Checked against Microsoft's documentation on
 # 18 August 2026.
-SEE_ALSO = {
-    "nabla.e.RangeToDAλ": "Excel 365 now has TRIMRANGE and trim references (.:.) for this.",
-    "nabla.u.RangeToDAλ": "Excel 365 now has TRIMRANGE and trim references (.:.) for this.",
-    "nabla.f.RangeToDAλ": "Excel 365 now has TRIMRANGE and trim references (.:.) for this.",
-    "nabla.f.FilterContainsλ": "Excel 365 now has REGEXTEST and REGEXEXTRACT for pattern matching.",
-    "nabla.f.SumPeriodsλ": "Excel 365 now has GROUPBY and PIVOTBY for formula-driven aggregation.",
-    "nabla.f.SumContainsλ": "Excel 365 now has GROUPBY and PIVOTBY for formula-driven aggregation.",
-}
 wb = get("xl/workbook.xml")
 added = 0
 for fname, note in SEE_ALSO.items():
@@ -864,6 +902,100 @@ for sheet, rid in [("sheet1", "rId4"), ("sheet2", "rId1"), ("sheet6", "rId1")]:
 assert not [n for n in parts if "printerSettings" in n]
 print("printer configuration removed; A4 set on 3 sheets")
 
+# ---------- 9f2. A worksheet demonstrating the Australian functions ----------
+# The five additions had no demonstration sheet, unlike every other headline function.
+st_now = get("xl/styles.xml")
+cellxfs_m = re.search(r'<cellXfs count="(\d+)">', st_now)
+base_xf = int(cellxfs_m.group(1))
+NEW_XFS = ('<xf numFmtId="0" fontId="4" fillId="0" borderId="0" xfId="0" applyFont="1"/>'      # heading
+           '<xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>'  # currency
+           '<xf numFmtId="171" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>')  # date
+st_now = st_now.replace(cellxfs_m.group(0), '<cellXfs count="%d">' % (base_xf + 3), 1)
+st_now = st_now.replace("</cellXfs>", NEW_XFS + "</cellXfs>", 1)
+put("xl/styles.xml", st_now)
+H, MONEY, DATE = base_xf, base_xf + 1, base_xf + 2
+
+def txt(ref, s, value):
+    return '<c r="%s" s="%d" t="inlineStr"><is><t>%s</t></is></c>' % (ref, s, value)
+def num(ref, s, value):
+    return '<c r="%s" s="%d"><v>%s</v></c>' % (ref, s, value)
+def fml(ref, s, formula, spill=None):
+    f = ('<f t="array" ref="%s">%s</f>' % (spill, xesc(formula))) if spill else '<f>%s</f>' % xesc(formula)
+    cm = ' cm="1"' if spill else ''
+    return '<c r="%s" s="%d"%s>%s</c>' % (ref, s, cm, f)
+
+AU_ROWS = {
+    1:  '<c r="A1" s="270" t="str"><f>_xlfn.TEXTAFTER(CELL("filename",A1),"]")</f><v>Australian tax</v></c>',
+    2:  txt("A2", 0, "The Australian additions to this library. Change the input cells and the results follow."),
+    4:  txt("A4", H, "DEPRECIATION"),
+    5:  txt("A5", H, "Cost") + txt("B5", H, "Effective life (years)"),
+    6:  num("A6", MONEY, 50000) + num("B6", 0, 5),
+    8:  txt("A8", 0, "Diminishing value (ATO 200% method)")
+        + fml("B8", MONEY, "nabla.f.DiminishingValueλ($A$6,$B$6)", spill="B8:F8"),
+    9:  txt("A9", 0, "Prime cost (ATO straight line)")
+        + fml("B9", MONEY, "nabla.f.PrimeCostλ($A$6,$B$6)", spill="B9:F9"),
+    11: txt("A11", H, "GST"),
+    12: txt("A12", H, "GST-exclusive amount") + txt("B12", H, "Plus GST"),
+    13: num("A13", MONEY, 1000) + fml("B13", MONEY, "nabla.f.GSTAddλ(A13)"),
+    15: txt("A15", H, "GST-inclusive amount") + txt("B15", H, "GST included"),
+    16: num("A16", MONEY, 1100) + fml("B16", MONEY, "nabla.f.GSTExtractλ(A16)"),
+    18: txt("A18", H, "FINANCIAL YEAR"),
+    19: txt("A19", H, "Date") + txt("B19", H, "Financial year"),
+    20: num("A20", DATE, 46203) + fml("B20", 0, "nabla.d.FinancialYearλ(A20)"),   # 30 Jun 2026
+    21: num("A21", DATE, 46204) + fml("B21", 0, "nabla.d.FinancialYearλ(A21)"),   # 1 Jul 2026
+    22: num("A22", DATE, 46249) + fml("B22", 0, "nabla.d.FinancialYearλ(A22)"),   # 15 Aug 2026
+}
+assert (EPOCH + datetime.timedelta(days=46203)) == datetime.datetime(2026, 6, 30)
+assert (EPOCH + datetime.timedelta(days=46204)) == datetime.datetime(2026, 7, 1)
+AU_SHEET = (
+    '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
+    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
+    'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+    '<dimension ref="A1:F22"/>'
+    '<sheetViews><sheetView showGridLines="0" workbookViewId="0">'
+    '<selection activeCell="A1" sqref="A1"/></sheetView></sheetViews>'
+    '<sheetFormatPr defaultRowHeight="15"/>'
+    '<cols><col min="1" max="1" width="34" customWidth="1"/>'
+    '<col min="2" max="6" width="16" customWidth="1"/></cols><sheetData>'
+    + "".join('<row r="%d">%s</row>' % (r, AU_ROWS[r]) for r in sorted(AU_ROWS))
+    + '</sheetData>'
+    '<hyperlinks><hyperlink ref="A1" location="\'TOC\'!$A$1" display="\'TOC\'!$A$1"/></hyperlinks>'
+    '<pageMargins left="0.7" right="0.7" top="0.75" bottom="0.75" header="0.3" footer="0.3"/>'
+    '<pageSetup paperSize="9" orientation="portrait"/></worksheet>')
+AU_PART, AU_RID, AU_SHEETID = "xl/worksheets/sheet50.xml", "rId62", 132
+assert AU_PART not in parts
+parts[AU_PART] = AU_SHEET.encode("utf-8")
+ct = get("[Content_Types].xml")
+put("[Content_Types].xml", ct.replace("</Types>",
+    '<Override PartName="/xl/worksheets/sheet50.xml" '
+    'ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>'))
+rels = get("xl/_rels/workbook.xml.rels")
+assert AU_RID not in rels
+put("xl/_rels/workbook.xml.rels", rels.replace("</Relationships>",
+    '<Relationship Id="%s" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" '
+    'Target="worksheets/sheet50.xml"/></Relationships>' % AU_RID))
+wbx = get("xl/workbook.xml")
+anchor_sheet = re.search(r'<sheet name="Data Validation"[^>]*/>', wbx)
+assert anchor_sheet
+put("xl/workbook.xml", wbx.replace(anchor_sheet.group(0), anchor_sheet.group(0)
+    + '<sheet name="Australian tax" sheetId="%d" r:id="%s"/>' % (AU_SHEETID, AU_RID)))
+# list it in the table of contents
+toc = get("xl/worksheets/sheet2.xml")
+assert '<row r="70"' not in toc
+row70 = ('<row r="70" spans="1:4">'
+         + txt("A70", 110, "Australian tax") + txt("B70", 108, "Worksheet")
+         + txt("C70", 111, "Australian tax") + txt("D70", 109,
+             "ATO depreciation, GST and financial-year helpers") + '</row>')
+toc = toc.replace("</sheetData>", row70 + "</sheetData>")
+toc = toc.replace('<dimension ref="A1:F69"/>', '<dimension ref="A1:F70"/>')
+toc = toc.replace('<hyperlinks>', '<hyperlinks><hyperlink ref="A70" location="\'Australian tax\'!$A$1" '
+                  'display="\'Australian tax\'!$A$1"/>', 1)
+put("xl/worksheets/sheet2.xml", toc)
+t1 = get("xl/tables/table1.xml")
+assert 'ref="A4:D69"' in t1
+put("xl/tables/table1.xml", t1.replace('ref="A4:D69"', 'ref="A4:D70"'))
+print("added the Australian tax worksheet")
+
 # ---------- 9g. Performance: freeze the volatile demo data ----------
 # 38 RANDBETWEEN formulas made 93% of the workbook's formula cells volatile, so every edit
 # recalculated almost everything. The sample data does not need to be random: fixed values
@@ -911,8 +1043,9 @@ assert n >= 3, n
 put("xl/tables/table10.xml", t10b)
 
 # Periodsλ: fixed start/end pairs and interval codes
+# the "Y" row must span more than a year or the demo returns zero
 static_cells("xl/worksheets/sheet9.xml", {"A25": 46081, "B25": 46356, "A26": 46203, "B26": 46600,
-                                          "A27": 46023, "B27": 46387, "A28": 46142, "B28": 46508,
+                                          "A27": 46023, "B27": 47119, "A28": 46142, "B28": 46508,
                                           "A29": 46265, "B29": 46630})
 static_cells("xl/worksheets/sheet9.xml", {"C25": "M", "C26": "Q", "C27": "Y", "C28": "W", "C29": "D"},
              numeric=False)
@@ -920,7 +1053,7 @@ static_cells("xl/worksheets/sheet9.xml", {"C25": "M", "C26": "Q", "C27": "Y", "C
 static_cells("xl/worksheets/sheet31.xml", {"A%d" % r: 46023 + (r - 19) * 47 for r in range(19, 26)})
 # IsBetweenλ: onboarding dates spaced a month apart instead of randomly scattered
 RAND_ONBOARD = ('RANDBETWEEN(1,$B$22*_xlfn.SWITCH($B$23, "Y", 365, "M", 30, "Q", 90, "W", 7, "D", 1))')
-SPACED = '30 * (ROW() - ROW(tblOnBoarding[#Headers]))'
+SPACED = '365 * (ROW() - ROW(tblOnBoarding[#Headers]))'
 for part in ("xl/worksheets/sheet47.xml", "xl/tables/table17.xml"):
     d = get(part)
     assert RAND_ONBOARD in d, part
@@ -934,9 +1067,60 @@ for old, new in [("_xlpm.Pad,RANDBETWEEN(1,3)", "_xlpm.Pad,2"),
     s26 = s26.replace(old, new)
 put("xl/worksheets/sheet26.xml", s26)
 
+# RANDARRAY is volatile too. Replace each with a deterministic MAKEARRAY over the same
+# shape and range, so the grids stay varied but stop recalculating on every edit.
+def _split_args(text, start):
+    """Split the argument list of a call whose '(' is at `start`; returns (args, end)."""
+    depth, args, cur, in_str, i = 0, [], "", False, start
+    while i < len(text):
+        ch = text[i]
+        if ch == '"':
+            in_str = not in_str
+        if not in_str:
+            if ch == "(":
+                depth += 1
+                if depth == 1:
+                    i += 1
+                    continue
+            elif ch == ")":
+                depth -= 1
+                if depth == 0:
+                    args.append(cur)
+                    return args, i + 1
+            elif ch == "," and depth == 1:
+                args.append(cur); cur = ""; i += 1; continue
+        cur += ch
+        i += 1
+    raise ValueError("unbalanced call")
+
+randarray = 0
+for n in list(parts):
+    if not re.match(r'xl/worksheets/sheet\d+\.xml$', n):
+        continue
+    d = get(n)
+    while "_xlfn.RANDARRAY(" in d:
+        at = d.index("_xlfn.RANDARRAY(")
+        args, end = _split_args(d, at + len("_xlfn.RANDARRAY"))
+        assert len(args) in (2, 3, 4, 5), (n, args)   # min/max and the whole-number flag are optional
+        rows, cols = (a.strip() for a in args[:2])
+        if len(args) >= 4:
+            lo, hi = args[2].strip(), args[3].strip()
+            body = "%s + MOD(_xlpm.r * 7 + _xlpm.c * 13, %s - %s + 1)" % (lo, hi, lo)
+        else:   # RANDARRAY's own default range is 0 to 1, returned as decimals
+            body = "MOD(_xlpm.r * 7 + _xlpm.c * 13, 100) / 100"
+        repl = '_xlfn.MAKEARRAY(%s, %s, _xlfn.LAMBDA(_xlpm.r,_xlpm.c, %s))' % (rows, cols, body)
+        d = d[:at] + repl + d[end:]
+        randarray += 1
+    put(n, d)
+print("replaced", randarray, "volatile RANDARRAY grids")
+
 for n in list(parts):
     if re.match(r'xl/(?:worksheets/sheet\d+|tables/table\d+)\.xml$', n):
-        assert "RANDBETWEEN" not in get(n), n
+        d = get(n)
+        formulas = re.findall(r'<f[^>]*>(.*?)</f>', d, re.S)
+        formulas += re.findall(r'<calculatedColumnFormula[^>]*>(.*?)</calculatedColumnFormula>', d, re.S)
+        for f in formulas:   # worksheet prose may still mention these by name
+            assert "RANDBETWEEN(" not in f and "RANDARRAY(" not in f, (n, f[:60])
 
 # Drop the always-calculate flags now that nothing but the sheet-name titles is volatile.
 cleared = 0
@@ -957,7 +1141,7 @@ for n in list(parts):
 print("volatile demo data frozen;", cleared, "always-calculate flags cleared")
 
 # ---------- 9h. Presentation ----------
-TAB = {"nabla.d": "FF1F4E79", "nabla.e": "FF2E75B6", "nabla.f": "FF157A5F", "nabla.r": "FF375623"}
+TAB = {"Australian tax": "FF157A5F", "nabla.d": "FF1F4E79", "nabla.e": "FF2E75B6", "nabla.f": "FF157A5F", "nabla.r": "FF375623"}
 wbx = get("xl/workbook.xml")
 relmap = dict(re.findall(r'Id="(rId\d+)"[^>]*Target="([^"]+)"', get("xl/_rels/workbook.xml.rels")))
 styled = 0
@@ -976,15 +1160,23 @@ for nm, rid in re.findall(r'<sheet name="([^"]+)"[^>]*r:id="(rId\d+)"', wbx):
     d = re.sub(r'<sheetView(?=[ >])(?![^>]*showGridLines)', '<sheetView showGridLines="0"', d)
     d = d.replace('showGridLines="1"', 'showGridLines="0"')
     d = re.sub(r'(<sheetView[^>]*?)\s*topLeftCell="[^"]*"', r'\g<1>', d)
+    # only the cover should open selected, matching the removed activeTab
+    d = re.sub(r'(<sheetView[^>]*?)\s*tabSelected="1"', r'\g<1>', d)
+    if nm == "Cover":
+        d = d.replace("<sheetView ", '<sheetView tabSelected="1" ', 1)
     if "<pane " not in d:   # leave split/frozen sheets to their own pane selections
         d = re.sub(r'<selection[^>]*/>', '<selection activeCell="A1" sqref="A1"/>', d)
     put(path, d)
     styled += 1
-assert styled == 49, styled
+assert styled == 50, styled
 # open on the cover, not on whichever tab was last active
 wbx2 = re.sub(r'(<workbookView[^>]*?)\s*activeTab="\d+"', r'\g<1>', wbx)
 assert wbx2 != wbx
 put("xl/workbook.xml", wbx2)
+toc_cols = get("xl/worksheets/sheet2.xml")
+for col, width in (("1", "31.5"), ("3", "30.5")):
+    toc_cols = re.sub(r'(<col min="%s" max="%s" width=")[\d.]+' % (col, col), r'\g<1>' + width, toc_cols)
+put("xl/worksheets/sheet2.xml", toc_cols)
 print("presentation: tab colours, gridlines and opening view set on", styled, "sheets")
 
 # ---------- 10. core.xml: title + modified ----------
@@ -1000,6 +1192,7 @@ put("docProps/core.xml", core)
 import os
 os.makedirs(os.path.dirname(DST), exist_ok=True)
 order = [n for n in zin.namelist() if n in parts]
+order += [n for n in parts if n not in set(zin.namelist())]   # parts this build adds
 with zipfile.ZipFile(DST, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zout:
     for n in order:
         zout.writestr(n, parts[n])

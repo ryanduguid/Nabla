@@ -103,7 +103,7 @@ def main():
         formulas = re.findall(r"<f[^>]*>(.*?)</f>", text, re.S)
         formulas += re.findall(r"<calculatedColumnFormula[^>]*>(.*?)</calculatedColumnFormula>", text, re.S)
         for formula in formulas:
-            for volatile in ("RANDBETWEEN(", "RAND()", "NOW()", "TODAY()", "OFFSET(", "INDIRECT("):
+            for volatile in ("RANDBETWEEN(", "RANDARRAY(", "RAND()", "NOW()", "TODAY()", "OFFSET(", "INDIRECT("):
                 if volatile in formula:
                     fail(f"volatile {volatile} in a formula in {part}")
         for cell in re.findall(r"<c r=\"[A-Z]+\d+\"[^>]*>(?:(?!</c>).)*</c>", text, re.S):

@@ -556,6 +556,7 @@ RangeToDAλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT(
                             "FUNCTION:          →RangeToDAλ(Range, [Rows], [Columns])¶" &
                             "DESCRIPTION:       →Convert a range reference to a dynamic array reference.¶" & 
+                            "SEE ALSO:      →Excel 365 now has TRIMRANGE and trim references (.:.) for this.¶" &
                             "WEBSITE:           →https://github.com/ryanduguid/Nabla¶" &
                             "PARAMETERS:        →¶" & 
                             "Range              →(Required) A reference to the range to be converted.¶" &

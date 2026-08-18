@@ -46,8 +46,8 @@ nabla.f.DBλ,nabla.f,"DBλ(Cost, Salvage, Life, [Month])",Fixed declining balanc
 nabla.f.DDBλ,nabla.f,"DBλ(Cost, Salvage, Life, [Factor])",Double-declining balance depreciation method for one asset or asset class.
 nabla.f.Depreciateλ,nabla.f,"Depreciateλ(InitialValues, InServiceDates, LifeInYears, Timeline,","Create a block of CAPEX, Opening Balance, Depreciation Values, and Book Value for each asset"
 nabla.f.DepreciateλDV,nabla.f,DepreciateλDV,Provides extended data validation of arguments for Depreciateλ
-nabla.f.DiminishingValueλ,nabla.f,"DiminishingValueλ(Cost, Life)",Diminishing value depreciation (ATO 200% method) for one asset or asset class.
-nabla.f.FilterContainsλ,nabla.f,FilterContainsλ,Filter an array by another array that contains specific text
+nabla.f.DiminishingValueλ,nabla.f,"DiminishingValueλ(Cost, Life)","Diminishing value depreciation (ATO 200% method), writing the residual off in the final period."
+nabla.f.FilterContainsλ,nabla.f,"FilterContainsλ( ArrayToFilter, FilterByArray, Text, [IgnoreCase?] )",Filter an array by another array that contains specific text
 nabla.f.GSTAddλ,nabla.f,"GSTAddλ(Amounts, [Rate])",Adds GST to one or more GST-exclusive amounts.
 nabla.f.GSTExtractλ,nabla.f,"GSTExtractλ(Amounts, [Rate])",Returns the GST contained in one or more GST-inclusive amounts.
 nabla.f.IRRλ,nabla.f,"IRRλ( Values, Dates)","Calculates IRR, correcting for when the first investment is not in the first period"
@@ -55,14 +55,14 @@ nabla.f.IntOnIntλ,nabla.f,"IntOnIntλ( Principal, Rate)",Calculate Interest on 
 nabla.f.LabelAmortiseλ,nabla.f,LabelAmortiseλ([LoanNames]),Create labels for Amortiseλ
 nabla.f.LabelDepreciateλ,nabla.f,LabelDepreciateλ( AssetNames),Create labels for Depreciateλ
 nabla.f.Movementλ,nabla.f,"Movementλ( [BeginningValue], Values)",Create a row of differences from column to column
-nabla.f.PeriodDiffλ,nabla.f,PeriodDiffλ,Determine the number of periods between two dates.
+nabla.f.PeriodDiffλ,nabla.f,"PeriodDiffλ(StartDate, EndDate, Interval)",Determine the number of periods between two dates.
 nabla.f.PeriodStartλ,nabla.f,"PeriodStartλ(AnyPeriodStart, MonthsPerPeriod, DateOfInterest)",Determine when the period containing a date of interest starts
 nabla.f.PrimeCostλ,nabla.f,"PrimeCostλ(Cost, Life)","Prime cost (straight line) depreciation, ATO method, for one asset or asset class."
 nabla.f.RangeToDAλ,nabla.f,"RangeToDAλ( Cell, [Rows], [Columns])",Create a dynamic array from a static range
 nabla.f.Reversalλ,nabla.f,"Reversalλ( [OpeningValue], RowToReverse)",Create a row that reverses input values in the next period.
 nabla.f.RollingAvgλ,nabla.f,"RollingAvgλ( Values, Size)",Creates Averages for preceding values of a set size moving from beginning to end over a row of values.
 nabla.f.RollingMaxλ,nabla.f,"RollingMaxλ( Values, Size)",Creates the maximum for preceding values of a set size moving from beginning to end over a row of values.
-nabla.f.RollingMinλ,nabla.f,RollingMinλ,Creates the Minimum for preceding values of a set size moving from beginning to end over a row of values.
+nabla.f.RollingMinλ,nabla.f,"RollingMinλ( Values, Size)",Creates the Minimum for preceding values of a set size moving from beginning to end over a row of values.
 nabla.f.RollingSumλ,nabla.f,"RollingSumλ( Values, Size)",Creates totals for preceding values of a set size moving from beginning to end over a row of values.
 nabla.f.SLNλ,nabla.f,"SLNλ(Cost, Salvage, Life)",Straight Line depreciation method for one asset or asset class.
 nabla.f.SYDλ,nabla.f,"SYDλ(Cost, Salvage, Life)",Sum-of-years' digits depreciation method for one asset or asset class.
@@ -78,8 +78,8 @@ nabla.r.AssetTurnoverRatioλ,nabla.r,"AssetTurnoverRatioλ( NetSales, TotalAsset
 nabla.r.BVPSλ,nabla.r,"BVPSλ( ShareholdersEquity, PreferredStock, AverageSharesOutstanding )",Book value per share ratio is an indicator of the value of a company’s stock _x000a_(Shareholders' Equity - Preferred Stock)/Average Shares Outstanding)
 nabla.r.CAPERatioλ,nabla.r,"CAPERatioλ( SharePrice, TenYearAverageEarningsInflationAdjusted )",CAPE Ratio is a valuation measure that uses real earnings per share (EPS) over a 10-year period_x000a_to smooth out fluctuations in corporate profits that occur over different periods of a business_x000a_cycle (aka Shiller PE Ratio) (Share Price/Ten Year Average Earn
 nabla.r.CashFlowMarginλ,nabla.r,"CashFlowMarginλ( NetIncome, Revenue)",Cash Flow Margin is a trusted metric of a company’s profitability and efficiency _x000a_and its earnings quality (Cash Flow From Operating Activities/Revenue).
-nabla.r.CashRatioλ,nabla.r,"CashRatioλ( Cash, Liabilites)",Evaluates ability to repay short-term debt w/cash or near-cash resources _x000a_    (Cash and Cash Equivalents / Current Liabilities)
-nabla.r.CurrentRatioλ,nabla.r,"CurrentRatioλ( Assets, Liabilites)",Measures a company’s ability to pay short-term obligations (Current Assets/Liabilities)
+nabla.r.CashRatioλ,nabla.r,"CashRatioλ( Cash, Liabilities)",Evaluates ability to repay short-term debt w/cash or near-cash resources _x000a_    (Cash and Cash Equivalents / Current Liabilities)
+nabla.r.CurrentRatioλ,nabla.r,"CurrentRatioλ( Assets, Liabilities)",Measures a company’s ability to pay short-term obligations (Current Assets/Liabilities)
 nabla.r.DPRλ,nabla.r,"DPRλ( DividendsPaid, NetIncome )",Dividend Payout Ratio is the percentage of earnings paid to shareholders via dividends_x000a_    (DividendsPaid/NetIncome)
 nabla.r.DSCRλ,nabla.r,"DSCRλ( NetOperatingIncome, Totaldebtservice)",Debt service coverage Ratio measures a firm’s available cash flow to pay its _x000a_current debt obligations(Net Operating Income/Total Debt Service)
 nabla.r.DSIλ,nabla.r,"DSIλ( AverageInventory, CostOfGoodsSold)",Days Sales in Inventory Ratio (aka Average age of inventory _x000a_indicates the average time in days that a company takes to turn its inventory _x000a_(Average Inventory/ Cost of Goods Sold)
@@ -96,7 +96,7 @@ nabla.r.GrossMarginλ,nabla.r,"GrossMarginλ( GrossProfit, NetSales)",Shows how 
 nabla.r.InterestCoverageRatioλ,nabla.r,"InterestCoverageRatioλ( OperatingIncome, InterestExpenses)",Determines how easily a company can pay interest on its outstanding debt_x000a_(Operating Income/Interest Expenses)
 nabla.r.InventoryTurnoverRatioλ,nabla.r,"InventoryTurnoverRatioλ( CostOfGoodsSold, AverageInventory)",Shows how many times a company turned over its inventory relative _x000a_    to its cost of goods sold (COGS) (COGS/Average Inventory)
 nabla.r.NetProfitMarginλ,nabla.r,"NetProfitMarginλ( NetIncome, Revenue)",Measures how much net income or profit a company generates as a percentage of its revenue. _x000a_(Net Income/Revenue).
-nabla.r.OperatingCashFlowRatioλ,nabla.r,"OperatingCashFlowRatioλ( OperatingCashFlow, Liabilites)",Measures a company’s ability to pay short-term obligations
+nabla.r.OperatingCashFlowRatioλ,nabla.r,"OperatingCashFlowRatioλ( OperatingCashFlow, Liabilities)",Measures a company’s ability to pay short-term obligations
 nabla.r.OperatingMarginλ,nabla.r,"OperatingMarginλ( OperatingEarnings, Revenue)","Measures how much profit a company makes on a dollar of sales after paying for variable costs _x000a_of production, such as wages and raw materials, but before paying interest or tax (Operating Earnings/Revenue)."
 nabla.r.OperatingRatioλ,nabla.r,"OperatingRatioλ( OperatingExpenses, CostOfGoodsSold, NetSales)",Shows how efficient management is at keeping costs low while generating revenue _x000a_(Operating Expenses + Cost Of Goods Sold)/Net Sales)
 nabla.r.PretaxMarginλ,nabla.r,"PretaxMarginλ( PretaxEarnings, Revenue)",Measures the operating efficiency of a company (Pretax Earnings/Revenue).
@@ -104,7 +104,7 @@ nabla.r.PriceEarningsRatioλ,nabla.r,"PriceEarningsRatioλ( SharePrice, Earnings
 nabla.r.PriceToBookRatioλ,nabla.r,"PriceToBookRatioλ( MarketPricePerShare, BookValuePerShareBvps)",Many investors use the price-to-book ratio (P/B ratio) to compare a firm's market _x000a_capitalisation to its book value and locate undervalued companies.
 nabla.r.PriceToCashRatioλ,nabla.r,"PriceToCashRatioλ( MarketPricePerShare, SalesPerShare)",Price to Cash (P/CF) Ratio is a stock valuation indicator or multiple that measures _x000a_the value of a stock’s price relative to its operating cash flow per share _x000a_(Market Price Per Share/Operating Cash Flow Per Share).
 nabla.r.PriceToSalesRatioλ,nabla.r,"PriceToSalesRatioλ( MarketPricePerShare, SalesPerShare)",Price to Sales (P/S) Ratio is an indicator of the value that financial markets have _x000a_placed on each dollar of a company's sales or revenues (Market Price Per Share/Sales Per Share).
-nabla.r.QuickRatioλ,nabla.r,"QuickRatioλ( LiquidAssets, Liabilites)",Measures ability to meet short-term obligations (Quick Assets/Current Liabilities)
+nabla.r.QuickRatioλ,nabla.r,"QuickRatioλ( LiquidAssets, Liabilities)",Measures ability to meet short-term obligations (Quick Assets/Current Liabilities)
 nabla.r.ROAλ,nabla.r,"ROAλ( NetIncome, TotalAssets)",Return on assets (ROA) ratio indicates how profitable a company is _x000a_in relation to its total assets ( Net Income / Total Assets)
 nabla.r.ROEλ,nabla.r,"ROEλ( NetIncome, ShareholdersEquity)",Return on equity (ROE) ratio is a measure of financial performance (Net Income/Shareholders Equity)
 nabla.r.ROICλ,nabla.r,"ROICλ( NetOperatingProfitAfterTax, InvestedCapital)",Return on Invested capital  assesses a company’s efficiency in allocating _x000a_capital to profitable investments (Net Operating Profit After Tax/Invested Capital)

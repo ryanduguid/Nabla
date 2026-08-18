@@ -4,7 +4,7 @@
 
 A LAMBDA function library for building dynamic-array financial models in Excel.
 
-`nabla.xlsx` ships 130 named functions across six modules. Every function carries inline help, and the core functions each have a demonstration worksheet with live, editable examples. Every function is built from native Excel functions only, so models assembled with nabla save as ordinary `.xlsx` workbooks with no add-ins and no macros.
+`nabla.xlsx` ships 130 named functions across six modules. Every function carries inline help, and the core functions each have a demonstration worksheet with live, editable examples. The **Australian tax** worksheet demonstrates the ATO depreciation, GST and financial-year helpers. Every function is built from native Excel functions only, so models assembled with nabla save as ordinary `.xlsx` workbooks with no add-ins and no macros.
 
 **Version: 18 August 2026**
 
@@ -48,7 +48,7 @@ The library is Australian-only. Tax content follows ATO practice, and the foreig
 
 | Function | Purpose |
 |---|---|
-| `nabla.f.DiminishingValueλ(Cost, Life)` | ATO diminishing value method (200% declining balance) |
+| `nabla.f.DiminishingValueλ(Cost, Life)` | ATO diminishing value method (200% declining balance), writing the residual off in the final period |
 | `nabla.f.PrimeCostλ(Cost, Life)` | ATO prime cost method (straight line) |
 | `nabla.f.GSTAddλ(Amounts, [Rate])` | Adds GST to GST-exclusive amounts, 10% by default |
 | `nabla.f.GSTExtractλ(Amounts, [Rate])` | Returns the GST inside GST-inclusive amounts |
@@ -72,7 +72,7 @@ The helpers are kept because they still work on the Excel 2024 baseline and insi
 
 ## Performance and presentation
 
-The workbook is built to stay responsive on modest hardware. No formula in it is volatile except the sheet-name titles, so editing a cell recalculates only what depends on it rather than the whole file. The sample data is fixed rather than randomly generated, which also means the worked examples match their captions every time you open them.
+The workbook is built to stay responsive on modest hardware. No formula in it is volatile except the sheet-name titles, so editing a cell recalculates only what depends on it rather than the whole file. That covers the random-number formulas behind the sample data in both their forms. The sample data is fixed rather than randomly generated, which also means the worked examples match their captions every time you open them.
 
 Each module has its own tab colour, gridlines are hidden, and every sheet opens at the top left on the cover.
 
