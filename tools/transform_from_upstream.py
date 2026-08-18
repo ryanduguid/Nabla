@@ -1026,8 +1026,32 @@ toc = toc.replace('<hyperlinks>', '<hyperlinks><hyperlink ref="A70" location="\'
 put("xl/worksheets/sheet2.xml", toc)
 t1 = get("xl/tables/table1.xml")
 assert 'ref="A4:D69"' in t1
-put("xl/tables/table1.xml", t1.replace('ref="A4:D69"', 'ref="A4:D70"'))
-print("added the Australian tax worksheet")
+t1 = t1.replace('ref="A4:D69"', 'ref="A4:D70"')
+
+# Upstream ships the contents filtered to Type = Worksheet, so the workbook opens with
+# every tblBudget row hidden: 16 of 66 entries invisible until someone notices the slicer.
+# Drop the criteria and unhide the rows. The <autoFilter> element itself stays, because
+# the Type slicer binds to it; with no filterColumn it simply has nothing applied.
+fcol = re.search(r'<filterColumn colId="1">.*?</filterColumn>', t1, re.S)
+assert fcol and 'val="Worksheet"' in fcol.group(0), "TOC filter not found where expected"
+t1 = t1.replace(fcol.group(0), "")
+assert "<filterColumn" not in t1
+put("xl/tables/table1.xml", t1)
+
+toc = get("xl/worksheets/sheet2.xml")
+unhidden = 0
+def _show(m):
+    global unhidden
+    row = int(m.group(1))
+    if not (5 <= row <= 70):        # only the table's own data rows
+        return m.group(0)
+    unhidden += 1
+    return m.group(0).replace(' hidden="1"', "")
+toc = re.sub(r'<row r="(\d+)"[^>]*hidden="1"[^>]*>', _show, toc)
+assert unhidden == 16, unhidden
+assert 'hidden="1"' not in toc
+put("xl/worksheets/sheet2.xml", toc)
+print("added the Australian tax worksheet; cleared the TOC filter and unhid", unhidden, "rows")
 
 # ---------- 9g. Performance: freeze the volatile demo data ----------
 # 38 RANDBETWEEN formulas made 93% of the workbook's formula cells volatile, so every edit
