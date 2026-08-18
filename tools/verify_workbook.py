@@ -94,13 +94,18 @@ def main():
     # Volatile formulas force the whole dependency chain to recalculate on every edit, which
     # is what makes a workbook this size feel slow on modest hardware. Only the sheet-name
     # titles, which use CELL(), are allowed to be volatile.
+    # Only real formulas count: worksheet text quoting TODAY() as an example, and the
+    # INDIRECT() that points a data-validation list at a table column, are not calculations.
     for part in parts:
         if not (SHEET_RE.match(part) or part.startswith("xl/tables/")):
             continue
         text = z.read(part).decode("utf-8")
-        for volatile in ("RANDBETWEEN(", "RAND()", "NOW()", "TODAY()", "OFFSET(", "INDIRECT("):
-            if volatile in text:
-                fail(f"volatile {volatile} in {part}")
+        formulas = re.findall(r"<f[^>]*>(.*?)</f>", text, re.S)
+        formulas += re.findall(r"<calculatedColumnFormula[^>]*>(.*?)</calculatedColumnFormula>", text, re.S)
+        for formula in formulas:
+            for volatile in ("RANDBETWEEN(", "RAND()", "NOW()", "TODAY()", "OFFSET(", "INDIRECT("):
+                if volatile in formula:
+                    fail(f"volatile {volatile} in a formula in {part}")
         for cell in re.findall(r"<c r=\"[A-Z]+\d+\"[^>]*>(?:(?!</c>).)*</c>", text, re.S):
             if ('ca="1"' in cell or 'aca="1"' in cell) and "CELL(" not in cell:
                 fail(f"always-calculate flag on a non-volatile cell in {part}")
