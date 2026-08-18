@@ -44,6 +44,13 @@ utilities copies. The five About tables take words instead: `nb.AboutFinancialλ
 4. Grey-shaded cells on each worksheet are inputs. Change them and watch the function respond.
 5. To use the functions in your own workbook, copy a green-shaded cell across (Excel brings the named LAMBDA with it), or import the plain-text source from `src/` with the Advanced Formula Environment in the Excel Labs add-in.
 
+   Importing `src/` that way recreates the functions under the module container's own
+   name, so `Dates.txt` produces `Dates.CountDOWλ` rather than `nb.CountDOWλ`: the
+   Advanced Formula Environment takes the prefix from the container, and one flat
+   namespace cannot be six containers. The workbook is the authority for the `nb.`
+   names. `src/` is for reading, diffing, and pasting a single definition into Name
+   Manager, where the name is yours to choose.
+
 The workbook recalculates fully on first open, so demonstration outputs (including random sample data) refresh and Excel will offer to save the result.
 
 Functions with a data-validation companion (named with a `DV` suffix, such as `nb.AmortiseλDV`) diagnose argument problems when the parent function returns something unexpected.

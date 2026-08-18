@@ -1,5 +1,40 @@
 # Changelog
 
+## v2.0.0, 18 August 2026, one namespace
+
+**This release renames every function and breaks every formula written against v1.2.x.**
+`nabla.f.Amortiseλ` is now `nb.Amortiseλ`. Models built on the old names keep working
+only if they keep the old workbook, which stays available at the `v1.2.6` tag.
+
+Six module prefixes became one. The gain is five fewer characters on every call and, more
+to the point, autocomplete that works: typing `=nb.` narrows to this library instead of
+requiring you to remember which of six modules a function lived in first.
+
+Of the 130 functions, 89 change prefix and nothing else. Seventeen bare names existed in
+more than one module: the fuller implementation keeps the plain name and the other 19 take
+a one-letter tag, `B` for debt, `E` for essentials, `U` for utilities. The five About
+tables take words, so `nabla.f.Aboutλ` is now `nb.AboutFinancialλ` and the bare name
+`Aboutλ` is gone.
+
+### Finding a renamed function
+
+`functions.csv` now carries a `previous_name` column, one entry for every function, so
+every old name has a documented replacement. The full table is in the release notes.
+
+Checked against the index v1.2.6 shipped: 130 names then, 130 now, one to one, with no
+name dropped and none invented.
+
+### Also
+
+- The `src/` round-trip has a known limitation, now documented in the README. Importing a
+  module through the Advanced Formula Environment recreates its functions under the
+  container's name, `Dates.CountDOWλ` rather than `nb.CountDOWλ`, because the AFE takes
+  the prefix from the container. The workbook is the authority for the `nb.` names.
+- `nabla.xlsx` is attached to this release as a downloadable asset, which earlier releases
+  did not offer.
+- The entry below for the namespace work said the tag scheme covered 23 functions. It
+  covers 19; the other 4 were the About renames, counted twice.
+
 ## Unreleased
 
 - **`tools/verify_signatures.py` now reads the parameter tables too.** It checked the FUNCTION line and stopped there, which is why the table defects fixed in v1.2.6 had to be found by hand. The two are independent pieces of hand-written text, so the checks are independent: 117 signatures and 122 parameter tables, the extra five being the debt module's functions, which have never carried a FUNCTION line but do carry tables. A row whose label ends in `!` is an aside rather than a parameter, and the internal `DoNotUse` counter may be documented or omitted. Run against v1.2.5 it reports all four table divergences; against v1.2.3, twenty-four problems across both checks.
@@ -68,7 +103,7 @@ module, forty functions in total. Nothing was dropped: the fuller implementation
 plain name and the other takes a one-letter tag.
 
 - `B` for debt, `E` for essentials, `U` for utilities: `nb.AmortiseBλ`, `nb.IsBetweenEλ`,
-  `nb.SumRowsUλ` and so on, 23 functions in all.
+  `nb.SumRowsUλ` and so on, 19 functions in all.
 - The five About tables take words rather than letters, because `nb.AboutRλ` tells a
   reader nothing: `nb.AboutDatesλ`, `nb.AboutEssentialsλ`, `nb.AboutFinancialλ`,
   `nb.AboutRatiosλ`, `nb.AboutUtilitiesλ`.
