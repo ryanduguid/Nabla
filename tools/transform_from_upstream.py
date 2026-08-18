@@ -654,6 +654,18 @@ HELP_SIGNATURES = [
     ("nabla.e", "IsInListλ", '"EXAMPLES       :→', '"EXAMPLES:      →'),
     ("nabla.u", "IsBetweenλ", '"EXAMPLES       :→', '"EXAMPLES:      →'),
     ("nabla.u", "IsInListλ", '"EXAMPLES       :→', '"EXAMPLES:      →'),
+    # IsBetweenλ's parameter table calls its second argument Lo, which is not what the
+    # LAMBDA declares or what the signature above it says, and describes the upper limit
+    # as the lower one, copied from the row above. The Dates module's own IsBetweenλ has
+    # both right and reads "The higher limit that the value(s) must be less than".
+    ("nabla.e", "IsBetweenλ", '"Lo             →', '"Low            →'),
+    ("nabla.e", "IsBetweenλ", "(Required) The lower limit that the value must be less than",
+     "(Required) The higher limit that the value must be less than"),
+    ("nabla.e", "IsBetweenλ", "equal to Lo and/or Hi", "equal to Low and/or Hi"),
+    ("nabla.u", "IsBetweenλ", '"Lo             →', '"Low            →'),
+    ("nabla.u", "IsBetweenλ", "(Required) The lower limit that the value must be less than",
+     "(Required) The higher limit that the value must be less than"),
+    ("nabla.u", "IsBetweenλ", "equal to Lo and/or Hi", "equal to Low and/or Hi"),
 ]
 
 # IsInListλ is the one case where the declaration is the odd one out: it shouts LIST,

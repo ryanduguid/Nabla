@@ -474,9 +474,9 @@ IsBetweenλ = LAMBDA(
                             "DESCRIPTION:   →Determine if a value is between a lower and upper limit.¶" & 
                             "PARAMETERS:    →¶" & 
                             "Value          →(Required) A value or array of values to compare.¶" & 
-                            "Lo             →(Required) The lower limit that the value must be greater than¶" &
-                            "Hi             →(Required) The lower limit that the value must be less than¶" &
-                            "Inclusive      →(Optional) If set to TRUE (default) the value can be equal to Lo and/or Hi¶" &
+                            "Low            →(Required) The lower limit that the value must be greater than¶" &
+                            "Hi             →(Required) The higher limit that the value must be less than¶" &
+                            "Inclusive      →(Optional) If set to TRUE (default) the value can be equal to Low and/or Hi¶" &
                             "→¶" &
                             "EXAMPLES:      →¶" & 
                             "Result         →Formula¶" &
