@@ -21,3 +21,5 @@ jobs:
         run: python tools/verify_sources.py nabla.xlsx src
       - name: Check each function's help describes its own parameters
         run: python tools/verify_signatures.py src
+      - name: Check the published index records what each function replaced
+        run: python tools/verify_previous_names.py functions.csv

@@ -1,6 +1,6 @@
 # Build nabla.xlsx from the upstream Financial Starter Pack workbook.
 # Pure zip/XML surgery. Never resaves via openpyxl (preserves cached values, extensions, rich parts).
-import zipfile, re, shutil, io, sys, datetime
+import zipfile, re, shutil, io, os, sys, datetime
 import base64, json
 
 # The progress lines name functions, and every function name carries a λ, which a Windows
@@ -1717,6 +1717,17 @@ FLAT_MODULE_OF = {}
 # What each function was called before the prefixes collapsed. functions.csv publishes
 # it, because renaming every name in the library breaks every formula written against
 # the old ones and a reader needs somewhere to look the replacement up.
+# The names in the loop below are the build's own intermediate ones, not the names any
+# release carried, and today those happen to coincide. They stop coinciding the moment a
+# function is added: a new nabla.f.PayrollTaxλ would flatten to nb.PayrollTaxλ and publish
+# a predecessor no release ever shipped, which is worse than publishing nothing. So the
+# predecessor is only recorded when the released baseline confirms it existed.
+RELEASED = "released-names-v1.2.6.txt"
+with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), RELEASED),
+          encoding="utf-8") as _fh:
+    BASELINE = {ln.strip() for ln in _fh if ln.strip() and not ln.startswith("#")}
+assert len(BASELINE) == 130, (RELEASED, len(BASELINE))
+
 FLAT_PREVIOUS_OF = {}
 _pre_wb = get("xl/workbook.xml")
 _mod_word = dict(AFE_MODULES)
@@ -1726,10 +1737,19 @@ for _m in re.finditer(r'<definedName name="(nabla\.(?:debt|d|e|f|r|u))\.([^"]+)"
     FLAT_MODULE_OF[_now] = _mod_word[_m.group(1)]
     # two old names collapsing onto one new one would silently lose a function
     assert FLAT_PREVIOUS_OF.setdefault(_now, _was) == _was, (_now, _was, FLAT_PREVIOUS_OF[_now])
-print("rename map: %d functions, %d of them keeping their bare name"
+    if _was not in BASELINE:
+        FLAT_PREVIOUS_OF[_now] = ""          # added since the baseline, so it replaced nothing
+
+# A baseline name nobody claims is a function that has silently disappeared, which is the
+# one thing the column exists to prevent. Say which, rather than reporting a count.
+_orphans = sorted(BASELINE - set(FLAT_PREVIOUS_OF.values()))
+assert not _orphans, ("no function claims these %s names: %s"
+                      % (RELEASED, ", ".join(_orphans)))
+print("rename map: %d functions, %d of them keeping their bare name, %d new since %s"
       % (len(FLAT_PREVIOUS_OF),
          sum(1 for _n, _o in FLAT_PREVIOUS_OF.items()
-             if _n.split(".", 1)[1] == _o.rsplit(".", 1)[1])))
+             if _o and _n.split(".", 1)[1] == _o.rsplit(".", 1)[1]),
+         sum(1 for _o in FLAT_PREVIOUS_OF.values() if not _o), RELEASED))
 
 # AFE store: rename the module containers, then flatten the source inside them
 afe_flat = get("customXml/item1.xml")
@@ -1771,7 +1791,6 @@ for n in parts:
 print("flattened to the nb. namespace across", flat_parts, "parts")
 
 # ---------- write ----------
-import os
 os.makedirs(os.path.dirname(DST) or ".", exist_ok=True)
 order = [n for n in zin.namelist() if n in parts]
 order += [n for n in parts if n not in set(zin.namelist())]   # parts this build adds

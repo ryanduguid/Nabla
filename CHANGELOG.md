@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- **`previous_name` is now pinned to a released baseline rather than to the build's own intermediate names.** The column shipped correct in v2.0.0, but it was derived from the `nabla.<module>.` names the build uses internally before it flattens them, which happen to match what v1.2.6 shipped only because nothing has been added since. The next function added would have published a predecessor that no release ever carried, and the build's count check could not have caught it, because both sides of that count come from the same build. The 130 names v1.2.6 shipped are now recorded in `tools/released-names-v1.2.6.txt`, and a function whose predecessor is not in that file records nothing rather than a plausible-looking guess. A baseline name that no function claims now stops the build and says which name, because a function disappearing without a forwarding address is the one thing this column exists to prevent.
+
+### Added
+
+- `tools/verify_previous_names.py`, a fifth gate and the fourth in CI. The build's asserts guarantee the column is right when it is generated, but the committed file is what people read, so this checks the published index against the published baseline. Exercised against three deliberate breakages: a fabricated predecessor, a dropped function, and one old name claimed twice. It names the offending function in each case rather than reporting a count.
+
 ## v2.0.0, 18 August 2026, one namespace
 
 **This release renames every function and breaks every formula written against v1.2.x.**

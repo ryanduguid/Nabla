@@ -110,7 +110,7 @@ Each module has its own tab colour, gridlines are hidden, and every sheet opens 
 
 ## Checks
 
-Four gates, because they answer different questions.
+Five gates, because they answer different questions.
 
 ```bash
 python tools/verify_workbook.py nabla.xlsx
@@ -129,6 +129,12 @@ python tools/verify_signatures.py src
 ```
 
 Documentation: every function states its parameters twice, once as the signature on its help's FUNCTION line and again as a table below it, and both must match what the LAMBDA declares, character for character. Both are hand-written text inside a string literal, so nothing else in the build ever reads them and they drift separately: one function's table described a different function's arguments for six releases. It reads 117 signatures and 122 parameter tables, accounts for every declaration in every module, and refuses to pass if it parsed too few. Also runs in CI.
+
+```bash
+python tools/verify_previous_names.py functions.csv
+```
+
+Migration: v2.0.0 renamed every function, so `functions.csv` carries a `previous_name` column and `tools/released-names-v1.2.6.txt` records the 130 names the last release before that rename shipped. This checks the published index against the published baseline: every old name is claimed by exactly one function, no function claims a name that never shipped, and anything added since records nothing rather than a plausible-looking guess. Also runs in CI.
 
 ```bash
 powershell -ExecutionPolicy Bypass -File tools/excel_selftest.ps1
