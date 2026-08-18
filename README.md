@@ -70,6 +70,12 @@ Excel 365 has gained functions since this library's upstream release in July 202
 
 The helpers are kept because they still work on the Excel 2024 baseline and inside the library's own composition, and because the native functions are Microsoft 365 only. Prefer the native function when your audience is on 365. Checked against Microsoft's documentation in August 2026.
 
+## Performance and presentation
+
+The workbook is built to stay responsive on modest hardware. No formula in it is volatile except the sheet-name titles, so editing a cell recalculates only what depends on it rather than the whole file. The sample data is fixed rather than randomly generated, which also means the worked examples match their captions every time you open them.
+
+Each module has its own tab colour, gridlines are hidden, and every sheet opens at the top left on the cover.
+
 ## Repository layout
 
 | Path | Contents |

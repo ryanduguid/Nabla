@@ -47,6 +47,17 @@ First nabla release, derived from the upstream 6 July 2024 workbook.
 - Replaced the upstream `Coming soon` webpage placeholders in 74 help blocks with the repository URL, and removed the duplicate `Website` line that repeated the `Repository` line in every About table.
 - Drawing text is tagged `en-AU` so Excel stops spell-checking Australian prose against a US dictionary, and the Advanced Formula Environment project store now declares the `en-au` locale with day-first date order.
 
+### Performance
+- Replaced the 38 `RANDBETWEEN` formulas that generated the sample data with fixed values. They made 4,349 of 4,627 formula cells volatile, so every edit recalculated 93% of the workbook; one of them on the `TimelineOffsetλ` sheet alone drove 2,583 cells. Nothing but the sheet-name titles is volatile now.
+- Cleared 4,243 stale always-calculate flags left on cells that no longer depend on anything volatile, and removed the table column formulas that would have re-injected the random data.
+- The verification script now fails the build if a volatile function or an unjustified always-calculate flag reappears.
+- Fixed sample data also makes every worked example reproducible, so the numbers match the captions on each open.
+
+### Presentation
+- Tab colours by module: dates navy, array essentials blue, financial teal, ratios green, and the cover, contents and reference sheets grey.
+- Gridlines hidden on all 49 sheets.
+- Every sheet opens at the top left, and the workbook opens on the cover rather than on whichever tab was last active.
+
 ### Packaging
 - Removed the embedded printer configuration, which carried the original author's printer name and a foreign default paper size.
 - Repacked at maximum deflate; the workbook is smaller than the upstream file despite the added functions.

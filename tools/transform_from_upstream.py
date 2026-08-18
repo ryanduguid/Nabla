@@ -864,6 +864,116 @@ for sheet, rid in [("sheet1", "rId4"), ("sheet2", "rId1"), ("sheet6", "rId1")]:
 assert not [n for n in parts if "printerSettings" in n]
 print("printer configuration removed; A4 set on 3 sheets")
 
+# ---------- 9g. Performance: freeze the volatile demo data ----------
+# 38 RANDBETWEEN formulas made 93% of the workbook's formula cells volatile, so every edit
+# recalculated almost everything. The sample data does not need to be random: fixed values
+# make the demonstrations reproducible and cost nothing to recalculate.
+def static_cells(part, values, numeric=True):
+    """Replace whole cells with literal values, dropping their formulas."""
+    d = get(part)
+    for cell, val in values.items():
+        pat = r'<c r="%s"( [^>]*?)?(?:/>|>.*?</c>)' % cell
+        m = re.search(pat, d, re.S)
+        assert m, (part, cell)
+        attrs = (m.group(1) or "")
+        attrs = re.sub(r' (?:t|cm|ca|aca)="[^"]*"', "", attrs)
+        body = '<v>%s</v>' % val if numeric else '<is><t>%s</t></is>' % val
+        if not numeric:
+            attrs += ' t="inlineStr"'
+        d = d[:m.start()] + '<c r="%s"%s>%s</c>' % (cell, attrs, body) + d[m.end():]
+    put(part, d)
+
+CUSTOMERS = ["ACME", "Wool*Art", "Town Hall", "Amazonia", "Jacqie Pens"]
+# tblCO: 21 invoices, issued across the first half of 2026, amounts 1,000 to 5,000
+issued = {"G%d" % r: 46023 + ((r - 20) * 7 + 3) for r in range(20, 41)}
+amounts = {"I%d" % r: 1000 + ((r - 20) * 197 % 4001) for r in range(20, 41)}
+custs = {"F%d" % r: CUSTOMERS[(r - 20) % len(CUSTOMERS)] for r in range(20, 41)}
+static_cells("xl/worksheets/sheet13.xml", issued)
+static_cells("xl/worksheets/sheet13.xml", amounts)
+static_cells("xl/worksheets/sheet13.xml", custs, numeric=False)
+# tblCO must not re-inject the formulas when the table is edited
+t10 = get("xl/tables/table10.xml")
+t10b, n = re.subn(r'<calculatedColumnFormula[^>]*>[^<]*</calculatedColumnFormula>', "", t10)
+assert n >= 3, n
+put("xl/tables/table10.xml", t10b)
+
+# Periodsλ: fixed start/end pairs and interval codes
+static_cells("xl/worksheets/sheet9.xml", {"A25": 46081, "B25": 46356, "A26": 46203, "B26": 46600,
+                                          "A27": 46023, "B27": 46387, "A28": 46142, "B28": 46508,
+                                          "A29": 46265, "B29": 46630})
+static_cells("xl/worksheets/sheet9.xml", {"C25": "M", "C26": "Q", "C27": "Y", "C28": "W", "C29": "D"},
+             numeric=False)
+# TimelineOffsetλ: fixed event dates through 2026
+static_cells("xl/worksheets/sheet31.xml", {"A%d" % r: 46023 + (r - 19) * 47 for r in range(19, 26)})
+# IsBetweenλ: onboarding dates spaced a month apart instead of randomly scattered
+RAND_ONBOARD = ('RANDBETWEEN(1,$B$22*_xlfn.SWITCH($B$23, "Y", 365, "M", 30, "Q", 90, "W", 7, "D", 1))')
+SPACED = '30 * (ROW() - ROW(tblOnBoarding[#Headers]))'
+for part in ("xl/worksheets/sheet47.xml", "xl/tables/table17.xml"):
+    d = get(part)
+    assert RAND_ONBOARD in d, part
+    put(part, d.replace(RAND_ONBOARD, SPACED))
+# IRRλ: a fixed investment and a rising series of returns instead of random ones
+s26 = get("xl/worksheets/sheet26.xml")
+for old, new in [("_xlpm.Pad,RANDBETWEEN(1,3)", "_xlpm.Pad,2"),
+                 ("RANDBETWEEN(1000,2000)", "1000 + _xlpm.C * 100"),
+                 ("-RANDBETWEEN(1000,9000)", "-5000")]:
+    assert old in s26, old
+    s26 = s26.replace(old, new)
+put("xl/worksheets/sheet26.xml", s26)
+
+for n in list(parts):
+    if re.match(r'xl/(?:worksheets/sheet\d+|tables/table\d+)\.xml$', n):
+        assert "RANDBETWEEN" not in get(n), n
+
+# Drop the always-calculate flags now that nothing but the sheet-name titles is volatile.
+cleared = 0
+for n in list(parts):
+    if not re.match(r'xl/worksheets/sheet\d+\.xml$', n):
+        continue
+    d = get(n)
+    def strip_flags(mo):
+        global cleared
+        cell = mo.group(0)
+        if "CELL(" in cell:       # the A1 title formula is legitimately volatile
+            return cell
+        new = cell.replace(' ca="1"', "").replace(' aca="1"', "")
+        cleared += cell.count('ca="1"')
+        return new
+    d = re.sub(r'<c r="[A-Z]+\d+"[^>]*>(?:.*?</c>)?', strip_flags, d, flags=re.S)
+    put(n, d)
+print("volatile demo data frozen;", cleared, "always-calculate flags cleared")
+
+# ---------- 9h. Presentation ----------
+TAB = {"nabla.d": "FF1F4E79", "nabla.e": "FF2E75B6", "nabla.f": "FF157A5F", "nabla.r": "FF375623"}
+wbx = get("xl/workbook.xml")
+relmap = dict(re.findall(r'Id="(rId\d+)"[^>]*Target="([^"]+)"', get("xl/_rels/workbook.xml.rels")))
+styled = 0
+for nm, rid in re.findall(r'<sheet name="([^"]+)"[^>]*r:id="(rId\d+)"', wbx):
+    path = "xl/" + relmap[rid]
+    d = get(path)
+    colour = TAB.get(".".join(nm.split(".")[:2]), "FF595959")
+    tab = '<tabColor rgb="%s"/>' % colour
+    if "<sheetPr" in d:
+        d = re.sub(r'<sheetPr([^>]*?)/>', r'<sheetPr\g<1>>%s</sheetPr>' % tab, d, count=1)
+        d = re.sub(r'(<sheetPr[^>]*[^/]>)(?!<tabColor)', r'\g<1>%s' % tab, d, count=1)
+    else:
+        d = re.sub(r'(<worksheet[^>]*>)', r'\g<1><sheetPr>%s</sheetPr>' % tab, d, count=1)
+    # hide gridlines and open every sheet at the top left.
+    # the lookahead for a space or > keeps this off the <sheetViews> container.
+    d = re.sub(r'<sheetView(?=[ >])(?![^>]*showGridLines)', '<sheetView showGridLines="0"', d)
+    d = d.replace('showGridLines="1"', 'showGridLines="0"')
+    d = re.sub(r'(<sheetView[^>]*?)\s*topLeftCell="[^"]*"', r'\g<1>', d)
+    if "<pane " not in d:   # leave split/frozen sheets to their own pane selections
+        d = re.sub(r'<selection[^>]*/>', '<selection activeCell="A1" sqref="A1"/>', d)
+    put(path, d)
+    styled += 1
+assert styled == 49, styled
+# open on the cover, not on whichever tab was last active
+wbx2 = re.sub(r'(<workbookView[^>]*?)\s*activeTab="\d+"', r'\g<1>', wbx)
+assert wbx2 != wbx
+put("xl/workbook.xml", wbx2)
+print("presentation: tab colours, gridlines and opening view set on", styled, "sheets")
+
 # ---------- 10. core.xml: title + modified ----------
 core = get("docProps/core.xml")
 core = re.sub(r'(<dcterms:modified[^>]*>)[^<]*(</dcterms:modified>)',

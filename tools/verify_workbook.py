@@ -91,6 +91,21 @@ def main():
                 if token not in defined and token not in sheets:
                     fail(f"{name} uses undefined {token}")
 
+    # Volatile formulas force the whole dependency chain to recalculate on every edit, which
+    # is what makes a workbook this size feel slow on modest hardware. Only the sheet-name
+    # titles, which use CELL(), are allowed to be volatile.
+    for part in parts:
+        if not (SHEET_RE.match(part) or part.startswith("xl/tables/")):
+            continue
+        text = z.read(part).decode("utf-8")
+        for volatile in ("RANDBETWEEN(", "RAND()", "NOW()", "TODAY()", "OFFSET(", "INDIRECT("):
+            if volatile in text:
+                fail(f"volatile {volatile} in {part}")
+        for cell in re.findall(r"<c r=\"[A-Z]+\d+\"[^>]*>(?:(?!</c>).)*</c>", text, re.S):
+            if ('ca="1"' in cell or 'aca="1"' in cell) and "CELL(" not in cell:
+                fail(f"always-calculate flag on a non-volatile cell in {part}")
+                break
+
     shared = ET.fromstring(z.read("xl/sharedStrings.xml").decode("utf-8"))
     declared = int(shared.get("uniqueCount"))
     if declared != len(list(shared)):
