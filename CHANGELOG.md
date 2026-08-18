@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## v1.2.6, 18 Aug 2026, parameter tables that describe their own function
+
+Every function's help repeats its parameters as a table below the signature. v1.2.4 corrected the signatures; this corrects the tables, which are a separate piece of hand-written text and had drifted on their own. Every parameter table in the library now lists exactly what its function declares.
 
 - **`nabla.r.EquityRatioλ` documented a different function's arguments.** Its parameter table listed `OperatingIncome` and `InterestExpenses`, which belong to `InterestCoverageRatioλ`, while the function takes `ShareholdersEquity`, `TotalAssets` and `IntangibleAssets`. This is the second half of the copy that gave it the wrong name until v1.2.3: the name and the table came across together and only the name was corrected then. Its three real parameters had never been described at all. They are now, in the wording its neighbours already use for the same quantities.
 - **`nabla.r.EquityMultiplierλ` dropped a word from its second parameter.** Its table called it `ShareholdersEquity`; the LAMBDA and the signature above it both say `TotalShareholdersEquity`. `ShareholdersEquity` is what the neighbouring `DebtToEquityRatioλ` genuinely takes, which is where the shortened name came from.
