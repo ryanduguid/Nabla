@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v2.6.0, 19 August 2026, any period length
 
 - **`nb.Amortiseλ` returned `#DIV/0!` on every timeline shorter than a month.** It reads
   the period length off the timeline's first two dates and rounds it to whole months, which
