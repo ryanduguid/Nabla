@@ -10,7 +10,7 @@
 
 AboutFinancialλ = TRIM(TEXTSPLIT(
     "ABOUT:             →Ozzit's Financial Models module. Suggested module name: oz¶" &
-    "VERSION:           →19 Aug 2026¶" &
+    "VERSION:           →20 Aug 2026¶" &
     "REPOSITORY:          →https://github.com/ryanduguid/Ozzit ¶" &
     "WEBSITE:           →https://github.com/ryanduguid/Ozzit ¶" &
     "→¶" &
@@ -88,7 +88,7 @@ Corkscrewλ = LAMBDA(
                         "FUNCTION:      →Corkscrewλ( Opening, Flow1, [Flow2], [Flow3], [Flow4])¶" &
                         "DESCRIPTION:   →Create a corkscrew section that sums the opening balance and up to 4 independent flows¶" & 
                         "WEBPAGE:       →<Coming Soon>¶" & 
-                        "VERSION:       →19 Aug 2026¶" &
+                        "VERSION:       →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "Opening        →(Required) First periods opening balance.¶" & 
                         "Flow1          →(Required) First row (or array of rows) of numbers to include in period totals.¶" & 
@@ -150,7 +150,7 @@ CorkScrewReversalλ=LAMBDA(
                         "FUNCTION:      →CorkScrewReversalλ( Opening, ReversalFlags, Flow1, [Flow2], [Flow3], [Flow4])¶" & 
                         "DESCRIPTION:   →Create a corkscrew where the opening balance is reversed in the next period based on a timing parameter¶" & 
                         "WEBPAGE:       →<Coming Soon>¶" &
-                        "VERSION:       →19 Aug 2026¶" & 
+                        "VERSION:       →20 Aug 2026¶" & 
                         "PARAMETERS:→¶" & 
                         "Opening        →(Required) First periods opening balance.¶" & 
                         "ReversalFlags  →(Required) A row of ones and blanks (or zeros) indicating when to reverse period totals.¶" & 
@@ -217,7 +217,7 @@ IntOnIntλ = LAMBDA(
                             "DESCRIPTION:   →Calculate Interest on Interest (Interest only). Use to determine amount ¶" &
                                            "→needed to cover borrowed interest¶" & 
                             "WEBSITE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Principal     →(Required) Principal amount¶" & 
                             "Rate          →(Required) Interest percentage rate. For years, APR. For months, APR/12¶" & 
@@ -253,7 +253,7 @@ IRRλ = LAMBDA(
                             "FUNCTION:      →IRRλ( Values, Dates)¶" & 
                             "DESCRIPTION:   →Calculates IRR, correcting for when the first investment is not in the first period¶" & 
                             "WEBSITE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Values         →(Required) A row of investments (negative) and distributions (positive)¶" & 
                                            "→The first entry, whether 0 or an amount, must be for the first period in the timeline¶" & 
@@ -263,11 +263,11 @@ IRRλ = LAMBDA(
                             "→¶" &
                             "EXAMPLES:      →¶" & 
                             "Result         →Formula (oz is assumed to be the module's name)¶" &
-                            "Dates          →=EDATE(""1/1/2025"", SEQUENCE(,24, 0))¶" &
+                            "Dates          →=EDATE(""1/7/2026"", SEQUENCE(,24, 0))¶" &
                             "Values         →={0,0,-150,0,-100,10,20,30,40,50,60,70}¶" & 
                             "→¶" &
                             "Result         →Formula¶" &
-                            "24%            →=oz.IRRλ( Values, Dates)",
+                            "25%            →=oz.IRRλ( Values, Dates)",
                             "→", "¶"
                             )
                         ),
@@ -304,7 +304,7 @@ Movementλ = LAMBDA(
                             "FUNCTION:      →Movementλ( [BeginningValues], Values)¶" &
                             "DESCRIPTION:   →Create a row of differences from column to column¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "BeginningValues→(Optional) Defaults to 0¶" & 
                             "Values         →(Required) A row of values to compare column to column¶" & 
@@ -357,7 +357,7 @@ Reversalλ = LAMBDA(
                             "FUNCTION:      →Reversalλ( [OpeningValue], RowToReverse)¶" &
                             "DESCRIPTION:   →Create a row that reverses input values in the next period.¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "OpeningValue   →(Optional) Defaults to 0¶" & 
                             "RowToReverse   →(Required) A row of values to reverse the following periods¶" & 
@@ -395,7 +395,7 @@ Cumulativeλ = LAMBDA(
                             "FUNCTION:      →Cumulativeλ( Totals, [OpeningBalance])¶" &
                             "DESCRIPTION:   →Creates a row or column of cumulative totals from a total row or column¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Totals         →(Required) A row or column of totals from which to run cumulative totals¶" & 
                             "OpeningBalance →(Optional) A starting balance. This defaults to 0¶" & 
@@ -430,7 +430,7 @@ RollingAvgλ = LAMBDA(
                             "DESCRIPTION:   →Creates averages for preceding values of a set size moving¶" &
                                            "→from beginning to end over a row of values¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Values         →(Required) A row of values to be averaged.¶" & 
                             "Size           →(Required) The number of values to average that ¶" & 
@@ -481,7 +481,7 @@ RollingMaxλ = LAMBDA(
                             "DESCRIPTION:   →Creates the maximum for preceding values of a set size moving from beginning to end over a row of values.¶" &
                                            "→from beginning to end over a row of values¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Values         →(Required) A row of values to be maxed.¶" & 
                             "Size           →(Required) The number of values to find maximum that ¶" & 
@@ -532,7 +532,7 @@ RollingMinλ = LAMBDA(
                             "DESCRIPTION:   →Creates the minimum for preceding values of a set size moving from beginning to end over a row of values.¶" &
                                            "→from beginning to end over a row of values¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Values         →(Required) A row of values to be minned.¶" & 
                             "Size           →(Required) The number of values to find maximum that ¶" & 
@@ -584,7 +584,7 @@ RollingSumλ = LAMBDA(
                             "DESCRIPTION:   →Creates totals for preceding values of a set size moving¶" &
                                            "→from beginning to end over a row of values¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Values         →(Required) A row of values to be totalled.¶" & 
                             "Size           →(Required) The number of values to total that ¶" & 
@@ -641,7 +641,7 @@ SumContainsλ = LAMBDA(
                                            "→its labels contain a unique letter, word, or phrase.¶" & 
                             "SEE ALSO:      →Excel 365 now has GROUPBY and PIVOTBY for formula-driven aggregation.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "ValuesToFilter →(Required) An array of values to be filtered¶" &                   
                             "ValueLabels    →(Required) An array containing the values' labels¶" &                   
@@ -691,7 +691,7 @@ SumPeriodsλ = LAMBDA(
                             "DESCRIPTION:   →Summarises values where each value column is for one day ¶" & 
                                            "→into one column for each period. ¶" & 
                             "SEE ALSO:      →Excel 365 now has GROUPBY and PIVOTBY for formula-driven aggregation.¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
                             "PARAMETERS:→¶" & 
                             "Values         →(Required) A two dimensional array/range containing values to be summed where" & 
@@ -758,7 +758,7 @@ Amortiseλ = LAMBDA(
                                        "→Use LabelAmortiseλ() to apply labels to this function's results:¶" & 
                                        "→Use SumAmortiseλ() to apply totals to this function's results:¶" & 
                         "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                        "VERSION:       →19 Aug 2026¶" &
+                        "VERSION:       →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "Principals     →(Required) Loan/debt amounts.¶" & 
                         "APRs           →(Required) Annual Percentage Rates for interest.¶" & 
@@ -767,7 +767,7 @@ Amortiseλ = LAMBDA(
                         "Timeline       →(Optional) An array of dates. If omitted, a row of months starting on start date will be added¶" & 
                         "EXAMPLES:→¶" & 
                         "Result         →Formula (oz is assumed to be the module's name)¶" &
-                                       "→=oz.Amortiseλ(10000, 5%, 4 * 12, ""2025-01-01"")", 
+                                       "→=oz.Amortiseλ(10000, 5%, 4 * 12, ""2026-07-01"")", 
                         "→", "¶" )
                     ),
     //  Constants
@@ -926,7 +926,7 @@ LabelAmortiseλ = LAMBDA(
                             "FUNCTION:      →LabelAmortiseλ(LoanNames, [LoanAmounts], [LoanAPRs], [LoanTerms])¶" &
                             "DESCRIPTION:   →Create row labels for the amortisation schedule array produced by Amortiseλ¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "LoanNames     →(Required) Names or descriptions of each loan in the amortisation schedule produced by Amortiseλ¶" &                  
                             "LoanAmounts   →(Optional) Amount borrowed¶" &                  
@@ -993,7 +993,7 @@ SumAmortiseλ = LAMBDA(
                             "FUNCTION:      →SumAmortiseλ(AmortisationSchedule)¶" &
                             "DESCRIPTION:   →Create row totals for Amortiseλ¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "AmortisationSchedule→(Required) An array produced by Amortiseλ¶" &                  
                             "EXAMPLES:→¶" & 
@@ -1050,7 +1050,7 @@ Depreciateλ = LAMBDA(
                             "               →[SalvageValues], [DisposalDates], [DisposalCosts], [Methods], [Factors])¶" &
                             "DESCRIPTION:   →Creates an array of CAPEX, depreciation, and book values for a model's timeline¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit ¶" & 
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "NOTES:         →The methods used here differs from Excel's functions in several ways. Please see webpage for details.¶" &
                             "PARAMETERS:    →¶" & 
                             "InitialValues  →(Required) The purchase values of each asset to depreciate¶" & 
@@ -1220,7 +1220,7 @@ LabelDepreciateλ = LAMBDA(
                             "FUNCTION:      →LabelDepreciateλ( AssetNames)¶" &
                             "DESCRIPTION:   →Create row labels for the depreciation schedule array produced by Depreciateλ¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "AssetNames     →(Required) The names or descriptions of each asset in the depreciation schedule produced by Depreciateλ¶" &                   
                             "EXAMPLES:      →¶" &
@@ -1269,7 +1269,7 @@ SumDepreciateλ = LAMBDA(
                             "FUNCTION:      →SumDepreciateλ(DepreciationSchedule)¶" &
                             "DESCRIPTION:   →Create row totals for Depreciateλ¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "DepreciationSchedule→(Required) An array produced by Depreciateλ¶" &
                             "→¶" &                 
@@ -1318,7 +1318,7 @@ Allocateλ = LAMBDA(
                             "FUNCTION:      →Allocateλ(Amounts, [FromInterval], [ToInterval])¶" &
                             "DESCRIPTION:   →Divide one or more amounts equally across smaller periods¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Amounts        →(Required) One amount or a row of amounts to allocate.¶" &                   
                             "FromInterval   →(Optional Default=Y) The larger interval in Q=Quarters or Y=Years¶" & 
@@ -1383,7 +1383,7 @@ PeriodDiffλ = LAMBDA(
                             "DESCRIPTION:   →Determine the number of periods between two dates.¶" &
                             "NOTES!         →This improves on, and corrects problems w/Excel's deprecated DATEDIF() function.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "StartDate      →(Required) Start Date.¶" &                   
                             "EndDate        →(Required) End Date¶" & 
@@ -1432,7 +1432,7 @@ SLNλ = LAMBDA(
                             "FUNCTION:      →SLNλ(Cost, Salvage, Life)¶" &
                             "DESCRIPTION:   →Straight Line Depreciation Method for one asset or asset class.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Cost           →(Required) Asset's initial cost.¶" &                   
                             "Salvage        →(Required) Asset's value and end of life¶" & 
@@ -1475,7 +1475,7 @@ SYDλ = LAMBDA(
                             "FUNCTION:      →SYDλ(Cost, Salvage, Life)¶" &
                             "DESCRIPTION:   →Sum-of-years' digits depreciation method for one asset or asset class.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Cost           →(Required) Asset's initial cost.¶" &                   
                             "Salvage        →(Required) Asset's value and end of life¶" & 
@@ -1519,7 +1519,7 @@ DBλ = LAMBDA(
                             "FUNCTION:      →DBλ(Cost, Salvage, Life, [Months])¶" &
                             "DESCRIPTION:   →Fixed declining balance depreciation method for one asset or asset class¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Cost           →(Required) Asset's initial cost.¶" &                   
                             "Salvage        →(Required) Asset's value and end of life. Salvage cannot be 0.¶" & 
@@ -1567,7 +1567,7 @@ DDBλ = LAMBDA(
                             "FUNCTION:      →DDBλ(Cost, Salvage, Life, [Factor])¶" &
                             "DESCRIPTION:   →Double-declining balance depreciation method for one asset or asset class.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Cost           →(Required) Asset's initial cost.¶" &                   
                             "Salvage        →(Required) Asset's value and end of life. Salvage cannot be 0.¶" & 
@@ -1616,7 +1616,7 @@ VDBλ = LAMBDA(
                             "FUNCTION:      →VDBλ(Cost, Salvage, Life, [Factor], [No_Switch])¶" &
                             "DESCRIPTION:   →Variable declining balance depreciation method for one asset or asset class.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Cost           →(Required) Asset's initial cost.¶" &                   
                             "Salvage        →(Required) Asset's value and end of life. Salvage cannot be 0.¶" & 
@@ -1928,14 +1928,14 @@ TimelineOffsetλ = LAMBDA(
                             "DESCRIPTION:   →Determines in which period, relative to the timeline's start and interval,¶" &
                                            "→a date falls within.¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Date           →(Required) A starting date¶" & 
                             "Timeline       →(Required) A model's timeline (Row of period start dates)¶" &                   
                             "EXAMPLES:      →¶" &
                             "Result         →Formula (oz is assumed to be the module's name)¶" &
-                            "1              →=oz.TimelineOffsetλ(""15/2/2026"", EDATE(""1/1/2026"", SEQUENCE( , 12, 0)))¶" &
-                            "-11            →=oz.TimelineOffsetλ(""15/2/2025"", EDATE(""1/1/2026"", SEQUENCE( , 12, 0)))", 
+                            "1              →=oz.TimelineOffsetλ(""15/8/2026"", EDATE(""1/7/2026"", SEQUENCE( , 12, 0)))¶" &
+                            "-11            →=oz.TimelineOffsetλ(""15/8/2025"", EDATE(""1/7/2026"", SEQUENCE( , 12, 0)))", 
                             "→", "¶"
                             )
                         ),
@@ -1990,7 +1990,7 @@ TimelinePositionλ = LAMBDA(
                             "FUNCTION:      →TimelinePositionλ(Array, Timeline, Offset)¶" &
                             "DESCRIPTION:   →Position an array relative to the model's timeline¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) The array to be positioned relative to a model's timeline¶" & 
                             "Timeline       →(Required) A model's timeline¶" & 
@@ -1999,7 +1999,7 @@ TimelinePositionλ = LAMBDA(
                                            "→Timelines can be vertical or horizontal. Whichever way the timeline goes, the array must match.¶" &                     
                             "EXAMPLES:      →¶" &
                             "Result         →Formula (oz is assumed to be the module's name)¶" &
-                                           "→=oz.TimelinePositionλ(SEQUENCE(3,3), EDATE(""1/1/2025"", SEQUENCE( , 12, 0)), 12)", 
+                                           "→=oz.TimelinePositionλ(SEQUENCE(3,3), EDATE(""1/7/2026"", SEQUENCE( , 12, 0)), 12)", 
                             "→", "¶"
                             )
                         ),
@@ -2057,7 +2057,7 @@ FilterContainsλ = LAMBDA(
                             "DESCRIPTION:   →Filter an array by another array that contains specific text.¶" & 
                             "SEE ALSO:      →Excel 365 now has REGEXTEST and REGEXEXTRACT for pattern matching.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "ArrayToFilter  →(Required) An array to be filtered¶" &                   
                             "FilterByArray  →(Required) An array containing text to use as a filter¶" &                   
@@ -2105,7 +2105,7 @@ RangeToDAλ = LAMBDA(
                             "DESCRIPTION:   →Create a dynamic array from a static range¶" & 
                             "SEE ALSO:      →Excel 365 now has TRIMRANGE and trim references (.:.) for this.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Cell           →(Required) The upper left cell of a range to convert¶" & 
                             "Rows           →(Optional) The number of rows for dynamic array. Defaults to 1.¶" & 
@@ -2145,14 +2145,14 @@ PeriodStartλ = LAMBDA(
                             "FUNCTION:      →PeriodStartλ(AnyPeriodStart, MonthsPerPeriod, DateOfInterest)¶" &
                             "DESCRIPTION:   →Determine when the period containing a date of interest starts.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "AnyPeriodStart →(Required) Any start date within a timeline.¶" &                   
                             "MonthsPerPeriod→(Required) Number of months in each period¶" & 
                             "DateOfInterest →(Required) A date for which we want to know the start of the period containing it.¶" & 
                             "EXAMPLES:      →¶" &
                             "Result         →Formula (oz is assumed to be the module's name)¶" &
-                            "2026-04-01     →=oz.PeriodStartλ(""2026-01-01"", 3, ""2026-04-15"")", 
+                            "2026-10-01     →=oz.PeriodStartλ(""2026-07-01"", 3, ""2026-10-15"")", 
                             "→", "¶"
                             )
                         ),
@@ -2200,7 +2200,7 @@ DiminishingValueλ = LAMBDA(
                             "FUNCTION:      →DiminishingValueλ(Cost, Life)¶" &
                             "DESCRIPTION:   →Diminishing-balance depreciation schedule at 200% of the straight-line rate, writing the residual off in the final period. A modelling schedule, not a tax calculation.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" &
                             "Cost           →(Required) Asset's cost.¶" &
                             "Life           →(Required) Asset's effective life in years.¶" &
@@ -2246,7 +2246,7 @@ PrimeCostλ = LAMBDA(
                             "FUNCTION:      →PrimeCostλ(Cost, Life)¶" &
                             "DESCRIPTION:   →Straight-line depreciation schedule for one asset or asset class, in whole years. A modelling schedule, not a tax calculation.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" &
                             "Cost           →(Required) Asset's cost.¶" &
                             "Life           →(Required) Asset's effective life in years.¶" &
@@ -2288,7 +2288,7 @@ GSTAddλ = LAMBDA(
                             "FUNCTION:      →GSTAddλ(Amounts, [Rate])¶" &
                             "DESCRIPTION:   →Adds GST to one or more GST-exclusive amounts.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" &
                             "Amounts        →(Required) One or more GST-exclusive amounts.¶" &
                             "Rate           →(Optional: Default = 0.1) GST rate as a fraction.¶" &
@@ -2328,7 +2328,7 @@ GSTExtractλ = LAMBDA(
                             "FUNCTION:      →GSTExtractλ(Amounts, [Rate])¶" &
                             "DESCRIPTION:   →Returns the GST contained in one or more GST-inclusive amounts.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" &
                             "Amounts        →(Required) One or more GST-inclusive amounts.¶" &
                             "Rate           →(Optional: Default = 0.1) GST rate as a fraction.¶" &

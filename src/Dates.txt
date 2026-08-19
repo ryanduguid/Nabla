@@ -14,7 +14,7 @@
 AboutDatesλ = TRIM(
     TEXTSPLIT(
         "About:                 →CBSE compliant LAMBDAs dealing with dates. Suggested module name: oz¶" &
-        "Version:               →19 Aug 2026¶" &
+        "Version:               →20 Aug 2026¶" &
         "Repository:              →https://github.com/ryanduguid/Ozzit ¶" &
         "→¶" & 
         "Function               →Description¶" & 
@@ -78,7 +78,7 @@ CountDOWλ = LAMBDA(
                         "DayOfWeek      →(Required) 1=Sunday, 7=Saturday.¶" &
                         "EXAMPLES:      →¶" & 
                         "Result         →Formula (oz is assumed to be the module's name)¶" &
-                        "3              →=oz.CountDOWλ(""22/3/2012"", ""10/4/2012"",  1)", 
+                        "3              →=oz.CountDOWλ(""23/7/2026"", ""11/8/2026"",  1)", 
                         "→", "¶"
                         )
                     ),
@@ -190,9 +190,9 @@ IsOccurrenceDateλ = LAMBDA(
                                         "→D=Daily¶" &                      
                         "EXAMPLES:      →¶" &
                         "Result         →Formula (oz is assumed to be the module's name)¶" &
-                        "72             →=SUM(N(oz.IsOccurrenceDateλ(SEQUENCE(,90,""1/1/2025""), ""1/1/2025"", ""13/3/2025"", ""D"")))¶" &
-                        "01             →=SUM(N(oz.IsOccurrenceDateλ(SEQUENCE(,90,""1/1/2025""), ""1/1/2025"", ""13/3/2025"", ""O"")))¶" &
-                        "11             →=SUM(N(oz.IsOccurrenceDateλ(SEQUENCE(,90,""1/1/2025""), ""1/1/2025"", ""13/3/2025"", ""W"")))", 
+                        "72             →=SUM(N(oz.IsOccurrenceDateλ(SEQUENCE(,90,""1/7/2026""), ""1/7/2026"", ""10/9/2026"", ""D"")))¶" &
+                        "01             →=SUM(N(oz.IsOccurrenceDateλ(SEQUENCE(,90,""1/7/2026""), ""1/7/2026"", ""10/9/2026"", ""O"")))¶" &
+                        "11             →=SUM(N(oz.IsOccurrenceDateλ(SEQUENCE(,90,""1/7/2026""), ""1/7/2026"", ""10/9/2026"", ""W"")))", 
                         "→", "¶"
                         )
                     ),
@@ -277,7 +277,7 @@ OverLapDaysλ = LAMBDA(
                         "Result         →Formula (oz is assumed to be the module's name)¶" &
                         "5              →=oz.OverLapDaysλ(08, 14, 10, 17)¶" & 
                         "8              →=oz.OverLapDaysλ(10, 20, 11, 18)¶" & 
-                        "2              →=oz.OverLapDaysλ(""17/1/2025"", ""25/1/2025"", ""7/1/2025"", ""18/1/2025"")", 
+                        "2              →=oz.OverLapDaysλ(""17/7/2026"", ""25/7/2026"", ""7/7/2026"", ""18/7/2026"")", 
                         "→", "¶"
                         )
                     ),
@@ -344,10 +344,10 @@ PeriodLabelλ = LAMBDA(
                                        "→A or Y=Annually¶" & 
                         "EXAMPLES:      →¶" & 
                         "Result         →Formula (oz is assumed to be the module's name)¶" &
-                        "2025-Feb-26    →=oz.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""D"")¶" &
-                        "2023-Feb       →=oz.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""M"")¶" & 
-                        "2025:Q1       →=oz.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""Q"")¶" & 
-                        "2023           →=oz.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""Y"")", 
+                        "2026-Aug-26    →=oz.PeriodLabelλ(DATEVALUE(""26/8/2026""), ""D"")¶" &
+                        "2026-Aug       →=oz.PeriodLabelλ(DATEVALUE(""26/8/2026""), ""M"")¶" & 
+                        "2026:Q3       →=oz.PeriodLabelλ(DATEVALUE(""26/8/2026""), ""Q"")¶" & 
+                        "2026           →=oz.PeriodLabelλ(DATEVALUE(""26/8/2026""), ""Y"")", 
                         "→", "¶"
                         )
                     ),
@@ -405,10 +405,10 @@ Periodsλ = LAMBDA(
                         "Intervals      →(Optional) Days, Weeks, Months (default), Quarters, or Years (D, W, M, Q, Y)¶" &
                         "EXAMPLES:      →¶" & 
                         "Result         →Formula (oz is assumed to be the module's name)¶" &
-                        "2              →=oz.Periodsλ(""31/3/2025"", ""15/5/2025"")¶" &
-                        "-2             →=oz.Periodsλ(""15/5/2025"", ""31/3/2025"")¶" &
-                        "-12            →=oz.Periodsλ(""15/1/2026"", ""16/1/2025"")¶" &
-                        "-53            →=oz.Periodsλ(""15/1/2026"", ""16/1/2025"", ""W"")",
+                        "2              →=oz.Periodsλ(""31/7/2026"", ""15/9/2026"")¶" &
+                        "-2             →=oz.Periodsλ(""15/9/2026"", ""31/7/2026"")¶" &
+                        "-12            →=oz.Periodsλ(""15/7/2027"", ""16/7/2026"")¶" &
+                        "-52            →=oz.Periodsλ(""15/7/2027"", ""16/7/2026"", ""W"")",
                         "→", "¶"
                     )
                 ),
@@ -490,7 +490,7 @@ ScheduleRatesλ = LAMBDA(
                         "Rates          →(Required) A column or row of rates associated with RateStarts.¶" & 
                         "EXAMPLES:      →¶" & 
                         "Result         →Formula (oz is assumed to be the module's name)¶" &
-                        "_,10,20,30,30  →=oz.ScheduleRatesλ(Timelineλ(""1/1/2025"",5,""W""),{45662; 45670; 45676}, {10; 20; 30})", 
+                        "_,10,20,30,30  →=oz.ScheduleRatesλ(Timelineλ(""1/7/2026"",5,""W""),{46208; 46216; 46222}, {10; 20; 30})", 
                         "→", "¶"
                         )
                     ),   
@@ -549,7 +549,7 @@ ScheduleRatesByItemsλ = LAMBDA(
                         "DoNotUse       →This is a counter used internally. Do not make any entry.¶" & 
                         "EXAMPLES:      →¶" & 
                         "Result         →Formula (oz is assumed to be the module's name)¶" &
-                                       "→oz.ScheduleRatesByItemsλ( Timelineλ( ""1/1/2025""), UNIQUE( tblRates(Unit)),¶" &
+                                       "→oz.ScheduleRatesByItemsλ( Timelineλ( ""1/7/2026""), UNIQUE( tblRates(Unit)),¶" &
                                        "→tblRates[Unit], tblRates[Rent], tblRates[Effective])", 
                         "→", "¶"
                             )
@@ -616,7 +616,7 @@ ScheduleValuesλ = LAMBDA(
                         "EffectiveDates →(Required) A column or row of when a value is scheduled.¶" &                   
                         "EXAMPLES:→¶" &
                         "Result         →Formula (oz is assumed to be the module's name)¶" &
-                                       "→=oz.ScheduleValuesλ(Timelineλ(""1/1/2025""), Timelineλ(""1/1/2025"",,,FALSE), {1;3}, {""1/1/2025""; ""15/2/2025""})", 
+                                       "→=oz.ScheduleValuesλ(Timelineλ(""1/7/2026""), Timelineλ(""1/7/2026"",,,FALSE), {1;3}, {""1/7/2026""; ""15/8/2026""})", 
                         "→", "¶"
                         )
                     ),
@@ -687,7 +687,7 @@ ScheduleValuesByItemsλ = LAMBDA(
                         "DoNotUse       →This is a counter used internally. Do not make any entry.¶" & 
                         "EXAMPLES:      →¶" & 
                         "Result         →Formula (oz is assumed to be the module's name)¶" &
-                                       "→oz.ScheduleValuesByItemsλ( Timelineλ( ""1/1/2025""),  Timelineλ( ""1/1/2025"",,,FALSE), ¶" & 
+                                       "→oz.ScheduleValuesByItemsλ( Timelineλ( ""1/7/2026""),  Timelineλ( ""1/7/2026"",,,FALSE), ¶" & 
                                        "→UNIQUE( tblExp(Items)), tblExp[Items], tblExp[Dates], tblExp[Amount])", 
                         "→", "¶"
                         )
@@ -813,7 +813,7 @@ FinancialYearλ = LAMBDA(
                             "FUNCTION:      →FinancialYearλ(Dates, [StartMonth])¶" &
                             "DESCRIPTION:   →Labels dates with their Australian financial year, which starts on 1 July.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" &
                             "Dates          →(Required) One or more dates.¶" &
                             "StartMonth     →(Optional: Default = 7) Month the financial year starts.¶" &

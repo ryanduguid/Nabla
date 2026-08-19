@@ -1,5 +1,50 @@
 # Changelog
 
+## v3.1.0, 20 August 2026, FY27 examples, Luma styling, a cleaner file
+
+- **Every worked example now starts on 1 July 2026**, the start of FY27. The demo inputs
+  on 141 cells moved forward, each sheet shifted by whole months so the relationships
+  between its dates are the ones they always were. Where an example's documented result
+  depends on the dates rather than the arithmetic, the shift is an exact multiple of the
+  recurrence: `CountDOWλ` moves from 22/3/2012–10/4/2012 to 23/7/2026–11/8/2026 and still
+  answers 3. The help text carries the new dates too, rewritten to the same character
+  count so the columns in all 130 help blocks stay aligned.
+
+  The one date deliberately left behind is 30/06/2026 on the Australian tax sheet. It is
+  there to sit beside 01/07/2026 and show FY2026 turning into FY2027, so moving it would
+  delete the thing it demonstrates.
+
+- **The workbook is styled to the Luma Advisors palette**, taken from the published logo
+  and stylesheet rather than guessed: purple `#5C2D91` as the single accent, near-black
+  `#04001F` and a warm grey for everything else. The legacy accents inherited from
+  upstream are gone: two greens, two blues and a maroon in the help blocks fold into the
+  brand purple, and the mint, yellow and pink cell fills fold into the neutral greys.
+  Thirteen font colours become eight. `assets/ozzit.svg` moves off its teal to match.
+
+- **The workbook no longer carries a copy of my filesystem.** Saving through Excel adds
+  parts that have no business in a distributed workbook: 50 `printerSettings` binaries
+  pinned to whatever printer was installed, an `x15ac:absPath` recording the directory the
+  file was last saved from, and always-calculate flags on 83 cells that compute nothing
+  volatile. All three are stripped, along with five worksheet relationship parts left
+  empty once the printer settings went. The zip is rebuilt deterministically, so two
+  builds of the same content produce the same bytes, and the part count is back to the
+  211 this workbook shipped with.
+
+  Net size is 443,284 bytes against 438,263 before, 1.1% larger: the styling additions
+  cost slightly more than the stripped parts saved. Against the copy in circulation that
+  was last saved through Excel, which carried all of the above, it is 13.6% smaller.
+
+- **`RangeToDAλ`, `RangeToDAEλ` and `RangeToDAUλ` keep OFFSET, on purpose.** OFFSET is
+  volatile and replacing it looked like the obvious speed win, but INDEX cannot do what
+  these functions do. Their whole point is to grow a reference past the cell you hand
+  them, and `INDEX(A1,12,1)` on a one-cell reference is `#REF!`, verified in Excel rather
+  than assumed. There is no non-volatile way to expand a reference, so the volatility
+  stays and the functions keep working.
+
+  The measurement that prompted this is worth recording: a full rebuild of all 1,129
+  formulas takes 0.21s, and a volatile-only recalculation takes under 2ms. There was no
+  performance problem to fix.
+
 ## v3.0.0, 19 August 2026, the library is now Ozzit
 
 - **Every function's prefix changes from `nb.` to `oz.`, and the library is renamed from
