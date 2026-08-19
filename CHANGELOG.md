@@ -1,5 +1,117 @@
 # Changelog
 
+## Unreleased
+
+- **`nb.Amortiseλ` returned `#DIV/0!` on every timeline shorter than a month.** It reads
+  the period length off the timeline's first two dates and rounds it to whole months, which
+  is nought for anything under about a fortnight, and the next two lines divide by it.
+  Daily, weekly and fortnightly timelines all failed.
+
+  The schedule is solved monthly whatever the timeline, because the function's own
+  description says the payments are monthly, and only then folded into the timeline's
+  periods. Flooring the count at one month is not enough on its own: the folded block is
+  laid down one period at a time, so a weekly timeline would date month two a week after
+  month one and report a year of interest inside a quarter. Each month's figures now go in
+  the one period that contains that month's start, and the periods between hold nothing,
+  which is what `nb.Depreciateλ` has always done on the same timelines. The two balance
+  rows are dated the same way rather than divided, because they are balances.
+
+  A twelve-month loan drawn on 1 January 2026 now reports the same money on a weekly, a
+  fortnightly and a daily timeline as it does on a monthly one, to the cent, and puts the
+  first month in period one and the second in the week that holds 1 February rather than
+  the week after the first. Whole-month timelines are untouched and answer exactly what
+  they answered before, six-monthly ones included: two- and six-month intervals were never
+  affected, measured in Excel, because the schedule arithmetic is generic in the count.
+  `PpY` divided twelve by that count, nothing read it, and it is gone.
+
+- **`nb.Depreciateλ` dropped the last period of any timeline shorter than a month.** Every
+  period but the last takes its end date from the next period's start. The last has no
+  successor and was given `EDATE(` its own start`, MpP) - 1`, which at nought months is the
+  day *before* it opens, so nothing could fall inside it. Forty-eight weekly periods from
+  1 January 2026 reported **1,833.37** of a 2,000.00 year: December went missing outright,
+  while forty-nine weekly periods and twelve monthly ones both reported 2,000.00. The last
+  period now ends one period on from its own start, counted in months where the timeline is
+  monthly or longer and in days where it is shorter.
+
+  Nothing else about it was broken. The published source carried two `SWITCH` lookups that
+  listed only monthly, quarterly and yearly and returned `#N/A` for anything else, and this
+  changelog has twice named them as a reason the function fails on other intervals. That
+  was wrong, and Excel says so: each is read by exactly one binding, nothing reads those
+  two bindings, and Excel never evaluates them. Two-, four- and six-month timelines have
+  always returned correct schedules. All four bindings are deleted rather than generalised,
+  and the parameter table no longer names three intervals as though they were the only ones.
+
+- **`nb.Depreciateλ` stopped responding when a life in years was not a life.** Its
+  arguments read `InitialValues`, `InServiceDates`, `LifeInYears`, `Timeline`. Transposing
+  the middle two puts a date serial where the life belongs, and 1 January 2026 is 46,023,
+  so the function is asked for a schedule 552,276 months long and Excel stops answering
+  rather than erroring. It now checks that every life is a number over 0 and no more than
+  100 and returns a message naming the argument order, and clamps the life it uses as well
+  as reporting it, so the arrays are never built. A life of 100 years still works; 101, 0,
+  a date and a word are all refused.
+
+- **`nb.Allocateλ` rebuilt its whole answer on every pass.** It accumulated with `HSTACK`
+  inside a `REDUCE`, so each new group copied everything already built and the work was
+  quadratic in the number of amounts. It is quick at any sane input, and it is what turned
+  the transposed call above from an error into a workbook that stops responding: 46,023
+  amounts spread over 552,276 months is of the order of 10^10 element copies. The answer is
+  a closed form, so the row is sized once and each column computed from its own index.
+
+  Every published result is unchanged to the digit, the deliberate last-column adjustment
+  included: it is still the amount less the `SUM` of the same array of equal parts, in the
+  same order, so even the floating-point residue is identical. The demonstration sheets
+  prove it, since `nb.Depreciateλ` allocates through this function on every one of them and
+  not one depreciation figure moved.
+
+- **`nb.InterestLRVλ` understated the interest in the period a debt is retired.** It solves
+  for the interest on the average balance over a period, taking the principal repayment as
+  the cash available for debt service less that interest. Nobody repays more than they owe,
+  and its caller says so: `nb.DebtSculptVariableLRVλ` caps the payment at the principal.
+  This function did not, so wherever the cap binds it solved a repayment larger than the
+  debt, put the average balance below half the opening balance, and reported too little
+  interest. On 1,000 at 5% a period with 1,200 of cash it returned **20.51** where the
+  balance runs from 1,000 to nil and the interest is **25.00**. The repayment is now capped
+  inside the iteration, both where it is assumed and where it is solved.
+
+  It converges faster, not slower: once the cap binds, the assumed and solved repayments
+  are both the principal and the first pass is the last. The published example is nowhere
+  near the cap and still prints 222.90. No balance anywhere moves, because a closing
+  balance is the principal less the payment and never read the interest, which is exactly
+  why the six balance identities in the self-test could not see this.
+
+- **Two help-text misspellings, the last of their kind.** `nb.TimelinePositionλ`'s
+  parameter table spelled the word the function is named after "timline", which v2.5.0
+  fixed in `nb.TimelineOffsetλ` and named as still outstanding here. `nb.LabelDepreciateλ`'s
+  said "teh".
+
+- **A licence, for the parts of this repository that can carry one.** [LICENCE](LICENCE) is
+  MIT and covers `tools/`, `.github/`, the Markdown files and `assets/`. It does not extend
+  to `nabla.xlsx`, `src/` or `functions.csv`: those derive from a workbook whose author
+  retains all rights, as `ATTRIBUTION.md` has said since v1.0.0, and nothing here can grant
+  what is not ours to grant.
+
+  `ATTRIBUTION.md` now also records the build input. The upstream workbook is not in this
+  repository and cannot be, so it names the file's size, its sha256 and its part count,
+  which is enough to tell a rebuild from the same input apart from a rebuild from a
+  different one.
+
+- `tools/excel_selftest.ps1` goes from 197 assertions to 247, and waits for Excel to finish
+  calculating before reading them. It did not: it asked for the answers immediately after
+  ordering a full rebuild, and a range Excel is still calculating hands back a null rather
+  than a partial answer. With the lighter assertion set that never lost the race. The new
+  ones are heavy enough to lose it, and the failure looks like a crash in the harness
+  rather than a slow workbook, so it now waits and says so if the answers never arrive.
+
+  Twenty-eight cells changed across the whole workbook, all of them text, all on the four
+  sheets that display the help of the functions above. No numeric cell anywhere differs
+  from v2.5.0.
+
+- A note for whoever adds a line of help next: a function's help spills down its own
+  demonstration sheet, and the sheets are laid out with between nought and seven free rows
+  underneath. `nb.Amortiseλ` has one. Two added rows blocked its spill and the whole help
+  block came back an error, which `tools/verify_cache.py` caught and the self-test's
+  error-cell scan would have caught too.
+
 ## v2.5.0, 19 August 2026, an example that runs
 
 - **`nb.TimelineOffsetλ`'s worked example could not be run as printed.** The call was

@@ -744,6 +744,36 @@ HELP_SIGNATURES = [
      'EDATE(""1/1/2026"", SEQUENCE( , 12, 0)))"'),
     # and its parameter table misspells the word the function is named after
     ("nabla.f", "TimelineOffsetλ", "A model's timline (Row", "A model's timeline (Row"),
+    # TimelinePositionλ's parameter table misspells the word the function is named after.
+    # TimelineOffsetλ's copy of the same row was corrected in v2.5.0; this is the last one.
+    ("nabla.f", "TimelinePositionλ", "A model's timline", "A model's timeline"),
+    # and LabelDepreciateλ's table transposes "the"
+    ("nabla.f", "LabelDepreciateλ", "each asset in teh depreciation", "each asset in the depreciation"),
+    # Amortiseλ now answers on a timeline shorter than a month, so its description says what
+    # it does there rather than leaving a reader to infer it from a spilled block of noughts.
+    # This rewrites the line rather than adding one. A function's help spills down its own
+    # demonstration sheet, and this one has a single free row beneath it before the sample
+    # data starts; two added rows blocked the spill and the whole help block came back an
+    # error. Depreciateλ's sheet below has seven free rows and can take the three it gains.
+    ("nabla.f", "Amortiseλ",
+     '"→It assumes all payments are made monthly.¶"',
+     '"→Payments are assumed monthly. On periods shorter than a month the figures for '
+     'each month land in the period holding its start, the rest nil.¶"'),
+    # Depreciateλ's timeline row named the three intervals its dead SWITCH lookups listed.
+    # It has always accepted any interval and now collects the final period on the short ones.
+    ("nabla.f", "Depreciateλ",
+     "→Timeline can be in Months, Quarters, or Years¶",
+     "→Timeline can be any interval: days, weeks, months, quarters or years¶"),
+    # and its life row states the bound the function now enforces
+    ("nabla.f", "Depreciateλ",
+     '                            "LifeInYears    →(Required) The number of years with which to depreciate each asset¶" & \n',
+     '                            "LifeInYears    →(Required) The number of years with which to depreciate each asset.¶" & \n'
+     '                            "               →More than 0 and no more than 100. A date here is not a life:¶" & \n'
+     '                            "               →the arguments read InitialValues, InServiceDates, LifeInYears, Timeline.¶" & \n',
+     '"LifeInYears    →(Required) The number of years with which to depreciate each asset¶" &amp; ',
+     '"LifeInYears    →(Required) The number of years with which to depreciate each asset.¶" &amp; '
+     '"               →More than 0 and no more than 100. A date here is not a life:¶" &amp; '
+     '"               →the arguments read InitialValues, InServiceDates, LifeInYears, Timeline.¶" &amp; '),
 ]
 
 
@@ -1133,6 +1163,207 @@ LOGIC_FIXES = [
      '_xlpm.ByMonth, MATCH(_xlpm.Date, _xlpm.SearchTimeline, 1) - IF(_xlpm.Direction = 1, 1, '
      '_xlpm.PeriodDiff + 2), _xlpm.Result, IF(_xlpm.SubMonthly?, INT((_xlpm.Date - _xlpm.Period1) '
      '/ _xlpm.DpP), _xlpm.ByMonth), '),
+    # Amortiseλ infers its timeline's period length from the first two dates and rounds it
+    # to whole months, which is nought for anything shorter than about a fortnight, and the
+    # next two lines divide by it. Every daily, weekly and fortnightly call returned
+    # #DIV/0!. Whole-month intervals other than 1, 3 and 12 were never affected: 2 and 6
+    # measure correctly and the schedule arithmetic is generic in the count, confirmed in
+    # Excel on a six-month timeline. PpY divides twelve by that count and nothing reads it,
+    # so it goes rather than gaining a guard it does not need.
+    ("nabla.f", "Amortiseλ",
+     '        MpP,                @ROUND(( SecondPeriod - FirstPeriod) / ADpM, 0),\n'
+     '        PpY,                MpY / MpP,\n',
+     '        DpP,                SecondPeriod - FirstPeriod,                 //Days Per Period\n'
+     '        WholeMonths,        @ROUND( DpP / ADpM, 0),\n'
+     '        SubMonthly?,        WholeMonths = 0,\n'
+     '        MpP,                MAX( WholeMonths, 1),                       //Months Per Period, never nought\n',
+     '_xlpm.MpP, _xlfn.SINGLE(ROUND((_xlpm.SecondPeriod - _xlpm.FirstPeriod) / _xlpm.ADpM, 0)), '
+     '_xlpm.PpY, _xlpm.MpY / _xlpm.MpP, ',
+     '_xlpm.DpP, _xlpm.SecondPeriod - _xlpm.FirstPeriod, '
+     '_xlpm.WholeMonths, _xlfn.SINGLE(ROUND(_xlpm.DpP / _xlpm.ADpM, 0)), '
+     '_xlpm.SubMonthly?, _xlpm.WholeMonths = 0, '
+     '_xlpm.MpP, MAX(_xlpm.WholeMonths, 1), '),
+    # Flooring the count at one month is not on its own enough. The schedule is always
+    # solved monthly and only then folded into the timeline's periods, and TimelinePositionλ
+    # lays the folded block down one period at a time from an offset. On a weekly timeline
+    # that dates month two a week after month one and reports twelve months of interest
+    # inside a quarter. A sub-monthly period is a fixed number of days, so put each month's
+    # figures in the period that contains that month's start and leave the periods between
+    # them nil, which is what Depreciateλ has always done on the same timelines. The month
+    # path is untouched.
+    ("nabla.f", "Amortiseλ",
+     '                    NewBlock,           TimelinePositionλ(AmortisationSched, Timeline, Offset),\n',
+     '                //  A sub-monthly period is a fixed number of days, so each month lands in\n'
+     '                //  the one period that contains its start and the periods between are nil.\n'
+     '                //  Rows 2 and 5 are balances rather than flows; a balance is carried into\n'
+     '                //  the period it is dated in and nowhere else, which is the same treatment\n'
+     '                //  Depreciateλ gives its own opening balance row.\n'
+     '                    MonthStarts,        EDATE( StartDate, SEQUENCE( , Periods, 0)),\n'
+     '                    ByDate,             MAKEARRAY( ROWS( AmortisationSched), COUNTA( Timeline),\n'
+     '                                            LAMBDA( R, C,\n'
+     '                                                LET( PeriodOpens,   INDEX( Timeline, C),\n'
+     '                                                    SUM( CHOOSEROWS( AmortisationSched, R)\n'
+     '                                                         * ( MonthStarts >= PeriodOpens)\n'
+     '                                                         * ( MonthStarts < PeriodOpens + DpP))))),\n'
+     '                    NewBlock,           IF( SubMonthly?,\n'
+     '                                            ByDate,\n'
+     '                                            TimelinePositionλ(AmortisationSched, Timeline, Offset)),\n',
+     '_xlpm.NewBlock, nabla.f.TimelinePositionλ(_xlpm.AmortisationSched, _xlpm.Timeline, _xlpm.Offset), ',
+     '_xlpm.MonthStarts, EDATE(_xlpm.StartDate, _xlfn.SEQUENCE(, _xlpm.Periods, 0)), '
+     '_xlpm.ByDate, _xlfn.MAKEARRAY(ROWS(_xlpm.AmortisationSched), COUNTA(_xlpm.Timeline), '
+     '_xlfn.LAMBDA(_xlpm.R,_xlpm.C, _xlfn.LET(_xlpm.PeriodOpens, INDEX(_xlpm.Timeline, _xlpm.C), '
+     'SUM(_xlfn.CHOOSEROWS(_xlpm.AmortisationSched, _xlpm.R) '
+     '* (_xlpm.MonthStarts &gt;= _xlpm.PeriodOpens) '
+     '* (_xlpm.MonthStarts &lt; _xlpm.PeriodOpens + _xlpm.DpP))))), '
+     '_xlpm.NewBlock, IF(_xlpm.SubMonthly?, _xlpm.ByDate, '
+     'nabla.f.TimelinePositionλ(_xlpm.AmortisationSched, _xlpm.Timeline, _xlpm.Offset)), '),
+    # Depreciateλ reads the same interval and, unlike Amortiseλ, survives a sub-monthly one:
+    # measured in Excel, a weekly timeline already returns each month's depreciation in the
+    # week holding that month's start. One thing does not survive. Every period but the last
+    # takes its end from the next period's start; the last has no successor and is given
+    # EDATE( its own start, MpP) - 1, which at nought months is the day BEFORE it begins, so
+    # the final period of a daily, weekly or fortnightly timeline collects nothing. On 48
+    # weekly periods from 1 January 2026 that dropped December outright: 1,833.37 of a
+    # 2,000.00 year, against 2,000.00 over 49 weeks and over 12 months.
+    #
+    # Interval and PpY are the SWITCH lookups that made this function look as though it
+    # only understood monthly, quarterly and yearly timelines. They never did anything: each
+    # is read by exactly one binding, LastPeriod and LifeInPeriods, and nothing reads those.
+    # Excel never evaluates them, which is why two-, four- and six-month timelines have
+    # always returned correct schedules rather than the #N/A the source implies. Removed
+    # with their readers below rather than generalised.
+    ("nabla.f", "Depreciateλ",
+     '        MpP,            @ROUND(( SecondPeriod - FirstPeriod) / 30.5, 0), //Months Per Period\n'
+     '        Interval,       SWITCH( MpP, 1, "M", 3, "Q", 12, "Y"),\n'
+     '        PpY,            SWITCH( MpP, 1, 12, 3, 4, 12, 1),                //Periods Per Year\n'
+     '        EndDates,       HSTACK( MAP(  SEQUENCE(, TimelineCols - 1), LAMBDA( n, INDEX( Timeline, n + 1) - 1)), EDATE( MAX( Timeline), MpP) -1 ),\n',
+     '        DpP,            SecondPeriod - FirstPeriod,                      //Days Per Period\n'
+     '        WholeMonths,    @ROUND( DpP / 30.5, 0),\n'
+     '        SubMonthly?,    WholeMonths = 0,\n'
+     '        MpP,            MAX( WholeMonths, 1),                            //Months Per Period, never nought\n'
+     '    //  The last period has no successor to take its end date from, so it ends one period\n'
+     '    //  on from its own start: a whole number of months where the timeline is monthly or\n'
+     '    //  longer, the same number of days as every other period where it is shorter.\n'
+     '        LastEnd,        IF( SubMonthly?, MAX( Timeline) + DpP, EDATE( MAX( Timeline), MpP)) - 1,\n'
+     '        EndDates,       HSTACK( MAP(  SEQUENCE(, TimelineCols - 1), LAMBDA( n, INDEX( Timeline, n + 1) - 1)), LastEnd),\n',
+     '_xlpm.MpP, _xlfn.SINGLE(ROUND((_xlpm.SecondPeriod - _xlpm.FirstPeriod) / 30.5, 0)), '
+     '_xlpm.Interval, _xlfn.SWITCH(_xlpm.MpP, 1, "M", 3, "Q", 12, "Y"), '
+     '_xlpm.PpY, _xlfn.SWITCH(_xlpm.MpP, 1, 12, 3, 4, 12, 1), '
+     '_xlpm.EndDates, _xlfn.HSTACK(_xlfn.MAP(_xlfn.SEQUENCE(, _xlpm.TimelineCols - 1), '
+     '_xlfn.LAMBDA(_xlpm.n, INDEX(_xlpm.Timeline, _xlpm.n + 1) - 1)), '
+     'EDATE(MAX(_xlpm.Timeline), _xlpm.MpP) - 1), ',
+     '_xlpm.DpP, _xlpm.SecondPeriod - _xlpm.FirstPeriod, '
+     '_xlpm.WholeMonths, _xlfn.SINGLE(ROUND(_xlpm.DpP / 30.5, 0)), '
+     '_xlpm.SubMonthly?, _xlpm.WholeMonths = 0, '
+     '_xlpm.MpP, MAX(_xlpm.WholeMonths, 1), '
+     '_xlpm.LastEnd, IF(_xlpm.SubMonthly?, MAX(_xlpm.Timeline) + _xlpm.DpP, '
+     'EDATE(MAX(_xlpm.Timeline), _xlpm.MpP)) - 1, '
+     '_xlpm.EndDates, _xlfn.HSTACK(_xlfn.MAP(_xlfn.SEQUENCE(, _xlpm.TimelineCols - 1), '
+     '_xlfn.LAMBDA(_xlpm.n, INDEX(_xlpm.Timeline, _xlpm.n + 1) - 1)), _xlpm.LastEnd), '),
+    # and the two bindings that read them, which nothing else reads
+    ("nabla.f", "Depreciateλ",
+     '                                    LifeInPeriods,  Years * PpY,\n'
+     '                                    LifeInMonths,   PeriodDiffλ( InserviceDate, DisposalDate, "M"),\n'
+     '                                    LastPeriod,     PeriodDiffλ( InserviceDate, DisposalDate, Interval),\n',
+     '                                    LifeInMonths,   PeriodDiffλ( InserviceDate, DisposalDate, "M"),\n',
+     '_xlpm.LifeInPeriods, _xlpm.Years * _xlpm.PpY, '
+     '_xlpm.LifeInMonths, nabla.f.PeriodDiffλ(_xlpm.InServiceDate, _xlpm.DisposalDate, "M"), '
+     '_xlpm.LastPeriod, nabla.f.PeriodDiffλ(_xlpm.InServiceDate, _xlpm.DisposalDate, _xlpm.Interval), ',
+     '_xlpm.LifeInMonths, nabla.f.PeriodDiffλ(_xlpm.InServiceDate, _xlpm.DisposalDate, "M"), '),
+    # Depreciateλ takes InitialValues, InServiceDates, LifeInYears, Timeline. Transposing the
+    # middle two puts a date serial where the life belongs, and 1 January 2026 is 46,023, so
+    # the function is asked for a schedule 552,276 months long and stops responding rather
+    # than answering. No asset has a life over a hundred years, so say so and return a
+    # message naming the argument order. The life is clamped where the check fails as well as
+    # reported, because a message is no use if the arrays are built before anything reads it.
+    ("nabla.f", "Depreciateλ",
+     '        Mpy,            12, //Months Per Year\n',
+     '        Mpy,            12, //Months Per Year\n'
+     '    //  Check inputs - a life in years must be a life, not a date\n'
+     '        LifeGiven,      IF( ISOMITTED( LifeInYears), 1, LifeInYears),\n'
+     '        LifeNums,       IF( ISNUMBER( LifeGiven), LifeGiven, -1),\n'
+     '        BadLife?,       OR( MIN( LifeNums) <= 0, MAX( LifeNums) > 100),\n'
+     '        LifeMessage,    "LifeInYears must be a number of years greater than 0 and no more than 100. "\n'
+     '                        & "Check the argument order: InitialValues, InServiceDates, LifeInYears, Timeline.",\n',
+     '_xlpm.Mpy, 12, ',
+     '_xlpm.Mpy, 12, '
+     '_xlpm.LifeGiven, IF(_xlfn.ISOMITTED(_xlpm.LifeInYears), 1, _xlpm.LifeInYears), '
+     '_xlpm.LifeNums, IF(ISNUMBER(_xlpm.LifeGiven), _xlpm.LifeGiven, -1), '
+     '_xlpm.BadLife?, OR(MIN(_xlpm.LifeNums) &lt;= 0, MAX(_xlpm.LifeNums) &gt; 100), '
+     '_xlpm.LifeMessage, "LifeInYears must be a number of years greater than 0 and no more than 100. " '
+     '&amp; "Check the argument order: InitialValues, InServiceDates, LifeInYears, Timeline.", '),
+    ("nabla.f", "Depreciateλ",
+     '                                    Years,          @INDEX( LifeInYears, Asset),\n',
+     '                                    Years,          IF( BadLife?, 1, @INDEX( LifeInYears, Asset)),\n',
+     '_xlpm.Years, _xlfn.SINGLE(INDEX(_xlpm.LifeInYears, _xlpm.Asset))',
+     '_xlpm.Years, IF(_xlpm.BadLife?, 1, _xlfn.SINGLE(INDEX(_xlpm.LifeInYears, _xlpm.Asset)))'),
+    ("nabla.f", "Depreciateλ",
+     '    //  Return Result\n'
+     '        CHOOSE(Help? + 1, Result, Help)\n',
+     '    //  Return Result, Help, or the message\n'
+     '        Return,         IF( Help?, 2, IF( BadLife?, 3, 1)),\n'
+     '        CHOOSE( Return, Result, Help, LifeMessage)\n',
+     'CHOOSE(_xlpm.Help? + 1, _xlpm.Result, _xlpm.Help)',
+     '_xlpm.Return, IF(_xlpm.Help?, 2, IF(_xlpm.BadLife?, 3, 1)), '
+     'CHOOSE(_xlpm.Return, _xlpm.Result, _xlpm.Help, _xlpm.LifeMessage)'),
+    # Allocateλ grew its answer by HSTACKing each new group onto everything already built,
+    # inside a REDUCE, so the whole accumulator is copied on every pass and the work is
+    # quadratic in the number of amounts. It is quick at any sane input and it is what turned
+    # the transposed Depreciateλ call above from an error into a workbook that stops
+    # responding: 46,023 amounts allocated to 552,276 months is of the order of 10^10 element
+    # copies. The answer is a closed form, so size the row once and compute each column from
+    # its own index. Every published result is unchanged, the last-column adjustment included:
+    # it is still the amount less the SUM of the same array of equal parts, in the same order,
+    # so the floating-point residue is identical to the bit.
+    ("nabla.f", "Allocateλ",
+     '        Result,         REDUCE( 0, SEQUENCE( , FromCount),\n'
+     '                            LAMBDA( Acc, n,\n'
+     '                                LET( \n'
+     '                                    FromAmount,     INDEX( Amounts, n), \n'
+     '                                    ToAmount,       ROUND( FromAmount * From / To, 2),\n'
+     '                                    BaseArray,      EXPAND( ToAmount, 1, ToCount, ToAmount),\n'
+     '                                    ToArray,        IF( ToCount = 1, \n'
+     '                                                        BaseArray, \n'
+     '                                                        HSTACK( \n'
+     '                                                            TAKE(BaseArray, 1, ToCount - 1), \n'
+     '                                                            FromAmount - SUM( TAKE(BaseArray, 1, ToCount - 1))\n'
+     '                                                        )\n'
+     '                                                    ),\n'
+     '                                    Result,         IF( n = 1, ToArray, HSTACK( Acc, ToArray )),\n'
+     '                                    Result\n'
+     '                                )\n'
+     '                            )\n'
+     '                        ),\n',
+     '        Result,         MAKEARRAY( 1, FromCount * ToCount,\n'
+     '                            LAMBDA( R, C,\n'
+     '                                LET(\n'
+     '                                //  Column C holds part C of amount QUOTIENT( C - 1, ToCount) + 1\n'
+     '                                    FromAmount,     INDEX( Amounts, QUOTIENT( C - 1, ToCount) + 1),\n'
+     '                                    ToAmount,       ROUND( FromAmount * From / To, 2),\n'
+     '                                //  The last part of each amount carries the rounding difference\n'
+     '                                    Last?,          MOD( C - 1, ToCount) + 1 = ToCount,\n'
+     '                                    IF( AND( Last?, ToCount > 1),\n'
+     '                                        FromAmount - SUM( EXPAND( ToAmount, 1, MAX( ToCount - 1, 1), ToAmount)),\n'
+     '                                        ToAmount)\n'
+     '                                )\n'
+     '                            )\n'
+     '                        ),\n',
+     '_xlpm.Result, _xlfn.REDUCE(0, _xlfn.SEQUENCE(, _xlpm.FromCount), _xlfn.LAMBDA(_xlpm.Acc,_xlpm.n, '
+     '_xlfn.LET(_xlpm.FromAmount, INDEX(_xlpm.Amounts, _xlpm.n), '
+     '_xlpm.ToAmount, ROUND(_xlpm.FromAmount * _xlpm.From / _xlpm.To, 2), '
+     '_xlpm.BaseArray, _xlfn.EXPAND(_xlpm.ToAmount, 1, _xlpm.ToCount, _xlpm.ToAmount), '
+     '_xlpm.ToArray, IF(_xlpm.ToCount = 1, _xlpm.BaseArray, '
+     '_xlfn.HSTACK(_xlfn.TAKE(_xlpm.BaseArray, 1, _xlpm.ToCount - 1), '
+     '_xlpm.FromAmount - SUM(_xlfn.TAKE(_xlpm.BaseArray, 1, _xlpm.ToCount - 1)))), '
+     '_xlpm.Result, IF(_xlpm.n = 1, _xlpm.ToArray, _xlfn.HSTACK(_xlpm.Acc, _xlpm.ToArray)), '
+     '_xlpm.Result))), ',
+     '_xlpm.Result, _xlfn.MAKEARRAY(1, _xlpm.FromCount * _xlpm.ToCount, _xlfn.LAMBDA(_xlpm.R,_xlpm.C, '
+     '_xlfn.LET(_xlpm.FromAmount, INDEX(_xlpm.Amounts, QUOTIENT(_xlpm.C - 1, _xlpm.ToCount) + 1), '
+     '_xlpm.ToAmount, ROUND(_xlpm.FromAmount * _xlpm.From / _xlpm.To, 2), '
+     '_xlpm.Last?, MOD(_xlpm.C - 1, _xlpm.ToCount) + 1 = _xlpm.ToCount, '
+     'IF(AND(_xlpm.Last?, _xlpm.ToCount &gt; 1), '
+     '_xlpm.FromAmount - SUM(_xlfn.EXPAND(_xlpm.ToAmount, 1, MAX(_xlpm.ToCount - 1, 1), _xlpm.ToAmount)), '
+     '_xlpm.ToAmount)))), '),
 ]
 
 for _entry in LOGIC_FIXES:
@@ -1187,6 +1418,35 @@ DEBT_FIXES = [
     ("nabla.debt", "DebtSculptVariableLRVλ",
      "→=DebtSculptVariableλ(, Debt, CFADS, DSCR, APR\"",
      "→=DebtSculptVariableLRVλ(, Debt, CFADS, DSCR, APR)\""),
+    # InterestLRVλ solves for the interest on the average balance over the period, taking the
+    # principal repayment as the cash available for debt service less that interest. Nobody
+    # repays more than they owe, and its caller says so: DebtSculptVariableLRVλ caps the
+    # payment at the principal. This function did not, so wherever the cap binds it solved a
+    # repayment larger than the debt, put the average balance below half the opening balance,
+    # and reported interest that is too small. Interest on 1,000 at 5% a period with 1,200 of
+    # cash came back as 20.51 where the balance runs from 1,000 to nil and the interest is
+    # 25.00. Cap the repayment inside the iteration, both where it is assumed and where it is
+    # solved, and the two agree. It still converges, and faster: once the cap binds the
+    # assumed and solved repayments are both the principal, so the first pass is the last.
+    #
+    # The one period of every sculpted schedule where the debt is retired is affected, and no
+    # other. The published example is not: 6,666.37 over 3.50 is 1,904.68 against 90,000 of
+    # principal, nowhere near the cap, and still prints 222.90. No balance moves anywhere,
+    # because the closing balance is the principal less the payment and never read the
+    # interest, which is why the balance identities in the self-test could not see this.
+    ("nabla.debt", "InterestLRVλ",
+     "_xlpm.Payment, IF(_xlpm.DoNotUse = 0, _xlpm.CFADS / _xlpm.DSCR, _xlpm.DoNotUse), "
+     "_xlpm.Interest, (_xlpm.Principal - _xlpm.Payment / 2) * _xlpm.InterestRate, "
+     "_xlpm.Repayment, -_xlpm.CFADS / _xlpm.DSCR + _xlpm.Interest, ",
+     "_xlpm.Payment, MIN(IF(_xlpm.DoNotUse = 0, _xlpm.CFADS / _xlpm.DSCR, _xlpm.DoNotUse), _xlpm.Principal), "
+     "_xlpm.Interest, (_xlpm.Principal - _xlpm.Payment / 2) * _xlpm.InterestRate, "
+     "_xlpm.Repayment, -MIN(_xlpm.CFADS / _xlpm.DSCR - _xlpm.Interest, _xlpm.Principal), "),
+    # and its description says which balance the interest is charged on
+    ("nabla.debt", "InterestLRVλ",
+     "→Calculates debt sculpting interest using method presented by Lance Rubin¶",
+     "→Calculates debt sculpting interest using method presented by Lance Rubin.¶"
+     "→Charged on the average balance over the period, with the principal repaid¶"
+     "→capped at the principal outstanding.¶"),
 ]
 
 # fix upstream copy-paste bug: the u module's About suggested "nabla.e" (was BXE) as its own name

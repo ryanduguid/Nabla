@@ -233,6 +233,122 @@ Near 'TimelineOffset: documented example, inside the timeline' `
 Near 'TimelineOffset: documented example, before the timeline' `
      "$to(`"15/2/2025`", EDATE(`"1/1/2026`", SEQUENCE( , 12, 0)))" '-11'
 
+
+# --- Amortise on a timeline shorter than a month. The period length is read off the first
+# two dates and rounded to whole months, which is nought below about a fortnight, and the
+# next line divided by it: every daily, weekly and fortnightly call came back #DIV/0!. The
+# schedule is still solved monthly, so the test is that the same money turns up, dated into
+# the period that holds each month's start, and that the periods between hold nothing.
+$am = "nb.Amortise$L"
+$amMo = "$am(10000, 0.05, 12, DATE(2026,1,1), EDATE(DATE(2026,1,1), SEQUENCE( , 14, 0)))"
+$amWk = "$am(10000, 0.05, 12, DATE(2026,1,1), DATE(2026,1,1) + SEQUENCE( , 52, 0) * 7)"
+$amFn = "$am(10000, 0.05, 12, DATE(2026,1,1), DATE(2026,1,1) + SEQUENCE( , 26, 0) * 14)"
+$amDy = "$am(10000, 0.05, 12, DATE(2026,1,1), DATE(2026,1,1) + SEQUENCE( , 400, 0))"
+
+Near 'Amortise: weekly is a schedule, not an error'      "SUMPRODUCT(--ISERROR($amWk))" '0'
+Near 'Amortise: fortnightly is a schedule, not an error' "SUMPRODUCT(--ISERROR($amFn))" '0'
+Near 'Amortise: daily is a schedule, not an error'       "SUMPRODUCT(--ISERROR($amDy))" '0'
+# One sample of every stock and one instance of every flow, whatever the period length.
+Near 'Amortise: weekly holds the same money as monthly'      "SUM($amWk) - SUM($amMo)" '0' '0.0000001'
+Near 'Amortise: fortnightly holds the same money as monthly' "SUM($amFn) - SUM($amMo)" '0' '0.0000001'
+Near 'Amortise: daily holds the same money as monthly'       "SUM($amDy) - SUM($amMo)" '0' '0.0000001'
+Near 'Amortise: weekly fills no extra periods' `
+     "SUMPRODUCT(--(INDEX($amWk,3,0)<>0)) - SUMPRODUCT(--(INDEX($amMo,3,0)<>0))" '0'
+Near 'Amortise: weekly draws the debt down once' "SUMPRODUCT(--(INDEX($amWk,1,0)<>0)) - 1" '0'
+# Both timelines open on 1 January 2026, so month one is period one on each. Month two
+# opens on 1 February, 31 days on, which is the fifth week and not the second.
+Near 'Amortise: weekly, month one is period one' "INDEX($amWk,4,1) - INDEX($amMo,4,1)" '0' '0.0000001'
+Near 'Amortise: weekly, month two is the week holding 1 February' `
+     "INDEX($amWk,4,5) - INDEX($amMo,4,2)" '0' '0.0000001'
+Near 'Amortise: weekly, the weeks between are nil' `
+     "SUMPRODUCT(ABS(INDEX($amWk,4,SEQUENCE(,3,2))))" '0' '0.0000001'
+# The month path is untouched. These three totals are what v2.5.0 produced.
+$amL = "10000, 0.05, 48, DATE(2026,1,1)"
+Near 'Amortise: monthly unchanged'    "SUM($am($amL, EDATE(DATE(2026,1,1), SEQUENCE( , 24, 0))))"     '377875.31' '0.005'
+Near 'Amortise: quarterly unchanged'  "SUM($am($amL, EDATE(DATE(2026,1,1), SEQUENCE( , 8, 0) * 3)))" '132616.32' '0.005'
+Near 'Amortise: six-monthly unchanged' "SUM($am($amL, EDATE(DATE(2026,1,1), SEQUENCE( , 8, 0) * 6)))" '92617.78' '0.005'
+Same 'Amortise: help with no args' "INDEX($am(),1,1)" 'FUNCTION:'
+
+# --- Depreciate. Every period but the last takes its end date from the next period's start.
+# The last had EDATE(its own start, months per period) - 1, which on a sub-monthly timeline
+# is the day BEFORE it opens, so the final period collected nothing: 48 weekly periods from
+# 1 January 2026 dropped December and reported 1,833.37 of a 2,000.00 year.
+$dp = "nb.Depreciate$L"
+$dpA = "10000, DATE(2026,1,1), 5"
+$dpMo = "$dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 12, 0)))"
+$dpW48 = "$dp($dpA, DATE(2026,1,1) + SEQUENCE( , 48, 0) * 7)"
+$dpW49 = "$dp($dpA, DATE(2026,1,1) + SEQUENCE( , 49, 0) * 7)"
+Near 'Depreciate: 48 weekly periods depreciate a full year' "SUM(INDEX($dpW48,3,0)) - 2000" '0' '0.005'
+Near 'Depreciate: 49 weekly periods agree with 48' `
+     "SUM(INDEX($dpW49,3,0)) - SUM(INDEX($dpW48,3,0))" '0' '0.005'
+Near 'Depreciate: weekly agrees with monthly' `
+     "SUM(INDEX($dpW48,3,0)) - SUM(INDEX($dpMo,3,0))" '0' '0.005'
+Near 'Depreciate: no period is counted twice' "SUMPRODUCT(--(INDEX($dpW48,3,0)<>0)) - 12" '0'
+# Whole-month intervals are unchanged. Two, four and six months never failed: the SWITCH
+# lookups that only listed 1, 3 and 12 were read by two bindings nothing else read, so
+# Excel never evaluated them. They are gone rather than generalised.
+Near 'Depreciate: monthly unchanged'     "SUM($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 24, 0))))"      '397999.12' '0.005'
+Near 'Depreciate: quarterly unchanged'   "SUM($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 8, 0) * 3)))"   '141999.76' '0.005'
+Near 'Depreciate: two-monthly unchanged' "SUM($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 12, 0) * 2)))"  '205999.60' '0.005'
+Near 'Depreciate: six-monthly unchanged' "SUM($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 8, 0) * 6)))"   '113999.84' '0.005'
+Near 'Depreciate: yearly unchanged'      "SUM($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 6, 0) * 12)))"  '70000.00'  '0.005'
+# A life in years is a life, not a date. Transposing arguments two and three puts 46,023
+# where the life belongs and asks for 552,276 months of schedule.
+$dpTL = "EDATE(DATE(2026,1,1), SEQUENCE( , 12, 0))"
+Same 'Depreciate: a date where the life belongs is refused' `
+     "LEFT(INDEX($dp(10000, 5, DATE(2026,1,1), $dpTL),1,1),11)" 'LifeInYears'
+Same 'Depreciate: a life of 101 years is refused' `
+     "LEFT(INDEX($dp(10000, DATE(2026,1,1), 101, $dpTL),1,1),11)" 'LifeInYears'
+Same 'Depreciate: a life of nought is refused' `
+     "LEFT(INDEX($dp(10000, DATE(2026,1,1), 0, $dpTL),1,1),11)" 'LifeInYears'
+Same 'Depreciate: a life in words is refused' `
+     "LEFT(INDEX($dp(10000, DATE(2026,1,1), `"five`", $dpTL),1,1),11)" 'LifeInYears'
+Near 'Depreciate: a life of 100 years is still a life' `
+     "SUM(INDEX($dp(10000, DATE(2026,1,1), 100, $dpTL),3,0)) - 100" '0' '0.5'
+Same 'Depreciate: help with no args' "INDEX($dp(),1,1)" 'FUNCTION:'
+
+# --- Allocate. The accumulator was rebuilt with HSTACK on every REDUCE pass, so the work
+# was quadratic in the number of amounts; it is a closed form and is now computed one
+# column at a time. Every published result has to come back to the digit, the deliberate
+# last-column adjustment included.
+$al = "nb.Allocate$L"
+Same 'Allocate: documented example' `
+     "TEXTJOIN(`",`",FALSE,$al({999.99,2000},`"Y`",`"Q`"))" '250,250,250,249.99,500,500,500,500'
+Same 'Allocate: quarters to quarters is the identity' `
+     "TEXTJOIN(`",`",FALSE,$al({999.99,2000},`"Q`",`"Q`"))" '999.99,2000'
+Same 'Allocate: quarters to months' `
+     "TEXTJOIN(`",`",FALSE,$al({999.99,2000},`"Q`",`"M`"))" '333.33,333.33,333.33,666.67,666.67,666.66'
+Same 'Allocate: default is years to months' `
+     "TEXTJOIN(`",`",FALSE,$al(1200))" '100,100,100,100,100,100,100,100,100,100,100,100'
+Same 'Allocate: a single amount' "TEXTJOIN(`",`",FALSE,$al(1000,`"Y`",`"Q`"))" '250,250,250,250'
+Same 'Allocate: negatives carry the adjustment too' `
+     "TEXTJOIN(`",`",FALSE,$al({-100.01},`"Y`",`"Q`"))" '-25,-25,-25,-25.01'
+Near 'Allocate: years to weeks sums back to the amount' "SUM($al({100},`"Y`",`"W`")) - 100" '0' '0.0000001'
+Near 'Allocate: quarters to weeks sums back to the amount' "SUM($al({100},`"Q`",`"W`")) - 100" '0' '0.0000001'
+Near 'Allocate: 400 amounts give 4,800 columns' "COLUMNS($al(SEQUENCE(,400,100,0),`"Y`",`"M`")) - 4800" '0'
+Near 'Allocate: 400 amounts still sum' "SUM($al(SEQUENCE(,400,100,0),`"Y`",`"M`")) - 40000" '0' '0.0000001'
+Same 'Allocate: help with no args' "INDEX($al(),1,1)" 'FUNCTION:'
+
+# --- InterestLRV. It solved for a principal repayment larger than the principal wherever
+# the cash available exceeded the debt, which put the average balance below half the
+# opening balance and understated the interest. Its caller capped the payment; it did not.
+Near 'InterestLRV: documented example'  "$ilrv(6666.37, 3.5, 90000, 0.03/12)" '222.90' '0.005'
+Near 'InterestLRV: cash over the debt charges half a period' "$ilrv(1200, 1, 1000, 0.05)" '25' '0.0000001'
+Near 'InterestLRV: cash far over the debt charges half a period' "$ilrv(5000, 1, 1000, 0.01)" '5' '0.0000001'
+Near 'InterestLRV: below the cap is unchanged' "$ilrv(300, 1.2, 1000, 0.005)" '4.3859649' '0.0000001'
+Near 'InterestLRV: never more than a period on the whole balance' `
+     "MAX(0, $ilrv(5000, 1, 1000, 0.01) - 1000 * 0.01)" '0' '0.0000001'
+Near 'InterestLRV: never less than nought' "MIN(0, $ilrv(5000, 1, 1000, 0.01))" '0' '0.0000001'
+
+# --- The last two help-text misspellings in the library.
+$tp = "nb.TimelinePosition$L"
+$ld = "nb.LabelDepreciate$L"
+Same 'TimelinePosition: help with no args' "INDEX($tp(),1,1)" 'FUNCTION:'
+Near 'TimelinePosition: its table spells timeline' `
+     "SUMPRODUCT(--ISNUMBER(SEARCH(`"timline`",$tp())))" '0'
+Near 'LabelDepreciate: its table spells the' `
+     "SUMPRODUCT(--ISNUMBER(SEARCH(`" teh `",$ld())))" '0'
+
 $xl = $null; $wb = $null; $tmp = $null; $exit = 0
 
 # Excel rejects incoming COM calls while it is mid-calculation (RPC_E_CALL_REJECTED),
@@ -309,8 +425,15 @@ try {
     Invoke-Excel { $tmp.Range($addr).Formula2 = $grid }
     Invoke-Excel { $xl.Calculation = -4105 }        # xlCalculationAutomatic
     Invoke-Excel { $xl.CalculateFullRebuild() }
+    # Wait for the rebuild to finish. Reading a range Excel is still calculating hands
+    # back a null, not a partial answer, and the assertion loop then indexes into it.
+    # CalculationState comes back as the enum's NAME, so compare against the string.
+    for ($w = 0; $w -lt 600 -and "$($xl.CalculationState)" -notin @('xlDone', '0'); $w++) {
+        Start-Sleep -Milliseconds 500
+    }
     # leading comma stops PowerShell flattening the 2-D range value on the way out
     $vals = Invoke-Excel { , $tmp.Range($addr).Value2 }
+    if ($null -eq $vals) { throw 'Excel returned no values for the assertion range' }
 
     $failed = @()
     for ($i = 0; $i -lt $checks.Count; $i++) {

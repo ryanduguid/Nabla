@@ -12,6 +12,12 @@ No open-source licence could be located for the upstream work as at 18 August 20
 
 Absent a licence, the upstream author retains all rights in the original material. Treat the derived portions of this repository accordingly. If you are the upstream author and want changes to this repository, open an issue.
 
+The repository's own work is separately licensed. [LICENCE](LICENCE) is MIT and covers `tools/`, `.github/`, the Markdown files and `assets/`, which were written for this repository. It does not extend to `nabla.xlsx`, `src/` or `functions.csv`.
+
+## The build input
+
+`tools/transform_from_upstream.py` rebuilds `nabla.xlsx` from the upstream workbook, which is not in this repository and cannot be. The build was last run against a file of 1,478,643 bytes, sha256 `f38dbc83b4a18fc7d71d0f4bcf39680d74694b9aa129f5b3deb39b014e0bbb67`, holding 224 parts. A rebuild that starts from that file reproduces `src/` and `functions.csv` exactly; anything else is a different input and the build's own assertions will say so.
+
 ## What changed from the upstream workbook
 
 - All namespaces renamed: `BXD`/`BXE`/`BXF`/`BXR`/`BXU`/`BXLDebt` were replaced by a single `nb.` prefix, with a one-letter tag where two modules shared a function name; 5g and BXL branding, branded artwork, the cover video thumbnails and their YouTube link, and Dropbox file links removed. One maths-citation link (a Diarmuid Early video, credited in an IntOnIntλ source comment) was retained deliberately.
