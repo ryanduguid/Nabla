@@ -45,6 +45,13 @@
   formulas takes 0.21s, and a volatile-only recalculation takes under 2ms. There was no
   performance problem to fix.
 
+- **The clean-up is now a tool, not a session.** `tools/sanitise_workbook.py` removes what
+  any Excel save adds — printer settings, the recorded save path, stray always-calculate
+  flags, empty worksheet rels — and rewrites the archive deterministically. The pipeline's
+  own `refresh_cache.py` already stripped its share after every refresh; the sanitiser
+  covers every save that is not the pipeline's, so a workbook touched by hand no longer
+  fails `verify_workbook.py` on `x15ac:absPath` the next time it is committed.
+
 ## v3.0.0, 19 August 2026, the library is now Ozzit
 
 - **Every function's prefix changes from `nb.` to `oz.`, and the library is renamed from
