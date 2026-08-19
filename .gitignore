@@ -4,3 +4,4 @@ __pycache__/
 
 # Excel's lock file, if the self-test or a manual open is interrupted
 ~$*.xlsx
+.backup-*/
