@@ -7,7 +7,7 @@
 
 AboutEssentialsλ = TRIM(TEXTSPLIT(
     "About:                     →Basic functions for working with dynamic arrays. Suggested module name: oz¶" &
-    "Version:                   →19 Aug 2026¶" &
+    "Version:                   →20 Aug 2026¶" &
     "Repository:                  →https://github.com/ryanduguid/Ozzit ¶" &
     "→¶" &
     "Function                   →Description¶" & 
@@ -48,7 +48,7 @@ CountCλ = LAMBDA(
                             "FUNCTION:      →CountCλ( Text, Characters)¶" &
                             "DESCRIPTION:   →Count how many of one or more characters are in a string.¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Text           →(Required) The string to interrogate¶" & 
                             "Characters     →(Required) A single character, or CSV of characters to find in Text¶" & 
@@ -85,7 +85,7 @@ SumRowsλ = LAMBDA(
                             "FUNCTION:      →SumRowsλ( Array)¶" &
                             "DESCRIPTION:   →Get the total of each row¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to be totalled by row.¶" & 
                             "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
@@ -117,7 +117,7 @@ SumColsλ = LAMBDA(
                             "FUNCTION:      →SumColsλ( Array)¶" &
                             "DESCRIPTION:   →Get the total of each column¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to be totalled by column.¶" & 
                             "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
@@ -149,7 +149,7 @@ AvgRowsλ = LAMBDA(
                             "FUNCTION:      →AvgRowsλ( Array)¶" &
                             "DESCRIPTION:   →Get the average of each row¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to be averaged by row.¶" & 
                             "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
@@ -181,7 +181,7 @@ AvgColsλ = LAMBDA(
                             "FUNCTION:      →AvgColsλ( Array)¶" &
                             "DESCRIPTION:   →Get the average for each Column¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to be averaged by column.¶" & 
                             "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
@@ -213,7 +213,7 @@ MinRowsλ = LAMBDA(
                             "FUNCTION:      →MinRowsλ( Array)¶" &
                             "DESCRIPTION:   →Get the minimum of each row¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to find the minimum by row.¶" & 
                             "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
@@ -245,7 +245,7 @@ MinColsλ = LAMBDA(
                             "FUNCTION:      →MinColsλ( Array)¶" &
                             "DESCRIPTION:   →Get the minimum for each Column¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to find the minumum by column.¶" & 
                             "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
@@ -277,7 +277,7 @@ MaxRowsλ = LAMBDA(
                             "FUNCTION:      →MaxRowsλ( Array)¶" &
                             "DESCRIPTION:   →Get the maximum of each row¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to find the maximum by row.¶" & 
                             "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
@@ -309,7 +309,7 @@ MaxColsλ = LAMBDA(
                             "FUNCTION:      →MaxColsλ( Array)¶" &
                             "DESCRIPTION:   →Get the maximum for each Column¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to find the maximum by column.¶" & 
                             "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
@@ -341,7 +341,7 @@ CountARowsλ = LAMBDA(
                             "FUNCTION:      →CountARowsλ( Array)¶" &
                             "DESCRIPTION:   →Count everything in each row¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to be counted.¶" & 
                             "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
@@ -373,7 +373,7 @@ CountAColsλ = LAMBDA(
                             "FUNCTION:      →CountAColsλ( Array )¶" &
                             "DESCRIPTION:   →Count everything in each column¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to be counted.¶" & 
                             "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
@@ -405,7 +405,7 @@ CountRowsλ = LAMBDA(
                             "FUNCTION:      →CountRowsλ( Array)¶" &
                             "DESCRIPTION:   →Count numbers in each row¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing numbers to be counted.¶" & 
                             "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
@@ -437,7 +437,7 @@ CountColsλ = LAMBDA(
                             "FUNCTION:      →CountColsλ( Array)¶" &
                             "DESCRIPTION:   →Count numbers in each column¶" & 
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
-                            "VERSION:       →19 Aug 2026¶" &
+                            "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing numbers to be counted.¶" & 
                             "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &

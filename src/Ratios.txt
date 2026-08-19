@@ -8,7 +8,7 @@
 AboutRatiosλ = TRIM(
     TEXTSPLIT(
         "About:                     →A library of Financial Ratios¶" &
-        "Version:                   →19 Aug 2026¶" &
+        "Version:                   →20 Aug 2026¶" &
         "Repository:                  →https://github.com/ryanduguid/Ozzit ¶" &
         "Notes:                     →Sources include Investopedia.com, Corporate Finance and WallStreetPrep.com.¶" &
                                    "→Copyright applies to LAMBDA coding¶" &
@@ -88,7 +88,7 @@ CurrentRatioλ = LAMBDA(
                         "DESCRIPTION:   →Measures a company’s ability to pay short-term obligations  ¶" & 
                                        "→(Current Assets/Liabilities)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/c/cash-ratio.asp ¶" &
-                        "VERSION:       →19 Aug 2026¶" &
+                        "VERSION:       →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "Assets         →(Required) Current Assets. Incluces: ¶" & 
                                        "→Cash ¶" & 
@@ -138,7 +138,7 @@ QuickRatioλ = LAMBDA(
                         "DESCRIPTION:   →Measures ability to meet short-term obligations¶" & 
                                        "→(Quick Assets/Current Liabilities)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/q/quickratio.asp ¶" &
-                        "VERSION:       →19 Aug 2026¶" &
+                        "VERSION:       →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "QuickAssets  →(Required) Quick Assets. Includes: ¶" & 
                                        "→• Cash & Cash equivalents ¶" & 
@@ -187,7 +187,7 @@ CashRatioλ = LAMBDA(
                         "DESCRIPTION:   →Evaluates ability to repay short-term debt w/cash or near-cash resources" & 
                                        "→(Cash and Cash Equivalents / Current Liabilities)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/c/cash-ratio.asp ¶" &
-                        "VERSION:       →19 Aug 2026¶" &
+                        "VERSION:       →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "Cash           →(Required) Cash and Cash Equivalents¶" & 
                         "Liabilities     →(Required) Current Liabilities. Includes: ¶" & 
@@ -228,7 +228,7 @@ OperatingCashFlowRatioλ = LAMBDA(
                         "DESCRIPTION:       →Measures how readily current liabilities are covered by cash flows generated from operations.¶" & 
                                            "→(OperatingCashFlow/Liabilities)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/o/ocfratio.asp ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:        →¶" & 
                         "OperatingCashFlow  →(Required) Operating cash flow. ¶" & 
                                            "→Indirect method includes: ¶" & 
@@ -277,7 +277,7 @@ ReceivablesTurnoverRatioλ = LAMBDA(
                         "DESCRIPTION:   →Indicates effectiveness in collecting outstanding balances from clients and ¶" &
                                        "→managing line of credit process (Net Credit Sales/Average Accounts Receivable)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/r/receivableturnoverratio.asp ¶" &
-                        "VERSION:       →19 Aug 2026¶" &
+                        "VERSION:       →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetCreditSales →(Required) Net Credit Sales. Amount of revenue earned by a company paid via credit¶" & 
                         "AverageAccountsReceivable→(Required) Average Accounts Receivable. Average of period opening and closing balance¶" & 
@@ -314,7 +314,7 @@ InventoryTurnoverRatioλ = LAMBDA(
                         "DESCRIPTION:       →Shows how many times a company turned over its inventory relative ¶" &
                                            "→to its cost of goods sold (COGS) (COGS/Average Inventory)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/i/inventoryturnover.asp ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "CostOfGoodsSold    →(Required) Cost of Goods Sold (COGS) which can include:¶" &
                                            "→Office supply costs¶" &
@@ -356,7 +356,7 @@ WorkingCapitalTurnoverRatioλ = LAMBDA(
                                           "→is using its working capital to support sales and growth ¶" &
                                           "→(Net Annual Sales/Average Working Capital). ¶" &
                         "WEBPAGE:          →https://www.investopedia.com/terms/w/workingcapitalturnover.asp ¶" &
-                        "VERSION:          →19 Aug 2026¶" &
+                        "VERSION:          →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetAnnualSales    →(Required) Net Annual Sales can include:¶" &
                                           "→Gross sales¶" &
@@ -402,7 +402,7 @@ DebtRatioλ = LAMBDA(
                         "FUNCTION:      →DebtRatioλ( TotalDebt, TotalAssets)¶" & 
                         "DESCRIPTION:   →Measures the extent of a company’s leverage (TotalDebt/TotalAssets)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/d/debtratio.asp# ¶" &
-                        "VERSION:       →19 Aug 2026¶" &
+                        "VERSION:       →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "TotalDebt      →(Required) Total Debt ¶" & 
                         "TotalAssets    →(Required) Total Assets ¶" & 
@@ -439,7 +439,7 @@ DSCRλ = LAMBDA(
                         "DESCRIPTION:       →Measures a firm’s available cash flow to pay its current debt obligations¶" &
                                            "→(Net Operating Income/Total Debt Service)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/d/dscr.asp ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetOperatingIncome →(Required) Revenue - Certain Operating Expenses¶" & 
                         "TotalDebtService   →(Required) Interest * (1-Tax Rate), principal, sinking fund,¶" &
@@ -478,7 +478,7 @@ DebtToCapitalRatioλ = LAMBDA(
                                            "→and whether or not the company is a suitable investment.¶" & 
                                            "→(Debt/(Debt + Shareholders' equity)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/d/debt-to-capitalratio.asp ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "Debt               →(Required) Total Debt which can include: ¶" &
                                            "→Notes payable¶" &
@@ -518,7 +518,7 @@ EquityMultiplierλ = LAMBDA(
                         "DESCRIPTION:       →Measures the portion of a company’s assets financed by shareholders' ¶" &
                                            "→equity rather than by debt (TotalAssets/TotalShareholdersEquity)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/e/equitymultiplier.asp ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:        →¶" & 
                         "TotalAssets        →(Required) Both current and long-term assets¶" & 
                         "TotalShareholdersEquity →(Required) Shareholders' Equity (total assets - total liabilities) ¶" & 
@@ -561,7 +561,7 @@ DebtToEquityRatioλ = LAMBDA(
                         "DESCRIPTION:       →Measures the degree to which a company is financing operations¶" &
                                            "→with debt rather than its own resources. (Total Liabilities/Shareholders' Equity)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/d/debtequityratio.asp ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:        →¶" & 
                         "TotalLiabilities   →(Required) Total Liabilities¶" & 
                         "ShareholdersEquity →(Required) Shareholders' Equity (total assets - total liabilities) ¶" & 
@@ -598,7 +598,7 @@ DebtToAssetRatioλ = LAMBDA(
                         "DESCRIPTION:       →Analysts can compare one company's leverage with that of other y¶" &
                                            "→companies in the same industry (Total Debt/Total Assets)¶" &
                         "WEBPAGE:           →https://www.investopedia.com/terms/t/totaldebttototalassets.asp ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:        →¶" & 
                         "TotalDebt          →(Required) Total debt includes shortterm and longterm debt¶" & 
                         "TotalAssets        →(Required) Shareholders' Equity (total assets - total liabilities) ¶" & 
@@ -635,7 +635,7 @@ InterestCoverageRatioλ = LAMBDA(
                         "DESCRIPTION:       →Determines how easily a company can pay interest on its outstanding debt¶" &
                                            "→(Operating Income/Interest Expenses)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/i/interestcoverageratio.asp ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:        →¶" & 
                         "OperatingIncome    →(Required) Operating Income (EBIT) ¶" & 
                         "InterestExpenses   →(Required) Interest Expense ¶" & 
@@ -673,7 +673,7 @@ EquityRatioλ = LAMBDA(
                         "DESCRIPTION:       →Measures the long-term solvency of a company by comparing its shareholders’ ¶" &
                                            "→equity to its total assets (Shareholder's Equity/(Total Assets - Intangible Assets))¶" &
                         "WEBPAGE:           →https://www.wallstreetprep.com/knowledge/equity-ratio/ ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:        →¶" & 
                         "ShareholdersEquity →(Required) Shareholders' Equity (total assets - total liabilities) ¶" & 
                         "TotalAssets        →(Required) Both current and long-term assets¶" & 
@@ -719,7 +719,7 @@ AssetTurnoverRatioλ = LAMBDA(
                         "DESCRIPTION:   →Measures the value of a company's sales or revenues relative to the value of its assets.¶" &
                                        "→(Net Sales/Total Assets)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/a/assetturnover.asp ¶" &
-                        "VERSION:       →19 Aug 2026¶" &
+                        "VERSION:       →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetSales       →(Required) revenue or net sales. ¶" & 
                         "TotalAssets    →(Required) Average of Assets and period start and end.¶" & 
@@ -758,7 +758,7 @@ DSIλ = LAMBDA(
                                            "→indicates the average time in days that a company takes to turn its inventory¶" & 
                                            "→(Average Inventory/ Cost of Goods Sold)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/d/days-sales-inventory-dsi.asp ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "AverageInventory→  (Required) Average of period open and close Inventory¶" & 
                         "CostOfGoodsSold→   (Required) Cost of Goods Sold (COGS) ¶" & 
@@ -799,7 +799,7 @@ OperatingRatioλ = LAMBDA(
                                            "→while generating revenue¶" & 
                                            "→(Operating Expenses + Cost Of Goods Sold)/Net Sales)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/o/operatingratio.asp ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "OperatingExpenses  →(Required) Operating Expenses which can include:¶" &
                                            "→Accounting and legal fees¶" &
@@ -854,7 +854,7 @@ GrossMarginλ = LAMBDA(
                         "DESCRIPTION:   →Shows how much profit a company makes after paying off its Cost of Goods Sold (COGS).¶" & 
                                        "→(Gross Profit/Net Sales)¶" & 
                         "WEBPAGE:       →https://corporatefinanceinstitute.com/resources/accounting/gross-margin-ratio/ ¶" &
-                        "VERSION:       →19 Aug 2026¶" &
+                        "VERSION:       →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "GrossProfit    →(Required) Gross Profit¶" & 
                         "NetSales       →(Required) Net Sales or Revenue¶" & 
@@ -890,7 +890,7 @@ EBITDAMarginλ = LAMBDA(
                         "DESCRIPTION:   →Measures a company's operating profit as a percentage of its revenue.¶" & 
                                        "→(EBITDA/Total Revenue)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/e/ebitda-margin.asp ¶" &
-                        "VERSION:       →19 Aug 2026¶" &
+                        "VERSION:       →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "EBITDA         →(Required) Earnings Before Interest, tax, depreciation, and amortisation¶" & 
                         "TotalRevenue   →(Required) Total Revenue¶" & 
@@ -928,7 +928,7 @@ OperatingMarginλ = LAMBDA(
                                            "→for variable costs of production, such as wages and raw materials, but ¶" & 
                                            "→before paying interest or tax (Operating Earnings/Revenue).¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/o/operatingmargin.asp ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "OperatingEarnings  →(Required) Earnings Before Interest and tax (EBIT) which is revenue - COGS¶" & 
                         "Revenue            →(Required) Revenue¶" & 
@@ -963,7 +963,7 @@ PretaxMarginλ = LAMBDA(
                         "FUNCTION:      →PretaxMarginλ( PretaxEarnings, Revenue)¶" & 
                         "DESCRIPTION:   →Measures the operating efficiency of a company (Pretax Earnings/Revenue).¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/p/pretax-margin.asp ¶" &
-                        "VERSION:       →19 Aug 2026¶" &
+                        "VERSION:       →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "PretaxEarnings →(Required) Earnings before tax (EBT)¶" & 
                         "Revenue        →(Required) Revenue¶" & 
@@ -1000,7 +1000,7 @@ NetProfitMarginλ = LAMBDA(
                         "DESCRIPTION:   →Measures how much net income or profit a company generates as a ¶" & 
                                        "→percentage of its revenue. (Net Income/Revenue)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/n/net_margin.asp ¶" &
-                        "VERSION:       →19 Aug 2026¶" &
+                        "VERSION:       →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetIncome      →(Required) Net Income includes:¶" & 
                                        "→Revenue¶" & 
@@ -1043,7 +1043,7 @@ CashFlowMarginλ = LAMBDA(
                                        "→and efficiency and its earnings quality ¶" & 
                                        "→(Cash Flow From Operating Activities/Revenue).¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/o/operating-cash-flow-margin.asp ¶" &
-                        "VERSION:       →19 Aug 2026¶" &
+                        "VERSION:       →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "CashFlowFromOperatingActivities→(Required) Cash Flow From Operating Activities includes:¶" & 
                                        "→Net Income¶" & 
@@ -1083,7 +1083,7 @@ ROAλ = LAMBDA(
                         "DESCRIPTION:   →Return on assets ratio indicates how profitable a company is ¶" & 
                                        "→in relation to its total assets ( Net Income / Total Assets)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/r/returnonassets.asp ¶" &
-                        "VERSION:       →19 Aug 2026¶" &
+                        "VERSION:       →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetIncome      →(Required) Net Income¶" & 
                         "TotalAssets    →(Required) Total Assets¶" & 
@@ -1120,7 +1120,7 @@ ROEλ = LAMBDA(
                                            "→profitability and how efficient it is in generating profits¶" & 
                                            "→(Net Income/ Average Shareholders' Equity)¶" &
                         "WEBPAGE:           →https://www.investopedia.com/terms/r/returnonequity.asp ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetIncome          →(Required) Net Income¶" & 
                         "ShareholdersEquity →(Required) Average Shareholders' Equity from period open and close ¶" & 
@@ -1158,7 +1158,7 @@ ROIλ = LAMBDA(
                                                "→an investment by comparing the gain or loss to its cost. ¶" & 
                                                "→(Net Return on Investment/Cost of Investment)¶" & 
                         "WEBPAGE:               →https://www.investopedia.com/terms/r/returnonequity.asp ¶" &
-                        "VERSION:               →19 Aug 2026¶" &
+                        "VERSION:               →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetReturnonInvestment  →(Required) Net Return on Investment is the ¶" & 
                                                "→final value of investment - initial value of investment¶" & 
@@ -1196,7 +1196,7 @@ ROICλ = LAMBDA(
                         "DESCRIPTION:   →Return on Invested capital  assesses a company’s efficiency in allocating ¶" &
                                        "→capital to profitable investments (Net Operating Profit After Tax/Invested Capital)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/r/returnoninvestmentcapital.asp ¶" &
-                        "VERSION:       →19 Aug 2026¶" &
+                        "VERSION:       →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetOperatingProfitAfterTax→(Required) Net Operating profit after Tax [ operating profit x (1 - effective tax rate) ].¶" & 
                         "InvestedCapital→(Required) Invested Capital (Debt + Equity).¶" & 
@@ -1240,7 +1240,7 @@ PriceEarningsRatioλ = LAMBDA(
                         "DESCRIPTION:       →Price-earnings Ratio measures a company's share price relative to ¶" & 
                                            "→its earnings per share (Share Price/Earnings Per Share).¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/p/price-earningsratio.asp ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "SharePrice         →(Required) Share Price (Market Value Per Share) ¶" & 
                         "EarningsPerShare   →(Required) Earnings Per Share¶" & 
@@ -1278,7 +1278,7 @@ PriceToBookRatioλ = LAMBDA(
                                            "→firm's market capitalisation to its book value and locate undervalued companies.¶" & 
                                            "→(Market Price Per Share/Book Value Per Share)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/p/price-to-bookratio.asp ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "MarketPricePerShare→(Required) Market Price Per Share (Current market price of the share)¶" & 
                         "BookValuePerShare  →(Required) Book Value Per share ¶" & 
@@ -1316,7 +1316,7 @@ PriceToSalesRatioλ = LAMBDA(
                         "DESCRIPTION:       →Price to Sales (P/S) Ratio is an indicator of the value that financial markets have¶" & 
                                            "→placed on each dollar of a company's sales or revenues (Market Price Per Share/Sales Per Share).¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/p/price-to-salesratio.asp ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "MarketPricePerShare→(Required) Market Price Per Share (Current market price of the share)¶" & 
                         "SalesPerShare      →(Required) Annual Sales Per Share (Revenue prior 12 months) ¶" & 
@@ -1355,7 +1355,7 @@ PriceToCashRatioλ = LAMBDA(
                                            "→measures the value of a stock’s price relative to its operating cash flow ¶" & 
                                            "→per share (Market Price Per Share/Operating Cash Flow Per Share).¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/p/price-to-cash-flowratio.asp ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "MarketPricePerShare→(Required) Market Price Per Share (Current market price of the share)¶" & 
                         "OperatingCashFlowPerShare→(Required) Operating Cash Flow for prior 12 months/Shares outstanding ¶" & 
@@ -1393,7 +1393,7 @@ BVPSλ = LAMBDA(
                         "DESCRIPTION:       →Book value per share ratio is an indicator of the value of a company’s stock¶" & 
                                            "→(Shareholders' Equity - Preferred Stock)/Average Shares Outstanding)¶" & 
                         "WEBPAGE:           →https://corporatefinanceinstitute.com/resources/valuation/book-value-per-share-bvps/ ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "ShareholdersEquity →(Required) Shareholders' Equity (total assets - total liabilities) ¶" & 
                         "PreferredStock     →(Required) Preferred Stock (securities that represent ownership in a corporation).¶" & 
@@ -1433,7 +1433,7 @@ CAPERatioλ = LAMBDA(
                                         "→to smooth out fluctuations in corporate profits that occur over different periods of a business ¶" & 
                                         "→cycle (aka Shiller PE Ratio) (Share Price/Ten Year Average Earnings Inflation Adjusted)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/c/cape-ratio.asp ¶" &
-                        "VERSION:       →19 Aug 2026¶" &
+                        "VERSION:       →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "SharePrice     →(Required) Current stock price ¶" & 
                         "TenYearAverageEarningsInflationAdjusted→(Required) Average earnings per share for 10 years adjusted for inflation ¶" & 
@@ -1470,7 +1470,7 @@ DPRλ = LAMBDA(
                         "DESCRIPTION:   →Dividend Payout Ratio is the percentage of earnings paid to shareholders via dividends¶" & 
                                        "→(DividendsPaid/NetIncome)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/d/dividendpayoutratio.asp ¶" &
-                        "VERSION:       →19 Aug 2026¶" &
+                        "VERSION:       →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "DividendsPaid  →(Required) Dividends paid ¶" & 
                         "NetIncome      →(Required) Net Income¶" & 
@@ -1507,7 +1507,7 @@ DividendYieldRatioλ = LAMBDA(
                         "DESCRIPTION:   →Dividend yield ratio shows how much a company pays out in dividends ¶" & 
                                        "→each year relative to its stock price (Annual Dividends Pe rShare/Share Price)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/d/dividendyield.asp ¶" &
-                        "VERSION:       →19 Aug 2026¶" &
+                        "VERSION:       →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "AnnualDividendsPerShare→(Required) Annual Dividends Per Share ¶" & 
                         "SharePrice     →(Required) Market value per share ¶" & 
@@ -1547,7 +1547,7 @@ EPSλ = LAMBDA(
                                            "→outstanding share of common stock has earned ¶" & 
                                            "→(Net Income - Preferred Dividends)/End Of Period Common Shares Outstanding)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/e/eps.asp ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetIncome          →(Required) Net Income ¶" & 
                         "PreferredDividends →(Required) Dividends paid on prefered stock¶" & 
@@ -1587,7 +1587,7 @@ RetentionRatioλ = LAMBDA(
                         "DESCRIPTION:       →Retention Ratio is the proportion of earnings kept back in the ¶" & 
                                            "→business as retained earnings (Retained Earnings/Net Income).¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/r/retentionratio.asp ¶" &
-                        "VERSION:           →19 Aug 2026¶" &
+                        "VERSION:           →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "RetainedEarnings   →(Required) Retained Earnings (Net Income - paid dividends)¶" & 
                         "NetIncome          →(Required) Net Income¶" & 
