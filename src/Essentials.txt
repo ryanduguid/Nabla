@@ -6,9 +6,9 @@
 */
 
 AboutEssentialsλ = TRIM(TEXTSPLIT(
-    "About:                     →Basic functions for working with dynamic arrays. Suggested module name: nb¶" &
-    "Version:                   →18 Aug 2026¶" &
-    "Repository:                  →https://github.com/ryanduguid/Nabla ¶" &
+    "About:                     →Basic functions for working with dynamic arrays. Suggested module name: oz¶" &
+    "Version:                   →19 Aug 2026¶" &
+    "Repository:                  →https://github.com/ryanduguid/Ozzit ¶" &
     "→¶" &
     "Function                   →Description¶" & 
     "AboutEssentialsλ                     →Produces this table¶" & 
@@ -47,14 +47,14 @@ CountCλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →CountCλ( Text, Characters)¶" &
                             "DESCRIPTION:   →Count how many of one or more characters are in a string.¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Text           →(Required) The string to interrogate¶" & 
                             "Characters     →(Required) A single character, or CSV of characters to find in Text¶" & 
                                            "→NOTE! Case sensitive¶" & 
-                            "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.CountCλ( ""Mary had a little lamb"", ""a,b"")", 
+                            "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.CountCλ( ""Mary had a little lamb"", ""a,b"")", 
                         "→", "¶" )
                     ),
     //  Check inputs - Omitted required arguments
@@ -84,12 +84,12 @@ SumRowsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →SumRowsλ( Array)¶" &
                             "DESCRIPTION:   →Get the total of each row¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to be totalled by row.¶" & 
-                            "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.SumRowsλ( SEQUENCE(5,5))", 
+                            "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.SumRowsλ( SEQUENCE(5,5))", 
                             "→", "¶" 
                         )
                     ),                    
@@ -116,12 +116,12 @@ SumColsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →SumColsλ( Array)¶" &
                             "DESCRIPTION:   →Get the total of each column¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to be totalled by column.¶" & 
-                            "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.SumColsλ( SEQUENCE(5,5))", 
+                            "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.SumColsλ( SEQUENCE(5,5))", 
                             "→", "¶" 
                         )
                     ),                    
@@ -148,12 +148,12 @@ AvgRowsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →AvgRowsλ( Array)¶" &
                             "DESCRIPTION:   →Get the average of each row¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to be averaged by row.¶" & 
-                            "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.AvgRowsλ( SEQUENCE(5,5))", 
+                            "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.AvgRowsλ( SEQUENCE(5,5))", 
                             "→", "¶" 
                         )
                     ),                    
@@ -180,12 +180,12 @@ AvgColsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →AvgColsλ( Array)¶" &
                             "DESCRIPTION:   →Get the average for each Column¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to be averaged by column.¶" & 
-                            "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.AvgColsλ( SEQUENCE(5,5))", 
+                            "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.AvgColsλ( SEQUENCE(5,5))", 
                             "→", "¶" 
                         )
                     ),                    
@@ -212,12 +212,12 @@ MinRowsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →MinRowsλ( Array)¶" &
                             "DESCRIPTION:   →Get the minimum of each row¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to find the minimum by row.¶" & 
-                            "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.MinRowsλ( SEQUENCE(5,5))", 
+                            "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.MinRowsλ( SEQUENCE(5,5))", 
                             "→", "¶" 
                         )
                     ),                    
@@ -244,12 +244,12 @@ MinColsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →MinColsλ( Array)¶" &
                             "DESCRIPTION:   →Get the minimum for each Column¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to find the minumum by column.¶" & 
-                            "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.MinColsλ( SEQUENCE(5,5))", 
+                            "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.MinColsλ( SEQUENCE(5,5))", 
                             "→", "¶" 
                         )
                     ),                    
@@ -276,12 +276,12 @@ MaxRowsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →MaxRowsλ( Array)¶" &
                             "DESCRIPTION:   →Get the maximum of each row¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to find the maximum by row.¶" & 
-                            "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.MaxRowsλ( SEQUENCE(5,5))", 
+                            "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.MaxRowsλ( SEQUENCE(5,5))", 
                             "→", "¶" 
                         )
                     ),                    
@@ -308,12 +308,12 @@ MaxColsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →MaxColsλ( Array)¶" &
                             "DESCRIPTION:   →Get the maximum for each Column¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to find the maximum by column.¶" & 
-                            "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.MaxColsλ( SEQUENCE(5,5))", 
+                            "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.MaxColsλ( SEQUENCE(5,5))", 
                             "→", "¶" 
                         )
                     ),                    
@@ -340,12 +340,12 @@ CountARowsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →CountARowsλ( Array)¶" &
                             "DESCRIPTION:   →Count everything in each row¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to be counted.¶" & 
-                            "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.CountARowsλ( CHOOSE( RANDARRAY( 5, 5, 1, 5),""A"", ""B"", """", 1, 2))", 
+                            "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.CountARowsλ( CHOOSE( RANDARRAY( 5, 5, 1, 5),""A"", ""B"", """", 1, 2))", 
                             "→", "¶" 
                         )
                     ),                    
@@ -372,12 +372,12 @@ CountAColsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →CountAColsλ( Array )¶" &
                             "DESCRIPTION:   →Count everything in each column¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing values to be counted.¶" & 
-                            "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.CountAColsλ( CHOOSE( RANDARRAY( 5, 5, 1, 5),""A"", ""B"", """", 1, 2))", 
+                            "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.CountAColsλ( CHOOSE( RANDARRAY( 5, 5, 1, 5),""A"", ""B"", """", 1, 2))", 
                             "→", "¶" 
                         )
                     ),                    
@@ -404,12 +404,12 @@ CountRowsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →CountRowsλ( Array)¶" &
                             "DESCRIPTION:   →Count numbers in each row¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing numbers to be counted.¶" & 
-                            "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.CountRowsλ( CHOOSE( RANDARRAY( 5, 5, 1, 5),""A"", ""B"", """", 1, 2))", 
+                            "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.CountRowsλ( CHOOSE( RANDARRAY( 5, 5, 1, 5),""A"", ""B"", """", 1, 2))", 
                             "→", "¶" 
                         )
                     ),                    
@@ -436,12 +436,12 @@ CountColsλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →CountColsλ( Array)¶" &
                             "DESCRIPTION:   →Count numbers in each column¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) A two dimensional array/range containing numbers to be counted.¶" & 
-                            "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.CountColsλ( CHOOSE( RANDARRAY( 5, 5, 1, 5),""A"", ""B"", """", 1, 2))", 
+                            "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.CountColsλ( CHOOSE( RANDARRAY( 5, 5, 1, 5),""A"", ""B"", """", 1, 2))", 
                             "→", "¶" 
                         )
                     ),                    
@@ -557,7 +557,7 @@ RangeToDAEλ = LAMBDA(
                             "FUNCTION:          →RangeToDAEλ(Range, [Rows], [Columns])¶" &
                             "DESCRIPTION:       →Convert a range reference to a dynamic array reference.¶" & 
                             "SEE ALSO:      →Excel 365 now has TRIMRANGE and trim references (.:.) for this.¶" &
-                            "WEBSITE:           →https://github.com/ryanduguid/Nabla¶" &
+                            "WEBSITE:           →https://github.com/ryanduguid/Ozzit¶" &
                             "PARAMETERS:        →¶" & 
                             "Range              →(Required) A reference to the range to be converted.¶" &
                             "Rows               →(Optional) Number of rows for the dynamic array. Defaults to 1.¶" &

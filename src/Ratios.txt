@@ -8,8 +8,8 @@
 AboutRatiosλ = TRIM(
     TEXTSPLIT(
         "About:                     →A library of Financial Ratios¶" &
-        "Version:                   →18 Aug 2026¶" &
-        "Repository:                  →https://github.com/ryanduguid/Nabla ¶" &
+        "Version:                   →19 Aug 2026¶" &
+        "Repository:                  →https://github.com/ryanduguid/Ozzit ¶" &
         "Notes:                     →Sources include Investopedia.com, Corporate Finance and WallStreetPrep.com.¶" &
                                    "→Copyright applies to LAMBDA coding¶" &
         "→¶" & 
@@ -88,7 +88,7 @@ CurrentRatioλ = LAMBDA(
                         "DESCRIPTION:   →Measures a company’s ability to pay short-term obligations  ¶" & 
                                        "→(Current Assets/Liabilities)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/c/cash-ratio.asp ¶" &
-                        "VERSION:       →18 Aug 2026¶" &
+                        "VERSION:       →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "Assets         →(Required) Current Assets. Incluces: ¶" & 
                                        "→Cash ¶" & 
@@ -106,8 +106,8 @@ CurrentRatioλ = LAMBDA(
                                        "→Taxes payable ¶" & 
                                        "→Short-term debts ¶" & 
                                        "→Current portion of long-term debt ¶" & 
-                        "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                        "1.075          →=nb.CurrentRatioλ( 134.836, 125.481)", 
+                        "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                        "1.075          →=oz.CurrentRatioλ( 134.836, 125.481)", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -138,7 +138,7 @@ QuickRatioλ = LAMBDA(
                         "DESCRIPTION:   →Measures ability to meet short-term obligations¶" & 
                                        "→(Quick Assets/Current Liabilities)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/q/quickratio.asp ¶" &
-                        "VERSION:       →18 Aug 2026¶" &
+                        "VERSION:       →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "QuickAssets  →(Required) Quick Assets. Includes: ¶" & 
                                        "→• Cash & Cash equivalents ¶" & 
@@ -154,8 +154,8 @@ QuickRatioλ = LAMBDA(
                                        "→Taxes payable ¶" & 
                                        "→Short-term debts ¶" & 
                                        "→Current portion of long-term debt ¶" & 
-                        "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                        "1.2            →=nb.QuickRatioλ( 165000, 137500)", 
+                        "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                        "1.2            →=oz.QuickRatioλ( 165000, 137500)", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -187,7 +187,7 @@ CashRatioλ = LAMBDA(
                         "DESCRIPTION:   →Evaluates ability to repay short-term debt w/cash or near-cash resources" & 
                                        "→(Cash and Cash Equivalents / Current Liabilities)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/c/cash-ratio.asp ¶" &
-                        "VERSION:       →18 Aug 2026¶" &
+                        "VERSION:       →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "Cash           →(Required) Cash and Cash Equivalents¶" & 
                         "Liabilities     →(Required) Current Liabilities. Includes: ¶" & 
@@ -196,8 +196,8 @@ CashRatioλ = LAMBDA(
                                        "→Taxes payable ¶" & 
                                        "→Short-term debts ¶" & 
                                        "→Current portion of long-term debt ¶" & 
-                        "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                        ".517409        →=nb.CashRatioλ( 63900000, 123500000)", 
+                        "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                        ".517409        →=oz.CashRatioλ( 63900000, 123500000)", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -228,7 +228,7 @@ OperatingCashFlowRatioλ = LAMBDA(
                         "DESCRIPTION:       →Measures how readily current liabilities are covered by cash flows generated from operations.¶" & 
                                            "→(OperatingCashFlow/Liabilities)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/o/ocfratio.asp ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:        →¶" & 
                         "OperatingCashFlow  →(Required) Operating cash flow. ¶" & 
                                            "→Indirect method includes: ¶" & 
@@ -244,8 +244,8 @@ OperatingCashFlowRatioλ = LAMBDA(
                                            "→Taxes payable ¶" & 
                                            "→Short-term debts ¶" & 
                                            "→Current portion of long-term debt ¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        "0.35871            →=nb.OperatingCashFlowRatioλ( 27.8, 77.5)", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        "0.35871            →=oz.OperatingCashFlowRatioλ( 27.8, 77.5)", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -277,12 +277,12 @@ ReceivablesTurnoverRatioλ = LAMBDA(
                         "DESCRIPTION:   →Indicates effectiveness in collecting outstanding balances from clients and ¶" &
                                        "→managing line of credit process (Net Credit Sales/Average Accounts Receivable)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/r/receivableturnoverratio.asp ¶" &
-                        "VERSION:       →18 Aug 2026¶" &
+                        "VERSION:       →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetCreditSales →(Required) Net Credit Sales. Amount of revenue earned by a company paid via credit¶" & 
                         "AverageAccountsReceivable→(Required) Average Accounts Receivable. Average of period opening and closing balance¶" & 
-                        "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                        "11.76471       →=nb.ReceivablesTurnoverRatioλ( 800000, 68000 )", 
+                        "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                        "11.76471       →=oz.ReceivablesTurnoverRatioλ( 800000, 68000 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -314,7 +314,7 @@ InventoryTurnoverRatioλ = LAMBDA(
                         "DESCRIPTION:       →Shows how many times a company turned over its inventory relative ¶" &
                                            "→to its cost of goods sold (COGS) (COGS/Average Inventory)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/i/inventoryturnover.asp ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "CostOfGoodsSold    →(Required) Cost of Goods Sold (COGS) which can include:¶" &
                                            "→Office supply costs¶" &
@@ -322,8 +322,8 @@ InventoryTurnoverRatioλ = LAMBDA(
                                            "→Repair and maintenance costs¶" &
                                            "→Salary and wage expenses¶" & 
                         "AverageInventory   →(Required) Average of period open and close inventory ¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        "8.461538           →=nb.InventoryTurnoverRatioλ( 429, 50.7)", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        "8.461538           →=oz.InventoryTurnoverRatioλ( 429, 50.7)", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -356,7 +356,7 @@ WorkingCapitalTurnoverRatioλ = LAMBDA(
                                           "→is using its working capital to support sales and growth ¶" &
                                           "→(Net Annual Sales/Average Working Capital). ¶" &
                         "WEBPAGE:          →https://www.investopedia.com/terms/w/workingcapitalturnover.asp ¶" &
-                        "VERSION:          →18 Aug 2026¶" &
+                        "VERSION:          →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetAnnualSales    →(Required) Net Annual Sales can include:¶" &
                                           "→Gross sales¶" &
@@ -364,8 +364,8 @@ WorkingCapitalTurnoverRatioλ = LAMBDA(
                                           "→Less allowances¶" &
                                           "→Less discounts¶" & 
                         "WorkingCapital    →(Required) Average of period open and close current assts less curren liabilities.¶" & 
-                        "EXAMPLES:         →Formula (nb is assumed to be the module's name)¶" &
-                        "6.0               →=nb.WorkingCapitalTurnoverRatioλ( 12.0, 2.0)", 
+                        "EXAMPLES:         →Formula (oz is assumed to be the module's name)¶" &
+                        "6.0               →=oz.WorkingCapitalTurnoverRatioλ( 12.0, 2.0)", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -402,12 +402,12 @@ DebtRatioλ = LAMBDA(
                         "FUNCTION:      →DebtRatioλ( TotalDebt, TotalAssets)¶" & 
                         "DESCRIPTION:   →Measures the extent of a company’s leverage (TotalDebt/TotalAssets)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/d/debtratio.asp# ¶" &
-                        "VERSION:       →18 Aug 2026¶" &
+                        "VERSION:       →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "TotalDebt      →(Required) Total Debt ¶" & 
                         "TotalAssets    →(Required) Total Assets ¶" & 
-                        "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                        ".3             →=nb.DebtRatioλ(30.0, 100.0)", 
+                        "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                        ".3             →=oz.DebtRatioλ(30.0, 100.0)", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -439,13 +439,13 @@ DSCRλ = LAMBDA(
                         "DESCRIPTION:       →Measures a firm’s available cash flow to pay its current debt obligations¶" &
                                            "→(Net Operating Income/Total Debt Service)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/d/dscr.asp ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetOperatingIncome →(Required) Revenue - Certain Operating Expenses¶" & 
                         "TotalDebtService   →(Required) Interest * (1-Tax Rate), principal, sinking fund,¶" &
                                            "→and lease payments due in the coming year¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        "6.142857           →=nb.DSCRλ(2150.0, 350.0)", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        "6.142857           →=oz.DSCRλ(2150.0, 350.0)", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -478,15 +478,15 @@ DebtToCapitalRatioλ = LAMBDA(
                                            "→and whether or not the company is a suitable investment.¶" & 
                                            "→(Debt/(Debt + Shareholders' equity)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/d/debt-to-capitalratio.asp ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "Debt               →(Required) Total Debt which can include: ¶" &
                                            "→Notes payable¶" &
                                            "→Bonds payable¶" &
                                            "→Long-term liabilities¶" &
                         "ShareholdersEquity →(Required) Shareholders' Equity (total assets - total liabilities) ¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        "26.4%              →=nb.DebtToCapitalRatioλ( 80.0, 223.0 )", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        "26.4%              →=oz.DebtToCapitalRatioλ( 80.0, 223.0 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -518,12 +518,12 @@ EquityMultiplierλ = LAMBDA(
                         "DESCRIPTION:       →Measures the portion of a company’s assets financed by shareholders' ¶" &
                                            "→equity rather than by debt (TotalAssets/TotalShareholdersEquity)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/e/equitymultiplier.asp ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:        →¶" & 
                         "TotalAssets        →(Required) Both current and long-term assets¶" & 
                         "TotalShareholdersEquity →(Required) Shareholders' Equity (total assets - total liabilities) ¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        "4.40625            →=nb.EquityMultiplierλ(366.6, 83.2 )", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        "4.40625            →=oz.EquityMultiplierλ(366.6, 83.2 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -561,12 +561,12 @@ DebtToEquityRatioλ = LAMBDA(
                         "DESCRIPTION:       →Measures the degree to which a company is financing operations¶" &
                                            "→with debt rather than its own resources. (Total Liabilities/Shareholders' Equity)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/d/debtequityratio.asp ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:        →¶" & 
                         "TotalLiabilities   →(Required) Total Liabilities¶" & 
                         "ShareholdersEquity →(Required) Shareholders' Equity (total assets - total liabilities) ¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        "3.77               →=nb.DebtToEquityRatioλ(279.0, 74.0 )", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        "3.77               →=oz.DebtToEquityRatioλ(279.0, 74.0 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -598,12 +598,12 @@ DebtToAssetRatioλ = LAMBDA(
                         "DESCRIPTION:       →Analysts can compare one company's leverage with that of other y¶" &
                                            "→companies in the same industry (Total Debt/Total Assets)¶" &
                         "WEBPAGE:           →https://www.investopedia.com/terms/t/totaldebttototalassets.asp ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:        →¶" & 
                         "TotalDebt          →(Required) Total debt includes shortterm and longterm debt¶" & 
                         "TotalAssets        →(Required) Shareholders' Equity (total assets - total liabilities) ¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        ".49873             →=nb.DebtToAssetRatioλ(31.845, 63.852 )", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        ".49873             →=oz.DebtToAssetRatioλ(31.845, 63.852 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -635,12 +635,12 @@ InterestCoverageRatioλ = LAMBDA(
                         "DESCRIPTION:       →Determines how easily a company can pay interest on its outstanding debt¶" &
                                            "→(Operating Income/Interest Expenses)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/i/interestcoverageratio.asp ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:        →¶" & 
                         "OperatingIncome    →(Required) Operating Income (EBIT) ¶" & 
                         "InterestExpenses   →(Required) Interest Expense ¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        "6.944444           →=nb.InterestCoverageRatioλ( 625.0, 90.0 )", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        "6.944444           →=oz.InterestCoverageRatioλ( 625.0, 90.0 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -673,13 +673,13 @@ EquityRatioλ = LAMBDA(
                         "DESCRIPTION:       →Measures the long-term solvency of a company by comparing its shareholders’ ¶" &
                                            "→equity to its total assets (Shareholder's Equity/(Total Assets - Intangible Assets))¶" &
                         "WEBPAGE:           →https://www.wallstreetprep.com/knowledge/equity-ratio/ ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:        →¶" & 
                         "ShareholdersEquity →(Required) Shareholders' Equity (total assets - total liabilities) ¶" & 
                         "TotalAssets        →(Required) Both current and long-term assets¶" & 
                         "IntangibleAssets   →(Required) Deducted from total assets before the comparison¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        "40%                →=nb.EquityRatioλ( 20.0, 60.0, 10.0 )", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        "40%                →=oz.EquityRatioλ( 20.0, 60.0, 10.0 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -719,12 +719,12 @@ AssetTurnoverRatioλ = LAMBDA(
                         "DESCRIPTION:   →Measures the value of a company's sales or revenues relative to the value of its assets.¶" &
                                        "→(Net Sales/Total Assets)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/a/assetturnover.asp ¶" &
-                        "VERSION:       →18 Aug 2026¶" &
+                        "VERSION:       →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetSales       →(Required) revenue or net sales. ¶" & 
                         "TotalAssets    →(Required) Average of Assets and period start and end.¶" & 
-                        "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                        ".32x           →=nb.AssetTurnoverRatioλ( 171760, 538715 )", 
+                        "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                        ".32x           →=oz.AssetTurnoverRatioλ( 171760, 538715 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -758,12 +758,12 @@ DSIλ = LAMBDA(
                                            "→indicates the average time in days that a company takes to turn its inventory¶" & 
                                            "→(Average Inventory/ Cost of Goods Sold)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/d/days-sales-inventory-dsi.asp ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "AverageInventory→  (Required) Average of period open and close Inventory¶" & 
                         "CostOfGoodsSold→   (Required) Cost of Goods Sold (COGS) ¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        "40.8949 days       →=nb.DSIλ(54.9, 490 )", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        "40.8949 days       →=oz.DSIλ(54.9, 490 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -799,7 +799,7 @@ OperatingRatioλ = LAMBDA(
                                            "→while generating revenue¶" & 
                                            "→(Operating Expenses + Cost Of Goods Sold)/Net Sales)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/o/operatingratio.asp ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "OperatingExpenses  →(Required) Operating Expenses which can include:¶" &
                                            "→Accounting and legal fees¶" &
@@ -814,8 +814,8 @@ OperatingRatioλ = LAMBDA(
                                            "→Repair and maintenance costs¶" &
                                            "→Salary and wage expenses¶" & 
                         "NetSales           →(Required) Net Sales or Revenue.¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        "69%                →=nb.OperatingRatioλ( 14.37, 48.48, 90.75 )", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        "69%                →=oz.OperatingRatioλ( 14.37, 48.48, 90.75 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -854,12 +854,12 @@ GrossMarginλ = LAMBDA(
                         "DESCRIPTION:   →Shows how much profit a company makes after paying off its Cost of Goods Sold (COGS).¶" & 
                                        "→(Gross Profit/Net Sales)¶" & 
                         "WEBPAGE:       →https://corporatefinanceinstitute.com/resources/accounting/gross-margin-ratio/ ¶" &
-                        "VERSION:       →18 Aug 2026¶" &
+                        "VERSION:       →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "GrossProfit    →(Required) Gross Profit¶" & 
                         "NetSales       →(Required) Net Sales or Revenue¶" & 
-                        "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                        "61.7448%       →=nb.GrossMarginλ( 62.984, 102.007 )", 
+                        "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                        "61.7448%       →=oz.GrossMarginλ( 62.984, 102.007 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -890,12 +890,12 @@ EBITDAMarginλ = LAMBDA(
                         "DESCRIPTION:   →Measures a company's operating profit as a percentage of its revenue.¶" & 
                                        "→(EBITDA/Total Revenue)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/e/ebitda-margin.asp ¶" &
-                        "VERSION:       →18 Aug 2026¶" &
+                        "VERSION:       →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "EBITDA         →(Required) Earnings Before Interest, tax, depreciation, and amortisation¶" & 
                         "TotalRevenue   →(Required) Total Revenue¶" & 
-                        "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                        "12%            →=nb.EBITDAMarginλ( 15.0, 125.0 )", 
+                        "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                        "12%            →=oz.EBITDAMarginλ( 15.0, 125.0 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -928,12 +928,12 @@ OperatingMarginλ = LAMBDA(
                                            "→for variable costs of production, such as wages and raw materials, but ¶" & 
                                            "→before paying interest or tax (Operating Earnings/Revenue).¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/o/operatingmargin.asp ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "OperatingEarnings  →(Required) Earnings Before Interest and tax (EBIT) which is revenue - COGS¶" & 
                         "Revenue            →(Required) Revenue¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        "40%                →=nb.OperatingMarginλ( .8, 2.0 )", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        "40%                →=oz.OperatingMarginλ( .8, 2.0 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -963,12 +963,12 @@ PretaxMarginλ = LAMBDA(
                         "FUNCTION:      →PretaxMarginλ( PretaxEarnings, Revenue)¶" & 
                         "DESCRIPTION:   →Measures the operating efficiency of a company (Pretax Earnings/Revenue).¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/p/pretax-margin.asp ¶" &
-                        "VERSION:       →18 Aug 2026¶" &
+                        "VERSION:       →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "PretaxEarnings →(Required) Earnings before tax (EBT)¶" & 
                         "Revenue        →(Required) Revenue¶" & 
-                        "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                        "8%             →=nb.PretaxMarginλ( 40.0, 500.0 )", 
+                        "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                        "8%             →=oz.PretaxMarginλ( 40.0, 500.0 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -1000,7 +1000,7 @@ NetProfitMarginλ = LAMBDA(
                         "DESCRIPTION:   →Measures how much net income or profit a company generates as a ¶" & 
                                        "→percentage of its revenue. (Net Income/Revenue)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/n/net_margin.asp ¶" &
-                        "VERSION:       →18 Aug 2026¶" &
+                        "VERSION:       →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetIncome      →(Required) Net Income includes:¶" & 
                                        "→Revenue¶" & 
@@ -1009,8 +1009,8 @@ NetProfitMarginλ = LAMBDA(
                                        "→Less Interest¶" & 
                                        "→Less Taxes¶" & 
                         "Revenue        →(Required) Revenue¶" & 
-                        "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                        "56%            →=nb.NetProfitMarginλ( 56.0, 100.0 )", 
+                        "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                        "56%            →=oz.NetProfitMarginλ( 56.0, 100.0 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -1043,15 +1043,15 @@ CashFlowMarginλ = LAMBDA(
                                        "→and efficiency and its earnings quality ¶" & 
                                        "→(Cash Flow From Operating Activities/Revenue).¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/o/operating-cash-flow-margin.asp ¶" &
-                        "VERSION:       →18 Aug 2026¶" &
+                        "VERSION:       →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "CashFlowFromOperatingActivities→(Required) Cash Flow From Operating Activities includes:¶" & 
                                        "→Net Income¶" & 
                                        "→Non-cash Expenses (Depreciation and Amortisation)¶" & 
                                        "→Change in Working Capital¶" & 
                         "Revenue        →(Required) Revenue¶" & 
-                        "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                        "50.8%          →=nb.CashFlowMarginλ( 2.695, 5.3 )", 
+                        "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                        "50.8%          →=oz.CashFlowMarginλ( 2.695, 5.3 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -1083,12 +1083,12 @@ ROAλ = LAMBDA(
                         "DESCRIPTION:   →Return on assets ratio indicates how profitable a company is ¶" & 
                                        "→in relation to its total assets ( Net Income / Total Assets)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/r/returnonassets.asp ¶" &
-                        "VERSION:       →18 Aug 2026¶" &
+                        "VERSION:       →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetIncome      →(Required) Net Income¶" & 
                         "TotalAssets    →(Required) Total Assets¶" & 
-                        "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                        "8%             →=nb.ROAλ(1200, 15000 )", 
+                        "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                        "8%             →=oz.ROAλ(1200, 15000 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -1120,12 +1120,12 @@ ROEλ = LAMBDA(
                                            "→profitability and how efficient it is in generating profits¶" & 
                                            "→(Net Income/ Average Shareholders' Equity)¶" &
                         "WEBPAGE:           →https://www.investopedia.com/terms/r/returnonequity.asp ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetIncome          →(Required) Net Income¶" & 
                         "ShareholdersEquity →(Required) Average Shareholders' Equity from period open and close ¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        "23.6213%           →=nb.ROEλ( 59.972, AVERAGE(251.635, 256.144) )", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        "23.6213%           →=oz.ROEλ( 59.972, AVERAGE(251.635, 256.144) )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -1158,13 +1158,13 @@ ROIλ = LAMBDA(
                                                "→an investment by comparing the gain or loss to its cost. ¶" & 
                                                "→(Net Return on Investment/Cost of Investment)¶" & 
                         "WEBPAGE:               →https://www.investopedia.com/terms/r/returnonequity.asp ¶" &
-                        "VERSION:               →18 Aug 2026¶" &
+                        "VERSION:               →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetReturnonInvestment  →(Required) Net Return on Investment is the ¶" & 
                                                "→final value of investment - initial value of investment¶" & 
                         "CostofInvestment       →(Required) Cost of Investment ¶" & 
-                        "EXAMPLES:              →Formula (nb is assumed to be the module's name)¶" &
-                        "28.75%                 →=nb.ROIλ( 2875, 10000 )", 
+                        "EXAMPLES:              →Formula (oz is assumed to be the module's name)¶" &
+                        "28.75%                 →=oz.ROIλ( 2875, 10000 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -1196,12 +1196,12 @@ ROICλ = LAMBDA(
                         "DESCRIPTION:   →Return on Invested capital  assesses a company’s efficiency in allocating ¶" &
                                        "→capital to profitable investments (Net Operating Profit After Tax/Invested Capital)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/r/returnoninvestmentcapital.asp ¶" &
-                        "VERSION:       →18 Aug 2026¶" &
+                        "VERSION:       →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetOperatingProfitAfterTax→(Required) Net Operating profit after Tax [ operating profit x (1 - effective tax rate) ].¶" & 
                         "InvestedCapital→(Required) Invested Capital (Debt + Equity).¶" & 
-                        "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                        "12.6122%       →=nb.ROICλ( 3245, 25729 )", 
+                        "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                        "12.6122%       →=oz.ROICλ( 3245, 25729 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -1240,12 +1240,12 @@ PriceEarningsRatioλ = LAMBDA(
                         "DESCRIPTION:       →Price-earnings Ratio measures a company's share price relative to ¶" & 
                                            "→its earnings per share (Share Price/Earnings Per Share).¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/p/price-earningsratio.asp ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "SharePrice         →(Required) Share Price (Market Value Per Share) ¶" & 
                         "EarningsPerShare   →(Required) Earnings Per Share¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        "14.39881           →=nb.PriceEarningsRatioλ( 242.62, 16.85)", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        "14.39881           →=oz.PriceEarningsRatioλ( 242.62, 16.85)", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -1278,13 +1278,13 @@ PriceToBookRatioλ = LAMBDA(
                                            "→firm's market capitalisation to its book value and locate undervalued companies.¶" & 
                                            "→(Market Price Per Share/Book Value Per Share)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/p/price-to-bookratio.asp ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "MarketPricePerShare→(Required) Market Price Per Share (Current market price of the share)¶" & 
                         "BookValuePerShare  →(Required) Book Value Per share ¶" & 
                                            "→(Total assets - intangible assets - total liabilities) ÷ number of outstanding shares ¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        "2.0                →=nb.PriceToBookRatioλ( 5, 2.50 )", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        "2.0                →=oz.PriceToBookRatioλ( 5, 2.50 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -1316,12 +1316,12 @@ PriceToSalesRatioλ = LAMBDA(
                         "DESCRIPTION:       →Price to Sales (P/S) Ratio is an indicator of the value that financial markets have¶" & 
                                            "→placed on each dollar of a company's sales or revenues (Market Price Per Share/Sales Per Share).¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/p/price-to-salesratio.asp ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "MarketPricePerShare→(Required) Market Price Per Share (Current market price of the share)¶" & 
                         "SalesPerShare      →(Required) Annual Sales Per Share (Revenue prior 12 months) ¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        "4.55               →=nb.PriceToSalesRatioλ( 455.0, 100.0 )", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        "4.55               →=oz.PriceToSalesRatioλ( 455.0, 100.0 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -1355,12 +1355,12 @@ PriceToCashRatioλ = LAMBDA(
                                            "→measures the value of a stock’s price relative to its operating cash flow ¶" & 
                                            "→per share (Market Price Per Share/Operating Cash Flow Per Share).¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/p/price-to-cash-flowratio.asp ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "MarketPricePerShare→(Required) Market Price Per Share (Current market price of the share)¶" & 
                         "OperatingCashFlowPerShare→(Required) Operating Cash Flow for prior 12 months/Shares outstanding ¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        "2                  →=nb.PriceToCashRatioλ( 200.0, 100.0 )", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        "2                  →=oz.PriceToCashRatioλ( 200.0, 100.0 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -1393,13 +1393,13 @@ BVPSλ = LAMBDA(
                         "DESCRIPTION:       →Book value per share ratio is an indicator of the value of a company’s stock¶" & 
                                            "→(Shareholders' Equity - Preferred Stock)/Average Shares Outstanding)¶" & 
                         "WEBPAGE:           →https://corporatefinanceinstitute.com/resources/valuation/book-value-per-share-bvps/ ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "ShareholdersEquity →(Required) Shareholders' Equity (total assets - total liabilities) ¶" & 
                         "PreferredStock     →(Required) Preferred Stock (securities that represent ownership in a corporation).¶" & 
                         "AverageSharesOutstanding→(Required) Average Shares Out Standing ¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        "5                  →=nb.BVPSλ(20.0, 5.0, AVERAGE( 2.9, 3.1) )", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        "5                  →=oz.BVPSλ(20.0, 5.0, AVERAGE( 2.9, 3.1) )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -1433,12 +1433,12 @@ CAPERatioλ = LAMBDA(
                                         "→to smooth out fluctuations in corporate profits that occur over different periods of a business ¶" & 
                                         "→cycle (aka Shiller PE Ratio) (Share Price/Ten Year Average Earnings Inflation Adjusted)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/c/cape-ratio.asp ¶" &
-                        "VERSION:       →18 Aug 2026¶" &
+                        "VERSION:       →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "SharePrice     →(Required) Current stock price ¶" & 
                         "TenYearAverageEarningsInflationAdjusted→(Required) Average earnings per share for 10 years adjusted for inflation ¶" & 
-                        "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                        "10             →=nb.CAPERatioλ( 100.0, 10.0  )", 
+                        "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                        "10             →=oz.CAPERatioλ( 100.0, 10.0  )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -1470,12 +1470,12 @@ DPRλ = LAMBDA(
                         "DESCRIPTION:   →Dividend Payout Ratio is the percentage of earnings paid to shareholders via dividends¶" & 
                                        "→(DividendsPaid/NetIncome)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/d/dividendpayoutratio.asp ¶" &
-                        "VERSION:       →18 Aug 2026¶" &
+                        "VERSION:       →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "DividendsPaid  →(Required) Dividends paid ¶" & 
                         "NetIncome      →(Required) Net Income¶" & 
-                        "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                        "25%            →=nb.DPRλ( 5.0, 20.0 )", 
+                        "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                        "25%            →=oz.DPRλ( 5.0, 20.0 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -1507,12 +1507,12 @@ DividendYieldRatioλ = LAMBDA(
                         "DESCRIPTION:   →Dividend yield ratio shows how much a company pays out in dividends ¶" & 
                                        "→each year relative to its stock price (Annual Dividends Pe rShare/Share Price)¶" & 
                         "WEBPAGE:       →https://www.investopedia.com/terms/d/dividendyield.asp ¶" &
-                        "VERSION:       →18 Aug 2026¶" &
+                        "VERSION:       →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "AnnualDividendsPerShare→(Required) Annual Dividends Per Share ¶" & 
                         "SharePrice     →(Required) Market value per share ¶" & 
-                        "EXAMPLES:      →Formula (nb is assumed to be the module's name)¶" &
-                        "2.6667%        →=nb.DividendYieldRatioλ( 1.2, 45 )", 
+                        "EXAMPLES:      →Formula (oz is assumed to be the module's name)¶" &
+                        "2.6667%        →=oz.DividendYieldRatioλ( 1.2, 45 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -1547,14 +1547,14 @@ EPSλ = LAMBDA(
                                            "→outstanding share of common stock has earned ¶" & 
                                            "→(Net Income - Preferred Dividends)/End Of Period Common Shares Outstanding)¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/e/eps.asp ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetIncome          →(Required) Net Income ¶" & 
                         "PreferredDividends →(Required) Dividends paid on prefered stock¶" & 
                         "EndOfPeriodCommonSharesOutstanding→(Required) End of Periods Common Shares outstanding or ¶" & 
                                            "→Weighted average number of shares outstanding¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        "1.909548           →=nb.EPSλ( 7.6, 0, 3.98 )", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        "1.909548           →=oz.EPSλ( 7.6, 0, 3.98 )", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)
@@ -1587,12 +1587,12 @@ RetentionRatioλ = LAMBDA(
                         "DESCRIPTION:       →Retention Ratio is the proportion of earnings kept back in the ¶" & 
                                            "→business as retained earnings (Retained Earnings/Net Income).¶" & 
                         "WEBPAGE:           →https://www.investopedia.com/terms/r/retentionratio.asp ¶" &
-                        "VERSION:           →18 Aug 2026¶" &
+                        "VERSION:           →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "RetainedEarnings   →(Required) Retained Earnings (Net Income - paid dividends)¶" & 
                         "NetIncome          →(Required) Net Income¶" & 
-                        "EXAMPLES:          →Formula (nb is assumed to be the module's name)¶" &
-                        "189.9%             →=nb.RetentionRatioλ( 41.981, 22.112)", 
+                        "EXAMPLES:          →Formula (oz is assumed to be the module's name)¶" &
+                        "189.9%             →=oz.RetentionRatioλ( 41.981, 22.112)", 
                     "→", "¶" )
                 ),
     //  Check inputs - Omitted required arguments (do not include optional arguments)

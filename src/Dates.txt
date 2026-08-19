@@ -1,4 +1,4 @@
-/*  Module Contains Nabla Compliant LAMBDAs that deal with dates */
+/*  Module Contains Ozzit Compliant LAMBDAs that deal with dates */
 
 /*  FUNCTION NAME:  AboutDatesλ
     DESCRIPTION:*//**Displays this module's repository URL and function list*/
@@ -13,9 +13,9 @@
 */
 AboutDatesλ = TRIM(
     TEXTSPLIT(
-        "About:                 →CBSE compliant LAMBDAs dealing with dates. Suggested module name: nb¶" &
-        "Version:               →18 Aug 2026¶" &
-        "Repository:              →https://github.com/ryanduguid/Nabla ¶" &
+        "About:                 →CBSE compliant LAMBDAs dealing with dates. Suggested module name: oz¶" &
+        "Version:               →19 Aug 2026¶" &
+        "Repository:              →https://github.com/ryanduguid/Ozzit ¶" &
         "→¶" & 
         "Function               →Description¶" & 
         "AboutDatesλ                 →Produces this table¶" &
@@ -71,14 +71,14 @@ CountDOWλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                         "FUNCTION:      →CountDOWλ(Starts, Ends, DayOfWeek)¶" & 
                         "DESCRIPTION:   →Count instances of a specific day of the week between two dates.¶" & 
-                        "WEBSITE:       →https://github.com/ryanduguid/Nabla¶" &
+                        "WEBSITE:       →https://github.com/ryanduguid/Ozzit¶" &
                         "PARAMETERS:    →¶" & 
                         "Starts         →(Required) One of more start dates (text or numeric) in a row or column¶" & 
                         "Ends           →(Required) End dates (text or numeric) for each start date¶" & 
                         "DayOfWeek      →(Required) 1=Sunday, 7=Saturday.¶" &
                         "EXAMPLES:      →¶" & 
-                        "Result         →Formula (nb is assumed to be the module's name)¶" &
-                        "3              →=nb.CountDOWλ(""22/3/2012"", ""10/4/2012"",  1)", 
+                        "Result         →Formula (oz is assumed to be the module's name)¶" &
+                        "3              →=oz.CountDOWλ(""22/3/2012"", ""10/4/2012"",  1)", 
                         "→", "¶"
                         )
                     ),
@@ -121,17 +121,17 @@ IsBetweenλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                         "FUNCTION:      →IsBetweenλ(Values, Low, High, [Inclusive])¶" &
                         "DESCRIPTION:   →Determine if a value is between a lower and upper limit.¶" & 
-                        "WEBSITE:       →https://github.com/ryanduguid/Nabla ¶" &
+                        "WEBSITE:       →https://github.com/ryanduguid/Ozzit ¶" &
                         "PARAMETERS:    →¶" & 
                         "Values         →(Required) one or more values to compare.¶" & 
                         "Low            →(Required) The lower limit that the value(s) must be greater than¶" &
                         "High           →(Required) The higher limit that the value(s) must be less than¶" &
                         "Inclusive      →(Optional) TRUE: Value(s) can be equal to Low and/or High (default)¶" &
                         "EXAMPLES:      →¶" & 
-                        "Result         →Formula (nb is assumed to be the module's name)¶" &
-                        "FALSE          →=nb.IsBetweenλ(1, 2, 4)¶" & 
-                        "TRUE           →=nb.IsBetweenλ(Today(), Today(), Today()+1)¶" & 
-                        "FALSE          →=nb.IsBetweenλ(""B"", ""B"", ""D"", FALSE)", 
+                        "Result         →Formula (oz is assumed to be the module's name)¶" &
+                        "FALSE          →=oz.IsBetweenλ(1, 2, 4)¶" & 
+                        "TRUE           →=oz.IsBetweenλ(Today(), Today(), Today()+1)¶" & 
+                        "FALSE          →=oz.IsBetweenλ(""B"", ""B"", ""D"", FALSE)", 
                         "→", "¶"
                         )
                     ),
@@ -172,7 +172,7 @@ IsOccurrenceDateλ = LAMBDA(
                         "DESCRIPTION:   →Returns TRUE if a Date is when something happens.¶" &
                         "               →This was developed for budgeting where we have expenses that start,¶" &
                         "               →and sometimes repeat at regular intervals.¶" &  
-                        "WEBSITE:       →https://github.com/ryanduguid/Nabla¶" &
+                        "WEBSITE:       →https://github.com/ryanduguid/Ozzit¶" &
                         "PARAMETERS:    →¶" &
                         "Dates          →(Required) Date to test. Normally this is horizontal timeline by day¶" &
                         "FirstOccurrence →(Required) When something that may repeat, happens for the first time.¶" &
@@ -189,10 +189,10 @@ IsOccurrenceDateλ = LAMBDA(
                                         "→X=Every Workday (Monday to Friday)¶" & 
                                         "→D=Daily¶" &                      
                         "EXAMPLES:      →¶" &
-                        "Result         →Formula (nb is assumed to be the module's name)¶" &
-                        "72             →=SUM(N(nb.IsOccurrenceDateλ(SEQUENCE(,90,""1/1/2025""), ""1/1/2025"", ""13/3/2025"", ""D"")))¶" &
-                        "01             →=SUM(N(nb.IsOccurrenceDateλ(SEQUENCE(,90,""1/1/2025""), ""1/1/2025"", ""13/3/2025"", ""O"")))¶" &
-                        "11             →=SUM(N(nb.IsOccurrenceDateλ(SEQUENCE(,90,""1/1/2025""), ""1/1/2025"", ""13/3/2025"", ""W"")))", 
+                        "Result         →Formula (oz is assumed to be the module's name)¶" &
+                        "72             →=SUM(N(oz.IsOccurrenceDateλ(SEQUENCE(,90,""1/1/2025""), ""1/1/2025"", ""13/3/2025"", ""D"")))¶" &
+                        "01             →=SUM(N(oz.IsOccurrenceDateλ(SEQUENCE(,90,""1/1/2025""), ""1/1/2025"", ""13/3/2025"", ""O"")))¶" &
+                        "11             →=SUM(N(oz.IsOccurrenceDateλ(SEQUENCE(,90,""1/1/2025""), ""1/1/2025"", ""13/3/2025"", ""W"")))", 
                         "→", "¶"
                         )
                     ),
@@ -267,17 +267,17 @@ OverLapDaysλ = LAMBDA(
         Help,       TRIM(TEXTSPLIT(
                         "FUNCTION:      →OverLapDaysλ(Period1Start, Period1End, Period2Start, Period2End)¶" &
                         "DESCRIPTION:   →Count days shared between two sets of periods.¶" & 
-                        "WEBSITE:       →https://github.com/ryanduguid/Nabla¶" &
+                        "WEBSITE:       →https://github.com/ryanduguid/Ozzit¶" &
                         "PARAMETERS:    →¶" & 
                         "Period1Start   →(Required) First period's start date.¶" & 
                         "Period1End     →(Required) First period's end date.¶" & 
                         "Period2Start   →(Required) Second period's start date.¶" & 
                         "Period2End     →(Required) Decond period's end date.¶" & 
                         "EXAMPLES:      →¶" & 
-                        "Result         →Formula (nb is assumed to be the module's name)¶" &
-                        "5              →=nb.OverLapDaysλ(08, 14, 10, 17)¶" & 
-                        "8              →=nb.OverLapDaysλ(10, 20, 11, 18)¶" & 
-                        "2              →=nb.OverLapDaysλ(""17/1/2025"", ""25/1/2025"", ""7/1/2025"", ""18/1/2025"")", 
+                        "Result         →Formula (oz is assumed to be the module's name)¶" &
+                        "5              →=oz.OverLapDaysλ(08, 14, 10, 17)¶" & 
+                        "8              →=oz.OverLapDaysλ(10, 20, 11, 18)¶" & 
+                        "2              →=oz.OverLapDaysλ(""17/1/2025"", ""25/1/2025"", ""7/1/2025"", ""18/1/2025"")", 
                         "→", "¶"
                         )
                     ),
@@ -331,7 +331,7 @@ PeriodLabelλ = LAMBDA(
         Help,       TRIM(TEXTSPLIT( 
                         "FUNCTION:      →PeriodLabelλ(Date, [Interval])¶" &
                         "DESCRIPTION:   →Creates a label for a date based on period interval¶" & 
-                        "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
+                        "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
                         "PARAMETERS:    →¶" & 
                         "Date           →(Required) A single date or array of date(s) where the first date is the first date of a calendar year.¶" & 
                         "Interval       →(Optional) Must be one of: ¶" & 
@@ -343,11 +343,11 @@ PeriodLabelλ = LAMBDA(
                                        "→S=Semi-Annually¶" & 
                                        "→A or Y=Annually¶" & 
                         "EXAMPLES:      →¶" & 
-                        "Result         →Formula (nb is assumed to be the module's name)¶" &
-                        "2025-Feb-26    →=nb.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""D"")¶" &
-                        "2023-Feb       →=nb.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""M"")¶" & 
-                        "2025:Q1       →=nb.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""Q"")¶" & 
-                        "2023           →=nb.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""Y"")", 
+                        "Result         →Formula (oz is assumed to be the module's name)¶" &
+                        "2025-Feb-26    →=oz.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""D"")¶" &
+                        "2023-Feb       →=oz.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""M"")¶" & 
+                        "2025:Q1       →=oz.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""Q"")¶" & 
+                        "2023           →=oz.PeriodLabelλ(DATEVALUE(""26/2/2025""), ""Y"")", 
                         "→", "¶"
                         )
                     ),
@@ -398,17 +398,17 @@ Periodsλ = LAMBDA(
                                        "→* Interval includes Weeks & Quarters¶" & 
                                        "→* Counts the period starts crossed, so a part period at the end counts¶" & 
                                        "→* Returns negative values if Date1 is after Date2¶" & 
-                        "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
+                        "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
                         "PARAMETERS:    →¶" &
                         "Starts         →(Required) First date (normally older). This can be a single number or array.¶" &
                         "Ends           →(Required) Second date (normally newer). This must be the same shape (# of rows & columns) as Date1.¶" &
                         "Intervals      →(Optional) Days, Weeks, Months (default), Quarters, or Years (D, W, M, Q, Y)¶" &
                         "EXAMPLES:      →¶" & 
-                        "Result         →Formula (nb is assumed to be the module's name)¶" &
-                        "2              →=nb.Periodsλ(""31/3/2025"", ""15/5/2025"")¶" &
-                        "-2             →=nb.Periodsλ(""15/5/2025"", ""31/3/2025"")¶" &
-                        "-12            →=nb.Periodsλ(""15/1/2026"", ""16/1/2025"")¶" &
-                        "-53            →=nb.Periodsλ(""15/1/2026"", ""16/1/2025"", ""W"")",
+                        "Result         →Formula (oz is assumed to be the module's name)¶" &
+                        "2              →=oz.Periodsλ(""31/3/2025"", ""15/5/2025"")¶" &
+                        "-2             →=oz.Periodsλ(""15/5/2025"", ""31/3/2025"")¶" &
+                        "-12            →=oz.Periodsλ(""15/1/2026"", ""16/1/2025"")¶" &
+                        "-53            →=oz.Periodsλ(""15/1/2026"", ""16/1/2025"", ""W"")",
                         "→", "¶"
                     )
                 ),
@@ -483,14 +483,14 @@ ScheduleRatesλ = LAMBDA(
                         "FUNCTION:      →ScheduleRatesλ(PeriodEnds, RateStarts, Rates)¶" &
                         "DESCRIPTION:   →Schedules rates that persist until replaced in a timeline from a schedule in a table.¶" & 
                         "NOTE!          →If 2 rates are scheduled within the same period, only the last rate will be selected.¶" & 
-                        "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
+                        "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
                         "PARAMETERS:    →¶" & 
                         "PeriodEnds     →(Required) A row of period end dates (timeline).¶" & 
                         "RateStarts     →(Required) A column or row of rate effective dates in any order.¶" & 
                         "Rates          →(Required) A column or row of rates associated with RateStarts.¶" & 
                         "EXAMPLES:      →¶" & 
-                        "Result         →Formula (nb is assumed to be the module's name)¶" &
-                        "_,10,20,30,30  →=nb.ScheduleRatesλ(Timelineλ(""1/1/2025"",5,""W""),{45662; 45670; 45676}, {10; 20; 30})", 
+                        "Result         →Formula (oz is assumed to be the module's name)¶" &
+                        "_,10,20,30,30  →=oz.ScheduleRatesλ(Timelineλ(""1/1/2025"",5,""W""),{45662; 45670; 45676}, {10; 20; 30})", 
                         "→", "¶"
                         )
                     ),   
@@ -538,7 +538,7 @@ ScheduleRatesByItemsλ = LAMBDA(
                         "DESCRIPTION:   →Schedules each item's rates by period until another rate takes effect.¶" & 
                         "NOTE!          →If 2 rates are scheduled within the same period for the same item, .¶" & 
                                        "→only the last rate will be selected.¶" & 
-                        "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
+                        "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
                         "PARAMETERS:    →¶" & 
                         "PeriodEnds     →(Required) A row or column of period end dates (timeline).¶" & 
                         "ItemFilter     →(Required) 1 or more items to filter a rate schedule by. ¶" &
@@ -548,8 +548,8 @@ ScheduleRatesByItemsλ = LAMBDA(
                         "RateList       →(Required) Rates in a rate schedule for each item/effective date pair.¶" & 
                         "DoNotUse       →This is a counter used internally. Do not make any entry.¶" & 
                         "EXAMPLES:      →¶" & 
-                        "Result         →Formula (nb is assumed to be the module's name)¶" &
-                                       "→nb.ScheduleRatesByItemsλ( Timelineλ( ""1/1/2025""), UNIQUE( tblRates(Unit)),¶" &
+                        "Result         →Formula (oz is assumed to be the module's name)¶" &
+                                       "→oz.ScheduleRatesByItemsλ( Timelineλ( ""1/1/2025""), UNIQUE( tblRates(Unit)),¶" &
                                        "→tblRates[Unit], tblRates[Rent], tblRates[Effective])", 
                         "→", "¶"
                             )
@@ -608,15 +608,15 @@ ScheduleValuesλ = LAMBDA(
         Help,       TRIM(TEXTSPLIT( 
                         "FUNCTION:      →ScheduleValuesλ(PeriodStarts, PeriodEnds, Values, EffectiveDates)¶" &
                         "DESCRIPTION:   →Place values from a table into a timeline's appropriate period.¶" & 
-                        "WEBSITE:       →https://github.com/ryanduguid/Nabla ¶" &
+                        "WEBSITE:       →https://github.com/ryanduguid/Ozzit ¶" &
                         "PARAMETERS:    →¶" & 
                         "PeriodStarts   →(Required) A column or row of period start dates (timeline).¶" & 
                         "PeriodEnds     →(Required) A column or row of period ends dates (timeline).¶" & 
                         "Values         →(Required) A column or row of values to be scheduled.¶" & 
                         "EffectiveDates →(Required) A column or row of when a value is scheduled.¶" &                   
                         "EXAMPLES:→¶" &
-                        "Result         →Formula (nb is assumed to be the module's name)¶" &
-                                       "→=nb.ScheduleValuesλ(Timelineλ(""1/1/2025""), Timelineλ(""1/1/2025"",,,FALSE), {1;3}, {""1/1/2025""; ""15/2/2025""})", 
+                        "Result         →Formula (oz is assumed to be the module's name)¶" &
+                                       "→=oz.ScheduleValuesλ(Timelineλ(""1/1/2025""), Timelineλ(""1/1/2025"",,,FALSE), {1;3}, {""1/1/2025""; ""15/2/2025""})", 
                         "→", "¶"
                         )
                     ),
@@ -675,7 +675,7 @@ ScheduleValuesByItemsλ = LAMBDA(
         Help,       TRIM(TEXTSPLIT( 
                         "FUNCTION:      →ScheduleValuesByItemsλ(PeriodStarts, PeriodEnds, ItemFilter, ItemList, EffectiveList, ValueList)¶" &
                         "DESCRIPTION:   →Schedule and sum values in a timeline for each item.¶" & 
-                        "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
+                        "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
                         "PARAMETERS:    →¶" & 
                         "PeriodStarts   →(Required) A row of period start dates (timeline).¶" & 
                         "PeriodEnds     →(Required) A row of period end dates (timeline).¶" & 
@@ -686,8 +686,8 @@ ScheduleValuesByItemsλ = LAMBDA(
                         "ValueList      →(Required) Values in a value schedule for each item/effective date pair.¶" & 
                         "DoNotUse       →This is a counter used internally. Do not make any entry.¶" & 
                         "EXAMPLES:      →¶" & 
-                        "Result         →Formula (nb is assumed to be the module's name)¶" &
-                                       "→nb.ScheduleValuesByItemsλ( Timelineλ( ""1/1/2025""),  Timelineλ( ""1/1/2025"",,,FALSE), ¶" & 
+                        "Result         →Formula (oz is assumed to be the module's name)¶" &
+                                       "→oz.ScheduleValuesByItemsλ( Timelineλ( ""1/1/2025""),  Timelineλ( ""1/1/2025"",,,FALSE), ¶" & 
                                        "→UNIQUE( tblExp(Items)), tblExp[Items], tblExp[Dates], tblExp[Amount])", 
                         "→", "¶"
                         )
@@ -752,16 +752,16 @@ Timelineλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT(
                             "FUNCTION:      →Timelineλ(StartDate, Periods, Interval, PeriodStarts?)¶" &
                             "DESCRIPTION:   →Creates a horizontal list of period dates.¶" & 
-                            "WEBSITE:       →https://github.com/ryanduguid/Nabla¶" & 
+                            "WEBSITE:       →https://github.com/ryanduguid/Ozzit¶" & 
                             "PARAMETERS:        →¶" & 
                             "StartDate      →(Required) First period's start date. May be entered as text.¶" &
                             "Periods        →(Optional) The number of period in the timeline. Defaults to 12.¶" &
                             "Interval       →(Optional) Period interval: D, W, M, Q or Y (Day, Week, Month <default>, Quarter, or Year)¶" &
                             "PeriodStarts?  →(Optional) TRUE=Display period start dates <default>. FALSE=Period end dates¶" &
                             "EXAMPLES:      →¶" & 
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                            "12 mo, starts  →=nb.Timelineλ(TODAY())¶" &
-                            "12 qtr, ends   →=nb.Timelineλ(TODAY(), , ""Q"", FALSE)",
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                            "12 mo, starts  →=oz.Timelineλ(TODAY())¶" &
+                            "12 qtr, ends   →=oz.Timelineλ(TODAY(), , ""Q"", FALSE)",
                             "→", "¶"
                             )
                         ),      
@@ -800,7 +800,7 @@ Timelineλ = LAMBDA(
 /*  FUNCTION NAME:  FinancialYearλ
     DESCRIPTION:*//**Labels dates with their Australian financial year, which starts on 1 July*/
 /*  REVISIONS:      Date        Developer       Description  
-                    18 Aug 2026 Nabla           Original development
+                    18 Aug 2026 Ozzit           Original development
 */
 
 FinancialYearλ = LAMBDA(
@@ -812,14 +812,14 @@ FinancialYearλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT(
                             "FUNCTION:      →FinancialYearλ(Dates, [StartMonth])¶" &
                             "DESCRIPTION:   →Labels dates with their Australian financial year, which starts on 1 July.¶" &
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" &
                             "Dates          →(Required) One or more dates.¶" &
                             "StartMonth     →(Optional: Default = 7) Month the financial year starts.¶" &
                             "EXAMPLES:      →¶" &
-                            "→Formula (nb is assumed to be the module's name)¶" &
-                            "→=nb.FinancialYearλ(DATE(2026,8,15))¶" &
+                            "→Formula (oz is assumed to be the module's name)¶" &
+                            "→=oz.FinancialYearλ(DATE(2026,8,15))¶" &
                             "→Result¶" &
                             "→FY2027",
                             "→", "¶"

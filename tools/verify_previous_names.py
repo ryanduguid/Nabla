@@ -83,7 +83,7 @@ def main():
                                 % (row["function"], was, new_bare, old_bare))
 
     # The index is read by people and by machines, so the two columns nothing else checks
-    # get checked here. Each has shipped wrong: nb.Depreciateλ published a signature cut off
+    # get checked here. Each has shipped wrong: oz.Depreciateλ published a signature cut off
     # mid-parameter-list because its help wraps onto a second row, and 31 descriptions
     # carried the raw OOXML escape for a line break out of a Name Manager comment.
     for row in rows:

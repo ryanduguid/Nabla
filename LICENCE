@@ -1,7 +1,7 @@
 This licence covers only the parts of this repository written for it: tools/,
 .github/, README.md, CHANGELOG.md, ATTRIBUTION.md, assets/ and this file.
 
-It does not cover nabla.xlsx, src/ or functions.csv. Those are a derivative of a
+It does not cover ozzit.xlsx, src/ or functions.csv. Those are a derivative of a
 third party's work, no licence for it could be located, and its author retains
 all rights in the original material. See ATTRIBUTION.md.
 

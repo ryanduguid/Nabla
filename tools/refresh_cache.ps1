@@ -1,4 +1,4 @@
-# Recalculate nabla.xlsx in Excel and save, so the values in the file are the values its
+# Recalculate ozzit.xlsx in Excel and save, so the values in the file are the values its
 # own formulas produce.
 #
 # The build edits the workbook as XML and has no formula engine, so anything downstream of
@@ -10,7 +10,7 @@
 # This is the only step in the pipeline that needs Excel, and it changes no formula: all
 # 4,506 formula cells come out byte-identical. Run tools/verify_cache.py afterwards, which
 # is the gate that proves it.
-param([string]$Path = 'nabla.xlsx')
+param([string]$Path = 'ozzit.xlsx')
 
 $ErrorActionPreference = 'Stop'
 $Path = (Resolve-Path $Path).Path

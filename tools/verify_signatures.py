@@ -58,7 +58,7 @@ SRC = sys.argv[1] if len(sys.argv) > 1 else "src"
 
 SIGNATURE = re.compile(r"^([A-Za-z0-9_.]*λ[A-Za-z0-9_]*)\s*\((.*)\)\s*$", re.S)
 # a call in help text, with or without the namespace the EXAMPLES header says to assume
-CALL = re.compile(r"(?<![A-Za-z0-9_.])(?:nb\.)?([A-Za-z_][A-Za-z0-9_]*λ[A-Za-z0-9_]*)\s*\(")
+CALL = re.compile(r"(?<![A-Za-z0-9_.])(?:oz\.)?([A-Za-z_][A-Za-z0-9_]*λ[A-Za-z0-9_]*)\s*\(")
 INTERNAL = "DoNotUse"        # an internal counter, documented but kept out of the signature
 FLOOR = 100                  # the library ships 130 functions; reading far fewer is a bug
 
