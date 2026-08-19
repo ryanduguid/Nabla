@@ -9,10 +9,10 @@
 */
 
 AboutFinancialλ = TRIM(TEXTSPLIT(
-    "ABOUT:             →Nabla's Financial Models module. Suggested module name: nb¶" &
-    "VERSION:           →18 Aug 2026¶" &
-    "REPOSITORY:          →https://github.com/ryanduguid/Nabla ¶" &
-    "WEBSITE:           →https://github.com/ryanduguid/Nabla ¶" &
+    "ABOUT:             →Ozzit's Financial Models module. Suggested module name: oz¶" &
+    "VERSION:           →19 Aug 2026¶" &
+    "REPOSITORY:          →https://github.com/ryanduguid/Ozzit ¶" &
+    "WEBSITE:           →https://github.com/ryanduguid/Ozzit ¶" &
     "→¶" &
     "FUNCTION           →DESCRIPTION¶" & 
     "AboutFinancialλ             →Produces this table¶" & 
@@ -88,7 +88,7 @@ Corkscrewλ = LAMBDA(
                         "FUNCTION:      →Corkscrewλ( Opening, Flow1, [Flow2], [Flow3], [Flow4])¶" &
                         "DESCRIPTION:   →Create a corkscrew section that sums the opening balance and up to 4 independent flows¶" & 
                         "WEBPAGE:       →<Coming Soon>¶" & 
-                        "VERSION:       →18 Aug 2026¶" &
+                        "VERSION:       →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "Opening        →(Required) First periods opening balance.¶" & 
                         "Flow1          →(Required) First row (or array of rows) of numbers to include in period totals.¶" & 
@@ -97,8 +97,8 @@ Corkscrewλ = LAMBDA(
                         "Flow4          →(Optional) Fourth row (or array of rows) of numbers to include in period totals.¶" & 
                         "NOTE!          →All flows are added. To subtract a flow make it negative.¶" & 
                         "→¶" &
-                        "EXAMPLES:      →NOTE! nb is assumed to be the module's name¶" & 
-                        "Formula:       →=nb.Corkscrewλ(0, Sequence(1,5))¶" &
+                        "EXAMPLES:      →NOTE! oz is assumed to be the module's name¶" & 
+                        "Formula:       →=oz.Corkscrewλ(0, Sequence(1,5))¶" &
                         "Result:        →00, 01, 03, 06, 10¶" &
                                        "→01, 02, 03, 04, 05¶" &
                                        "→01, 03, 06, 10, 15", 
@@ -150,7 +150,7 @@ CorkScrewReversalλ=LAMBDA(
                         "FUNCTION:      →CorkScrewReversalλ( Opening, ReversalFlags, Flow1, [Flow2], [Flow3], [Flow4])¶" & 
                         "DESCRIPTION:   →Create a corkscrew where the opening balance is reversed in the next period based on a timing parameter¶" & 
                         "WEBPAGE:       →<Coming Soon>¶" &
-                        "VERSION:       →18 Aug 2026¶" & 
+                        "VERSION:       →19 Aug 2026¶" & 
                         "PARAMETERS:→¶" & 
                         "Opening        →(Required) First periods opening balance.¶" & 
                         "ReversalFlags  →(Required) A row of ones and blanks (or zeros) indicating when to reverse period totals.¶" & 
@@ -216,14 +216,14 @@ IntOnIntλ = LAMBDA(
                             "FUNCTION:      →IntOnIntλ( Principal, Rate)¶" & 
                             "DESCRIPTION:   →Calculate Interest on Interest (Interest only). Use to determine amount ¶" &
                                            "→needed to cover borrowed interest¶" & 
-                            "WEBSITE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBSITE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Principal     →(Required) Principal amount¶" & 
                             "Rate          →(Required) Interest percentage rate. For years, APR. For months, APR/12¶" & 
                             "EXAMPLES:      →¶" & 
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                            "52.63          →=nb.IntOnIntλ( 1000, 5%)",
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                            "52.63          →=oz.IntOnIntλ( 1000, 5%)",
                             "→", "¶"
                             )
                         ),
@@ -252,8 +252,8 @@ IRRλ = LAMBDA(
     LET(Help,           TRIM(TEXTSPLIT(
                             "FUNCTION:      →IRRλ( Values, Dates)¶" & 
                             "DESCRIPTION:   →Calculates IRR, correcting for when the first investment is not in the first period¶" & 
-                            "WEBSITE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBSITE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Values         →(Required) A row of investments (negative) and distributions (positive)¶" & 
                                            "→The first entry, whether 0 or an amount, must be for the first period in the timeline¶" & 
@@ -262,12 +262,12 @@ IRRλ = LAMBDA(
                             "Dates          →(Required) A timeline for when each investment is made¶" & 
                             "→¶" &
                             "EXAMPLES:      →¶" & 
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
                             "Dates          →=EDATE(""1/1/2025"", SEQUENCE(,24, 0))¶" &
                             "Values         →={0,0,-150,0,-100,10,20,30,40,50,60,70}¶" & 
                             "→¶" &
                             "Result         →Formula¶" &
-                            "24%            →=nb.IRRλ( Values, Dates)",
+                            "24%            →=oz.IRRλ( Values, Dates)",
                             "→", "¶"
                             )
                         ),
@@ -303,14 +303,14 @@ Movementλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →Movementλ( [BeginningValues], Values)¶" &
                             "DESCRIPTION:   →Create a row of differences from column to column¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "BeginningValues→(Optional) Defaults to 0¶" & 
                             "Values         →(Required) A row of values to compare column to column¶" & 
                             "EXAMPLES:      →¶" & 
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                            "100,10,20,-30  →=nb.Movementλ(,{100,110,130,100}, 4)",
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                            "100,10,20,-30  →=oz.Movementλ(,{100,110,130,100}, 4)",
                             "→", "¶" )
                     ),            
     //  Check inputs - Omitted required arguments
@@ -356,14 +356,14 @@ Reversalλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →Reversalλ( [OpeningValue], RowToReverse)¶" &
                             "DESCRIPTION:   →Create a row that reverses input values in the next period.¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "OpeningValue   →(Optional) Defaults to 0¶" & 
                             "RowToReverse   →(Required) A row of values to reverse the following periods¶" & 
                             "EXAMPLES:      →¶" & 
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                            "-100,-110,-130 →=nb.Reversalλ( , {100,110,130})",
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                            "-100,-110,-130 →=oz.Reversalλ( , {100,110,130})",
                             "→", "¶" )
                     ),            
     //  Check inputs - Omitted required arguments
@@ -394,14 +394,14 @@ Cumulativeλ = LAMBDA(
     LET(Help,       TRIM(TEXTSPLIT( 
                             "FUNCTION:      →Cumulativeλ( Totals, [OpeningBalance])¶" &
                             "DESCRIPTION:   →Creates a row or column of cumulative totals from a total row or column¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Totals         →(Required) A row or column of totals from which to run cumulative totals¶" & 
                             "OpeningBalance →(Optional) A starting balance. This defaults to 0¶" & 
                             "EXAMPLES:      →¶" & 
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                            "1,3,6          →=nb.Cumulativeλ(Sequence(,3))",
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                            "1,3,6          →=oz.Cumulativeλ(Sequence(,3))",
                             "→", "¶" )
                     ),            
     //  Check inputs - Omitted required arguments
@@ -429,15 +429,15 @@ RollingAvgλ = LAMBDA(
                             "FUNCTION:      →RollingAvgλ( Values, Size)¶" &
                             "DESCRIPTION:   →Creates averages for preceding values of a set size moving¶" &
                                            "→from beginning to end over a row of values¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Values         →(Required) A row of values to be averaged.¶" & 
                             "Size           →(Required) The number of values to average that ¶" & 
                                            "→include and preceed the current value¶" & 
                             "EXAMPLES:      →¶" &
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                            "1,1.5,2,3,4    →=nb.RollingAvgλ(SEQUENCE(, 5), 3)",
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                            "1,1.5,2,3,4    →=oz.RollingAvgλ(SEQUENCE(, 5), 3)",
                         "→", "¶" )
                     ),
     //  Check inputs - Omitted required arguments
@@ -480,15 +480,15 @@ RollingMaxλ = LAMBDA(
                             "FUNCTION:      →RollingMaxλ( Values, Size)¶" &
                             "DESCRIPTION:   →Creates the maximum for preceding values of a set size moving from beginning to end over a row of values.¶" &
                                            "→from beginning to end over a row of values¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Values         →(Required) A row of values to be maxed.¶" & 
                             "Size           →(Required) The number of values to find maximum that ¶" & 
                                            "→include and preceed the current value¶" & 
                             "EXAMPLES:      →¶" &
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                            "5,5,5,6,6,7    →=nb.RollingMaxλ({5,3,4,6,3,7}, 3)",
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                            "5,5,5,6,6,7    →=oz.RollingMaxλ({5,3,4,6,3,7}, 3)",
                         "→", "¶" )
                     ),
     //  Check inputs - Omitted required arguments
@@ -531,15 +531,15 @@ RollingMinλ = LAMBDA(
                             "FUNCTION:      →RollingMinλ( Values, Size)¶" &
                             "DESCRIPTION:   →Creates the minimum for preceding values of a set size moving from beginning to end over a row of values.¶" &
                                            "→from beginning to end over a row of values¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Values         →(Required) A row of values to be minned.¶" & 
                             "Size           →(Required) The number of values to find maximum that ¶" & 
                                            "→include and preceed the current value¶" & 
                             "EXAMPLES:      →¶" &
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                            "5,3,3,3,2,2    →=nb.RollingMinλ({5,3,4,6,2,7}, 3)",
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                            "5,3,3,3,2,2    →=oz.RollingMinλ({5,3,4,6,2,7}, 3)",
                         "→", "¶" )
                     ),
     //  Check inputs - Omitted required arguments
@@ -583,15 +583,15 @@ RollingSumλ = LAMBDA(
                             "FUNCTION:      →RollingSumλ( Values, Size)¶" &
                             "DESCRIPTION:   →Creates totals for preceding values of a set size moving¶" &
                                            "→from beginning to end over a row of values¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Values         →(Required) A row of values to be totalled.¶" & 
                             "Size           →(Required) The number of values to total that ¶" & 
                                            "→include and preceed the current value¶" & 
                             "EXAMPLES:      →¶" &
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                            "1,3,6,9,12     →=nb.RollingSumλ(SEQUENCE(, 5), 3)",
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                            "1,3,6,9,12     →=oz.RollingSumλ(SEQUENCE(, 5), 3)",
                         "→", "¶" )
                     ),
     //  Check inputs - Omitted required arguments
@@ -640,16 +640,16 @@ SumContainsλ = LAMBDA(
                             "DESCRIPTION:   →Creates a row of column totals for each row in an array where¶" & 
                                            "→its labels contain a unique letter, word, or phrase.¶" & 
                             "SEE ALSO:      →Excel 365 now has GROUPBY and PIVOTBY for formula-driven aggregation.¶" &
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "ValuesToFilter →(Required) An array of values to be filtered¶" &                   
                             "ValueLabels    →(Required) An array containing the values' labels¶" &                   
                             "FilterByText   →(Required) A unique letter, word or phrase to find contained in ValueLabels¶" &                   
                             "IgnoreCase?    →(Optional) A flag to determine if Text's case is important. Default is TRUE¶" &                   
                             "EXAMPLES:      →¶" &
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                            "               →=nb.SumContainsλ( Array, Labels, ""CAPEX"" )",
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                            "               →=oz.SumContainsλ( Array, Labels, ""CAPEX"" )",
                             "→", "¶"
                             )
                         ),
@@ -691,16 +691,16 @@ SumPeriodsλ = LAMBDA(
                             "DESCRIPTION:   →Summarises values where each value column is for one day ¶" & 
                                            "→into one column for each period. ¶" & 
                             "SEE ALSO:      →Excel 365 now has GROUPBY and PIVOTBY for formula-driven aggregation.¶" &
-                            "VERSION:       →18 Aug 2026¶" &
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
+                            "VERSION:       →19 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
                             "PARAMETERS:→¶" & 
                             "Values         →(Required) A two dimensional array/range containing values to be summed where" & 
                                             "each column is for a specific day¶" & 
                             "Dates          →(Required) A row of dates providing the date for each Values column¶" &
                             "PeriodStarts   →(Required) A row of period start dates¶" &
                             "EXAMPLES:      →¶" &
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                            "03, 07         →=nb.SumPeriodsλ({1,2,3,4;4,3,2,1;10,20,30,40}, {1,2,3,4}, {1,3})¶" & 
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                            "03, 07         →=oz.SumPeriodsλ({1,2,3,4;4,3,2,1;10,20,30,40}, {1,2,3,4}, {1,3})¶" & 
                             "07, 03         →¶" & 
                             "30, 70         →",
                             "→", "¶" )
@@ -757,8 +757,8 @@ Amortiseλ = LAMBDA(
                                        "→Payments are assumed monthly. On periods shorter than a month the figures for each month land in the period holding its start, the rest nil.¶" &
                                        "→Use LabelAmortiseλ() to apply labels to this function's results:¶" & 
                                        "→Use SumAmortiseλ() to apply totals to this function's results:¶" & 
-                        "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                        "VERSION:       →18 Aug 2026¶" &
+                        "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                        "VERSION:       →19 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "Principals     →(Required) Loan/debt amounts.¶" & 
                         "APRs           →(Required) Annual Percentage Rates for interest.¶" & 
@@ -766,8 +766,8 @@ Amortiseλ = LAMBDA(
                         "StartDates     →(Required) Dates debts are issued.¶" & 
                         "Timeline       →(Optional) An array of dates. If omitted, a row of months starting on start date will be added¶" & 
                         "EXAMPLES:→¶" & 
-                        "Result         →Formula (nb is assumed to be the module's name)¶" &
-                                       "→=nb.Amortiseλ(10000, 5%, 4 * 12, ""2025-01-01"")", 
+                        "Result         →Formula (oz is assumed to be the module's name)¶" &
+                                       "→=oz.Amortiseλ(10000, 5%, 4 * 12, ""2025-01-01"")", 
                         "→", "¶" )
                     ),
     //  Constants
@@ -925,16 +925,16 @@ LabelAmortiseλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT( 
                             "FUNCTION:      →LabelAmortiseλ(LoanNames, [LoanAmounts], [LoanAPRs], [LoanTerms])¶" &
                             "DESCRIPTION:   →Create row labels for the amortisation schedule array produced by Amortiseλ¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "LoanNames     →(Required) Names or descriptions of each loan in the amortisation schedule produced by Amortiseλ¶" &                  
                             "LoanAmounts   →(Optional) Amount borrowed¶" &                  
                             "LoanAPRs      →(Optional) Annual Percentage Interest Rate¶" &                  
                             "LoanTerms     →(Optional) Number of months to repay¶" &                  
                             "EXAMPLES:      →¶" &
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.LabelAmortiseλ(tblLoans[Loan Name])", 
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.LabelAmortiseλ(tblLoans[Loan Name])", 
                             "→", "¶"
                             )
                         ),
@@ -992,13 +992,13 @@ SumAmortiseλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT( 
                             "FUNCTION:      →SumAmortiseλ(AmortisationSchedule)¶" &
                             "DESCRIPTION:   →Create row totals for Amortiseλ¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "AmortisationSchedule→(Required) An array produced by Amortiseλ¶" &                  
                             "EXAMPLES:→¶" & 
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.SumAmortiseλ(AmortisationSchedule)",
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.SumAmortiseλ(AmortisationSchedule)",
                             "→", "¶"
                             )
                         ),
@@ -1049,8 +1049,8 @@ Depreciateλ = LAMBDA(
                             "FUNCTION:      →Depreciateλ(InitialValues, InServiceDates, LifeInYears, Timeline, ¶" &
                             "               →[SalvageValues], [DisposalDates], [DisposalCosts], [Methods], [Factors])¶" &
                             "DESCRIPTION:   →Creates an array of CAPEX, depreciation, and book values for a model's timeline¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla ¶" & 
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit ¶" & 
+                            "VERSION:       →19 Aug 2026¶" &
                             "NOTES:         →The methods used here differs from Excel's functions in several ways. Please see webpage for details.¶" &
                             "PARAMETERS:    →¶" & 
                             "InitialValues  →(Required) The purchase values of each asset to depreciate¶" & 
@@ -1219,13 +1219,13 @@ LabelDepreciateλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT( 
                             "FUNCTION:      →LabelDepreciateλ( AssetNames)¶" &
                             "DESCRIPTION:   →Create row labels for the depreciation schedule array produced by Depreciateλ¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "AssetNames     →(Required) The names or descriptions of each asset in the depreciation schedule produced by Depreciateλ¶" &                   
                             "EXAMPLES:      →¶" &
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.LabelDepreciateλ(tblAssets[Asset Name])", 
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.LabelDepreciateλ(tblAssets[Asset Name])", 
                             "→", "¶"
                             )
                         ),
@@ -1268,14 +1268,14 @@ SumDepreciateλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT( 
                             "FUNCTION:      →SumDepreciateλ(DepreciationSchedule)¶" &
                             "DESCRIPTION:   →Create row totals for Depreciateλ¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "DepreciationSchedule→(Required) An array produced by Depreciateλ¶" &
                             "→¶" &                 
                             "EXAMPLES:      →¶" &
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.SumDepreciateλ(DepreciationSchedule)",
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.SumDepreciateλ(DepreciationSchedule)",
                             "→", "¶"
                             )
                         ),
@@ -1317,8 +1317,8 @@ Allocateλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT( 
                             "FUNCTION:      →Allocateλ(Amounts, [FromInterval], [ToInterval])¶" &
                             "DESCRIPTION:   →Divide one or more amounts equally across smaller periods¶" &
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Amounts        →(Required) One amount or a row of amounts to allocate.¶" &                   
                             "FromInterval   →(Optional Default=Y) The larger interval in Q=Quarters or Y=Years¶" & 
@@ -1327,8 +1327,8 @@ Allocateλ = LAMBDA(
                                            "→When a From Period's amount does not divide evenly to the 1/100 for all To Periods',¶" & 
                                            "→the last To Period contains the necessary adjustment.¶" & 
                             "EXAMPLES:      →¶" &
-                                           "→Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.Allocateλ({999.99, 2000}, ""Y"", ""Q"")¶" &
+                                           "→Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.Allocateλ({999.99, 2000}, ""Y"", ""Q"")¶" &
                                            "→Result¶" &
                                            "→250,250,250,249.99,500,500,500,500", 
                             "→", "¶"
@@ -1382,15 +1382,15 @@ PeriodDiffλ = LAMBDA(
                             "FUNCTION:      →PeriodDiffλ(StartDate, EndDate, Interval)¶" &
                             "DESCRIPTION:   →Determine the number of periods between two dates.¶" &
                             "NOTES!         →This improves on, and corrects problems w/Excel's deprecated DATEDIF() function.¶" &
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "StartDate      →(Required) Start Date.¶" &                   
                             "EndDate        →(Required) End Date¶" & 
                             "Interval       →(Required) W=Week, M=Month, Q=Quarter, Y=Year.¶" & 
                             "EXAMPLES:      →¶" &
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                            "1              →=nb.PeriodDiffλ(""2026-01-01"", ""2026-04-15"", ""Q"")", 
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                            "1              →=oz.PeriodDiffλ(""2026-01-01"", ""2026-04-15"", ""Q"")", 
                             "→", "¶"
                             )
                         ),
@@ -1431,15 +1431,15 @@ SLNλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT( 
                             "FUNCTION:      →SLNλ(Cost, Salvage, Life)¶" &
                             "DESCRIPTION:   →Straight Line Depreciation Method for one asset or asset class.¶" &
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Cost           →(Required) Asset's initial cost.¶" &                   
                             "Salvage        →(Required) Asset's value and end of life¶" & 
                             "Life           →(Required) Asset's useful life in years.¶" & 
                             "EXAMPLES:      →¶" &
-                                           "→Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.SLNλ(1000, 100, 5)¶" &
+                                           "→Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.SLNλ(1000, 100, 5)¶" &
                                            "→Result¶" &
                                            "→180,180,180,180,180", 
                             "→", "¶"
@@ -1474,15 +1474,15 @@ SYDλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT( 
                             "FUNCTION:      →SYDλ(Cost, Salvage, Life)¶" &
                             "DESCRIPTION:   →Sum-of-years' digits depreciation method for one asset or asset class.¶" &
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Cost           →(Required) Asset's initial cost.¶" &                   
                             "Salvage        →(Required) Asset's value and end of life¶" & 
                             "Life           →(Required) Asset's useful life in years.¶" & 
                             "EXAMPLES:      →¶" &
-                                           "→Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.SYDλ(1000, 100, 5)¶" &
+                                           "→Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.SYDλ(1000, 100, 5)¶" &
                                            "→Result¶" &
                                            "→300,240,180,120,60", 
                             "→", "¶"
@@ -1518,16 +1518,16 @@ DBλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT( 
                             "FUNCTION:      →DBλ(Cost, Salvage, Life, [Months])¶" &
                             "DESCRIPTION:   →Fixed declining balance depreciation method for one asset or asset class¶" &
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Cost           →(Required) Asset's initial cost.¶" &                   
                             "Salvage        →(Required) Asset's value and end of life. Salvage cannot be 0.¶" & 
                             "Life           →(Required) Asset's useful life in years.¶" & 
                             "Months         →(Optional) Number of months in the first year to depreciate.¶" & 
                             "EXAMPLES:      →¶" &
-                                           "→Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.DBλ(1000, 100, 5)¶" &
+                                           "→Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.DBλ(1000, 100, 5)¶" &
                                            "→Result¶" &
                                            "→369.00,232.84,146.92,92.71,58.53", 
                             "→", "¶"
@@ -1566,16 +1566,16 @@ DDBλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT( 
                             "FUNCTION:      →DDBλ(Cost, Salvage, Life, [Factor])¶" &
                             "DESCRIPTION:   →Double-declining balance depreciation method for one asset or asset class.¶" &
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Cost           →(Required) Asset's initial cost.¶" &                   
                             "Salvage        →(Required) Asset's value and end of life. Salvage cannot be 0.¶" & 
                             "Life           →(Required) Asset's useful life in years.¶" & 
                             "Factor         →(Optional Default=2) Rate at which the balance declines.¶" & 
                             "EXAMPLES:      →¶" &
-                                           "→Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.DDBλ(1000, 100, 5)¶" &
+                                           "→Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.DDBλ(1000, 100, 5)¶" &
                                            "→Result¶" &
                                            "→400.00,240.00,144.00,86.40,29.60", 
                             "→", "¶"
@@ -1615,8 +1615,8 @@ VDBλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT( 
                             "FUNCTION:      →VDBλ(Cost, Salvage, Life, [Factor], [No_Switch])¶" &
                             "DESCRIPTION:   →Variable declining balance depreciation method for one asset or asset class.¶" &
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Cost           →(Required) Asset's initial cost.¶" &                   
                             "Salvage        →(Required) Asset's value and end of life. Salvage cannot be 0.¶" & 
@@ -1625,8 +1625,8 @@ VDBλ = LAMBDA(
                             "No_Switch      →(Optional Default=FALSE) Switch to straight-line depreciation when¶" & 
                                            "→ depreciation is greater than the declining balance calculation.¶" & 
                             "EXAMPLES:      →¶" &
-                                           "→Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.VDBλ(1000, 100, 5, 1.5, TRUE)¶" &
+                                           "→Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.VDBλ(1000, 100, 5, 1.5, TRUE)¶" &
                                            "→Result¶" &
                                            "→300.00,210.00,147.00,102.90,72.03", 
                             "→", "¶"
@@ -1927,15 +1927,15 @@ TimelineOffsetλ = LAMBDA(
                             "FUNCTION:      →TimelineOffsetλ(Date, Timeline)¶" &
                             "DESCRIPTION:   →Determines in which period, relative to the timeline's start and interval,¶" &
                                            "→a date falls within.¶" & 
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Date           →(Required) A starting date¶" & 
                             "Timeline       →(Required) A model's timeline (Row of period start dates)¶" &                   
                             "EXAMPLES:      →¶" &
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                            "1              →=nb.TimelineOffsetλ(""15/2/2026"", EDATE(""1/1/2026"", SEQUENCE( , 12, 0)))¶" &
-                            "-11            →=nb.TimelineOffsetλ(""15/2/2025"", EDATE(""1/1/2026"", SEQUENCE( , 12, 0)))", 
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                            "1              →=oz.TimelineOffsetλ(""15/2/2026"", EDATE(""1/1/2026"", SEQUENCE( , 12, 0)))¶" &
+                            "-11            →=oz.TimelineOffsetλ(""15/2/2025"", EDATE(""1/1/2026"", SEQUENCE( , 12, 0)))", 
                             "→", "¶"
                             )
                         ),
@@ -1989,8 +1989,8 @@ TimelinePositionλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT( 
                             "FUNCTION:      →TimelinePositionλ(Array, Timeline, Offset)¶" &
                             "DESCRIPTION:   →Position an array relative to the model's timeline¶" &
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) The array to be positioned relative to a model's timeline¶" & 
                             "Timeline       →(Required) A model's timeline¶" & 
@@ -1998,8 +1998,8 @@ TimelinePositionλ = LAMBDA(
                             "NOTES!         →¶" & 
                                            "→Timelines can be vertical or horizontal. Whichever way the timeline goes, the array must match.¶" &                     
                             "EXAMPLES:      →¶" &
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                                           "→=nb.TimelinePositionλ(SEQUENCE(3,3), EDATE(""1/1/2025"", SEQUENCE( , 12, 0)), 12)", 
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                                           "→=oz.TimelinePositionλ(SEQUENCE(3,3), EDATE(""1/1/2025"", SEQUENCE( , 12, 0)), 12)", 
                             "→", "¶"
                             )
                         ),
@@ -2056,16 +2056,16 @@ FilterContainsλ = LAMBDA(
                             "FUNCTION:      →FilterContainsλ( ArrayToFilter, FilterByArray, FilterByText, [IgnoreCase?] )¶" &
                             "DESCRIPTION:   →Filter an array by another array that contains specific text.¶" & 
                             "SEE ALSO:      →Excel 365 now has REGEXTEST and REGEXEXTRACT for pattern matching.¶" &
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "ArrayToFilter  →(Required) An array to be filtered¶" &                   
                             "FilterByArray  →(Required) An array containing text to use as a filter¶" &                   
                             "FilterByText   →(Required) A text string to find in FilterByArray¶" &                   
                             "IgnoreCase?    →(Optional) A flag to determine if Text's case is important. Default is TRUE¶" &                   
                             "EXAMPLES:      →¶" &
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                            """Cat""        →=nb.FilterContainsλ( {""Joe"", ""Sally"", ""Cat""}, {""H1"", ""H2"", ""A1""}, ""A"" )",
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                            """Cat""        →=oz.FilterContainsλ( {""Joe"", ""Sally"", ""Cat""}, {""H1"", ""H2"", ""A1""}, ""A"" )",
                             "→", "¶"
                             )
                         ),
@@ -2104,15 +2104,15 @@ RangeToDAλ = LAMBDA(
                             "FUNCTION:      →RangeToDAλ( Cell, [Rows], [Columns])¶" &
                             "DESCRIPTION:   →Create a dynamic array from a static range¶" & 
                             "SEE ALSO:      →Excel 365 now has TRIMRANGE and trim references (.:.) for this.¶" &
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Cell           →(Required) The upper left cell of a range to convert¶" & 
                             "Rows           →(Optional) The number of rows for dynamic array. Defaults to 1.¶" & 
                             "Columns        →(Optional) The number of columns for dynamic array. Defaults to 1.¶" & 
                             "EXAMPLES:      →¶" & 
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                            "               →=nb.RangeToDAλ( A1, , 12)",
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                            "               →=oz.RangeToDAλ( A1, , 12)",
                             "→", "¶" )
                     ),            
     //  Check inputs - Omitted required arguments
@@ -2144,15 +2144,15 @@ PeriodStartλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT( 
                             "FUNCTION:      →PeriodStartλ(AnyPeriodStart, MonthsPerPeriod, DateOfInterest)¶" &
                             "DESCRIPTION:   →Determine when the period containing a date of interest starts.¶" &
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" & 
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "AnyPeriodStart →(Required) Any start date within a timeline.¶" &                   
                             "MonthsPerPeriod→(Required) Number of months in each period¶" & 
                             "DateOfInterest →(Required) A date for which we want to know the start of the period containing it.¶" & 
                             "EXAMPLES:      →¶" &
-                            "Result         →Formula (nb is assumed to be the module's name)¶" &
-                            "2026-04-01     →=nb.PeriodStartλ(""2026-01-01"", 3, ""2026-04-15"")", 
+                            "Result         →Formula (oz is assumed to be the module's name)¶" &
+                            "2026-04-01     →=oz.PeriodStartλ(""2026-01-01"", 3, ""2026-04-15"")", 
                             "→", "¶"
                             )
                         ),
@@ -2187,7 +2187,7 @@ PeriodStartλ = LAMBDA(
 /*  FUNCTION NAME:  DiminishingValueλ
     DESCRIPTION:*//**Diminishing-balance depreciation schedule at 200% of the straight-line rate, writing the residual off in the final period. A modelling schedule, not a tax calculation*/
 /*  REVISIONS:      Date        Developer       Description  
-                    18 Aug 2026 Nabla           Original development
+                    18 Aug 2026 Ozzit           Original development
 */
 
 DiminishingValueλ = LAMBDA(
@@ -2199,14 +2199,14 @@ DiminishingValueλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT(
                             "FUNCTION:      →DiminishingValueλ(Cost, Life)¶" &
                             "DESCRIPTION:   →Diminishing-balance depreciation schedule at 200% of the straight-line rate, writing the residual off in the final period. A modelling schedule, not a tax calculation.¶" &
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" &
                             "Cost           →(Required) Asset's cost.¶" &
                             "Life           →(Required) Asset's effective life in years.¶" &
                             "EXAMPLES:      →¶" &
-                            "→Formula (nb is assumed to be the module's name)¶" &
-                            "→=nb.DiminishingValueλ(1000, 5)¶" &
+                            "→Formula (oz is assumed to be the module's name)¶" &
+                            "→=oz.DiminishingValueλ(1000, 5)¶" &
                             "→Result¶" &
                             "→400.00,240.00,144.00,86.40,129.60",
                             "→", "¶"
@@ -2233,7 +2233,7 @@ DiminishingValueλ = LAMBDA(
 /*  FUNCTION NAME:  PrimeCostλ
     DESCRIPTION:*//**Straight-line depreciation schedule for one asset or asset class, in whole years. A modelling schedule, not a tax calculation*/
 /*  REVISIONS:      Date        Developer       Description  
-                    18 Aug 2026 Nabla           Original development
+                    18 Aug 2026 Ozzit           Original development
 */
 
 PrimeCostλ = LAMBDA(
@@ -2245,14 +2245,14 @@ PrimeCostλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT(
                             "FUNCTION:      →PrimeCostλ(Cost, Life)¶" &
                             "DESCRIPTION:   →Straight-line depreciation schedule for one asset or asset class, in whole years. A modelling schedule, not a tax calculation.¶" &
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" &
                             "Cost           →(Required) Asset's cost.¶" &
                             "Life           →(Required) Asset's effective life in years.¶" &
                             "EXAMPLES:      →¶" &
-                            "→Formula (nb is assumed to be the module's name)¶" &
-                            "→=nb.PrimeCostλ(1000, 5)¶" &
+                            "→Formula (oz is assumed to be the module's name)¶" &
+                            "→=oz.PrimeCostλ(1000, 5)¶" &
                             "→Result¶" &
                             "→200.00,200.00,200.00,200.00,200.00",
                             "→", "¶"
@@ -2275,7 +2275,7 @@ PrimeCostλ = LAMBDA(
 /*  FUNCTION NAME:  GSTAddλ
     DESCRIPTION:*//**Adds GST to one or more GST-exclusive amounts*/
 /*  REVISIONS:      Date        Developer       Description  
-                    18 Aug 2026 Nabla           Original development
+                    18 Aug 2026 Ozzit           Original development
 */
 
 GSTAddλ = LAMBDA(
@@ -2287,14 +2287,14 @@ GSTAddλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT(
                             "FUNCTION:      →GSTAddλ(Amounts, [Rate])¶" &
                             "DESCRIPTION:   →Adds GST to one or more GST-exclusive amounts.¶" &
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" &
                             "Amounts        →(Required) One or more GST-exclusive amounts.¶" &
                             "Rate           →(Optional: Default = 0.1) GST rate as a fraction.¶" &
                             "EXAMPLES:      →¶" &
-                            "→Formula (nb is assumed to be the module's name)¶" &
-                            "→=nb.GSTAddλ(100)¶" &
+                            "→Formula (oz is assumed to be the module's name)¶" &
+                            "→=oz.GSTAddλ(100)¶" &
                             "→Result¶" &
                             "→110",
                             "→", "¶"
@@ -2315,7 +2315,7 @@ GSTAddλ = LAMBDA(
 /*  FUNCTION NAME:  GSTExtractλ
     DESCRIPTION:*//**Returns the GST contained in one or more GST-inclusive amounts*/
 /*  REVISIONS:      Date        Developer       Description  
-                    18 Aug 2026 Nabla           Original development
+                    18 Aug 2026 Ozzit           Original development
 */
 
 GSTExtractλ = LAMBDA(
@@ -2327,14 +2327,14 @@ GSTExtractλ = LAMBDA(
         Help,           TRIM(TEXTSPLIT(
                             "FUNCTION:      →GSTExtractλ(Amounts, [Rate])¶" &
                             "DESCRIPTION:   →Returns the GST contained in one or more GST-inclusive amounts.¶" &
-                            "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
-                            "VERSION:       →18 Aug 2026¶" &
+                            "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
+                            "VERSION:       →19 Aug 2026¶" &
                             "PARAMETERS:    →¶" &
                             "Amounts        →(Required) One or more GST-inclusive amounts.¶" &
                             "Rate           →(Optional: Default = 0.1) GST rate as a fraction.¶" &
                             "EXAMPLES:      →¶" &
-                            "→Formula (nb is assumed to be the module's name)¶" &
-                            "→=nb.GSTExtractλ(110)¶" &
+                            "→Formula (oz is assumed to be the module's name)¶" &
+                            "→=oz.GSTExtractλ(110)¶" &
                             "→Result¶" &
                             "→10",
                             "→", "¶"

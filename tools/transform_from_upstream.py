@@ -1,4 +1,4 @@
-# Build nabla.xlsx from the upstream Financial Starter Pack workbook.
+# Build ozzit.xlsx from the upstream Financial Starter Pack workbook.
 # Pure zip/XML surgery. Never resaves via openpyxl (preserves cached values, extensions, rich parts).
 import zipfile, re, shutil, io, os, sys, datetime
 import base64, json
@@ -10,8 +10,8 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
 SRC = sys.argv[1] if len(sys.argv) > 1 else "2024-07-06.xlsx"
-DST = sys.argv[2] if len(sys.argv) > 2 else "nabla.xlsx"
-REPO_URL = "https://github.com/ryanduguid/Nabla"
+DST = sys.argv[2] if len(sys.argv) > 2 else "ozzit.xlsx"
+REPO_URL = "https://github.com/ryanduguid/Ozzit"
 TODAY_AU = "18 Aug 2026"
 NOW_ISO = "2026-08-18T00:00:00Z"
 
@@ -112,15 +112,15 @@ ss = get("xl/sharedStrings.xml")
 rewrites = [
     ("This table is created by BXL TOC add-in available on Eloquens",
      "Click any name below to jump to its worksheet"),
-    ("Financial Starter Pack Introduction", "nabla Introduction"),
+    ("Financial Starter Pack Introduction", "ozzit Introduction"),
     ("This workbook contains two 5g libraries: Dates (BXD) and Financial Functions (BXF). ",
-     "This workbook contains the Nabla function library, covering dates, array essentials, "
-     "financial functions, financial ratios, utilities and debt. Every function shares the nb. prefix. "),
+     "This workbook contains the Ozzit function library, covering dates, array essentials, "
+     "financial functions, financial ratios, utilities and debt. Every function shares the oz. prefix. "),
     ("click and worksheet name", "click any worksheet name"),
     # matched before the brand sweep runs, so this is the upstream wording
     ("This is a library of 5g functions for simplifying financial model development, "
      "especially models using dynamic arrays, and especially for Excel novices.",
-     "This is a library of nabla functions for simplifying financial model development, "
+     "This is a library of ozzit functions for simplifying financial model development, "
      "especially models using dynamic arrays, and especially for Excel novices. "
      "It needs Excel with LAMBDA and dynamic arrays: Microsoft 365, or Excel 2024 and later. "
      "Where Excel 365 has since gained a native equivalent, the function's inline help says so "
@@ -153,22 +153,22 @@ BRAND = [
     ("Gist URL:", "Repository:"),
     ("Displays the URL to this module's Gist which includes documentation",
      "Displays this module's repository URL and function list"),
-    ("BXLDebt.", "nabla.debt."),
-    ("BXD.", "nabla.d."), ("BXE.", "nabla.e."), ("BXF.", "nabla.f."),
-    ("BXR.", "nabla.r."), ("BXU.", "nabla.u."),
-    ("BXL", "nabla"),
+    ("BXLDebt.", "ozzit.debt."),
+    ("BXD.", "ozzit.d."), ("BXE.", "ozzit.e."), ("BXF.", "ozzit.f."),
+    ("BXR.", "ozzit.r."), ("BXU.", "ozzit.u."),
+    ("BXL", "ozzit"),
 ]
-BRAND_BARE = [("BXD", "nabla.d"), ("BXE", "nabla.e"), ("BXF", "nabla.f"),
-              ("BXR", "nabla.r"), ("BXU", "nabla.u"), ("5g", "nabla"), ("5G", "nabla")]
+BRAND_BARE = [("BXD", "ozzit.d"), ("BXE", "ozzit.e"), ("BXF", "ozzit.f"),
+              ("BXR", "ozzit.r"), ("BXU", "ozzit.u"), ("5g", "ozzit"), ("5G", "ozzit")]
 TYPOS = [("equally equally", "equally"),
          # worked-example results the +2 year date shift invalidated
-         ('"→2¶" &amp; "→=nabla.d.CountDOWλ', '"→3¶" &amp; "→=nabla.d.CountDOWλ'),
-         ('"→2¶" & "→=nabla.d.CountDOWλ', '"→3¶" & "→=nabla.d.CountDOWλ'),
+         ('"→2¶" &amp; "→=ozzit.d.CountDOWλ', '"→3¶" &amp; "→=ozzit.d.CountDOWλ'),
+         ('"→2¶" & "→=ozzit.d.CountDOWλ', '"→3¶" & "→=ozzit.d.CountDOWλ'),
          ("2023-Feb-26", "2025-Feb-26"), ("2023-Feb¶", "2025-Feb¶"),
          ("2023:Q01", "2025:Q1"), ("→2023¶", "→2025¶"), ("specifice text", "specific text"),
          ("dynamice", "dynamic"), ("a lable for", "a label for"),
          # double substitution artefact: upstream read "every BXL 5g Library"
-         ("nabla nabla Library", "nabla library"),
+         ("ozzit ozzit Library", "ozzit library"),
          ("Every Workday (USA normal)", "Every Workday (Monday to Friday)"),
          ("randomly generated", "sample"), ("Randomly generated", "Sample"),
          ("\"FUNCTION:      FilterContains", "\"FUNCTION:      →FilterContains"),
@@ -269,7 +269,7 @@ def transform_text(s):
     for old, new in AU_DATA:
         s = s.replace(old, new)
     # CountDOWλ's worked example: shifting its dates +2 years changed the answer from 2 to 3
-    s = re.sub(r'"2(\s+)→=nabla\.d\.CountDOWλ', r'"3\g<1>→=nabla.d.CountDOWλ', s)
+    s = re.sub(r'"2(\s+)→=ozzit\.d\.CountDOWλ', r'"3\g<1>→=ozzit.d.CountDOWλ', s)
     s = re.sub(r'(?i)(ersion:\s*→\s*)[A-Z][a-z]{2} \d{1,2} \d{4}', r'\g<1>' + TODAY_AU, s)
     # sample dates: quoted or cell-value m/d/yyyy -> +2y, AU day-first
     # (trailing char may be a backslash inside JSON-escaped AFE text)
@@ -325,7 +325,7 @@ def build_afe(spec):
         "/*  FUNCTION NAME:  %s\n" % spec["name"]
         + "    DESCRIPTION:*//**%s*/\n" % spec["desc"].rstrip(".")
         + "/*  REVISIONS:      Date        Developer       Description  \n"
-        + "                    %s nabla           Original development\n" % TODAY_AU
+        + "                    %s ozzit           Original development\n" % TODAY_AU
         + "*/\n\n"
         + "%s = LAMBDA(\n" % spec["name"]
         + "//  Parameter Declaration\n"
@@ -345,12 +345,12 @@ def build_afe(spec):
 
 FUNCS = [
     {
-        "module": "nabla.f", "name": "DiminishingValueλ",
+        "module": "ozzit.f", "name": "DiminishingValueλ",
         "sig": "DiminishingValueλ(Cost, Life)",
         "desc": "Diminishing-balance depreciation schedule at 200% of the straight-line rate, writing the residual off in the final period. A modelling schedule, not a tax calculation.",
         "params": [("Cost", "(Required) Asset's cost."),
                    ("Life", "(Required) Asset's effective life in years.")],
-        "example": "nabla.f.DiminishingValueλ(1000, 5)",
+        "example": "ozzit.f.DiminishingValueλ(1000, 5)",
         "result": "400.00,240.00,144.00,86.40,129.60",
         "xml_decl": "_xlop.Cost,_xlop.Life",
         "help_test": "OR(_xlfn.ISOMITTED(_xlpm.Cost), _xlfn.ISOMITTED(_xlpm.Life))",
@@ -367,12 +367,12 @@ FUNCS = [
         ],
     },
     {
-        "module": "nabla.f", "name": "PrimeCostλ",
+        "module": "ozzit.f", "name": "PrimeCostλ",
         "sig": "PrimeCostλ(Cost, Life)",
         "desc": "Straight-line depreciation schedule for one asset or asset class, in whole years. A modelling schedule, not a tax calculation.",
         "params": [("Cost", "(Required) Asset's cost."),
                    ("Life", "(Required) Asset's effective life in years.")],
-        "example": "nabla.f.PrimeCostλ(1000, 5)",
+        "example": "ozzit.f.PrimeCostλ(1000, 5)",
         "result": "200.00,200.00,200.00,200.00,200.00",
         "xml_decl": "_xlop.Cost,_xlop.Life",
         "help_test": "OR(_xlfn.ISOMITTED(_xlpm.Cost), _xlfn.ISOMITTED(_xlpm.Life))",
@@ -386,12 +386,12 @@ FUNCS = [
         ],
     },
     {
-        "module": "nabla.f", "name": "GSTAddλ",
+        "module": "ozzit.f", "name": "GSTAddλ",
         "sig": "GSTAddλ(Amounts, [Rate])",
         "desc": "Adds GST to one or more GST-exclusive amounts.",
         "params": [("Amounts", "(Required) One or more GST-exclusive amounts."),
                    ("Rate", "(Optional: Default = 0.1) GST rate as a fraction.")],
-        "example": "nabla.f.GSTAddλ(100)",
+        "example": "ozzit.f.GSTAddλ(100)",
         "result": "110",
         "xml_decl": "_xlop.Amounts,_xlop.Rate",
         "help_test": "_xlfn.ISOMITTED(_xlpm.Amounts)",
@@ -403,12 +403,12 @@ FUNCS = [
         ],
     },
     {
-        "module": "nabla.f", "name": "GSTExtractλ",
+        "module": "ozzit.f", "name": "GSTExtractλ",
         "sig": "GSTExtractλ(Amounts, [Rate])",
         "desc": "Returns the GST contained in one or more GST-inclusive amounts.",
         "params": [("Amounts", "(Required) One or more GST-inclusive amounts."),
                    ("Rate", "(Optional: Default = 0.1) GST rate as a fraction.")],
-        "example": "nabla.f.GSTExtractλ(110)",
+        "example": "ozzit.f.GSTExtractλ(110)",
         "result": "10",
         "xml_decl": "_xlop.Amounts,_xlop.Rate",
         "help_test": "_xlfn.ISOMITTED(_xlpm.Amounts)",
@@ -421,12 +421,12 @@ FUNCS = [
         ],
     },
     {
-        "module": "nabla.d", "name": "FinancialYearλ",
+        "module": "ozzit.d", "name": "FinancialYearλ",
         "sig": "FinancialYearλ(Dates, [StartMonth])",
         "desc": "Labels dates with their Australian financial year, which starts on 1 July.",
         "params": [("Dates", "(Required) One or more dates."),
                    ("StartMonth", "(Optional: Default = 7) Month the financial year starts.")],
-        "example": 'nabla.d.FinancialYearλ(DATE(2026,8,15))',
+        "example": 'ozzit.d.FinancialYearλ(DATE(2026,8,15))',
         "result": "FY2027",
         "xml_decl": "_xlop.Dates,_xlop.StartMonth",
         "help_test": "_xlfn.ISOMITTED(_xlpm.Dates)",
@@ -468,12 +468,12 @@ AFE_MACRS_RE = [
 ]
 
 SEE_ALSO = {
-    "nabla.e.RangeToDAλ": "Excel 365 now has TRIMRANGE and trim references (.:.) for this.",
-    "nabla.u.RangeToDAλ": "Excel 365 now has TRIMRANGE and trim references (.:.) for this.",
-    "nabla.f.RangeToDAλ": "Excel 365 now has TRIMRANGE and trim references (.:.) for this.",
-    "nabla.f.FilterContainsλ": "Excel 365 now has REGEXTEST and REGEXEXTRACT for pattern matching.",
-    "nabla.f.SumPeriodsλ": "Excel 365 now has GROUPBY and PIVOTBY for formula-driven aggregation.",
-    "nabla.f.SumContainsλ": "Excel 365 now has GROUPBY and PIVOTBY for formula-driven aggregation.",
+    "ozzit.e.RangeToDAλ": "Excel 365 now has TRIMRANGE and trim references (.:.) for this.",
+    "ozzit.u.RangeToDAλ": "Excel 365 now has TRIMRANGE and trim references (.:.) for this.",
+    "ozzit.f.RangeToDAλ": "Excel 365 now has TRIMRANGE and trim references (.:.) for this.",
+    "ozzit.f.FilterContainsλ": "Excel 365 now has REGEXTEST and REGEXEXTRACT for pattern matching.",
+    "ozzit.f.SumPeriodsλ": "Excel 365 now has GROUPBY and PIVOTBY for formula-driven aggregation.",
+    "ozzit.f.SumContainsλ": "Excel 365 now has GROUPBY and PIVOTBY for formula-driven aggregation.",
 }
 # AFE (Excel Labs) project store: base64-wrapped UTF-16 JSON holding LAMBDA source
 afe = get("customXml/item1.xml")
@@ -489,7 +489,7 @@ for f in obj_afe["files"]:
     dropped += k
 assert dropped >= 4, dropped
 
-ftext = mods["nabla.f"]["text"]
+ftext = mods["ozzit.f"]["text"]
 for old, new in AFE_MACRS:
     assert ftext.count(old) == 1, old[:60]
     ftext = ftext.replace(old, new)
@@ -501,13 +501,13 @@ i_mac = ftext.index("/*  FUNCTION NAME:  MACRSλ")
 i_next = ftext.index("/*  FUNCTION NAME:", i_mac + 10)
 ftext = ftext[:i_mac] + ftext[i_next:]
 assert "MACRS" not in ftext
-mods["nabla.f"]["text"] = ftext
+mods["ozzit.f"]["text"] = ftext
 
 # the SEE ALSO lines must live in the module source too, or an Excel Labs save drops them
 see_afe = 0
 for full, note in SEE_ALSO.items():
     mod, fname = full.split(".")[1], full.split(".")[2]
-    text = mods["nabla." + mod]["text"]
+    text = mods["ozzit." + mod]["text"]
     # anchor on the help signature line: not every function has a FUNCTION NAME header
     sig = re.search(r'"FUNCTION:\s*→?\s*%s\(' % re.escape(fname), text)
     assert sig, full
@@ -516,7 +516,7 @@ for full, note in SEE_ALSO.items():
     lab = label.search(text, start)   # not `m`: that still holds the project-store blob match
     assert lab, full
     line = '\n%s"SEE ALSO:      →%s¶" &' % (lab.group(1), note)
-    mods["nabla." + mod]["text"] = text[:lab.start()] + line + text[lab.start():]
+    mods["ozzit." + mod]["text"] = text[:lab.start()] + line + text[lab.start():]
     see_afe += 1
 assert see_afe == len(SEE_ALSO), see_afe
 print("SEE ALSO added to", see_afe, "module sources")
@@ -525,7 +525,7 @@ print("SEE ALSO added to", see_afe, "module sources")
 # the name carries a blank help row and a different (behaviour-identical) way of
 # testing for the omitted argument. Bring the source up to the version that ships, so
 # what is published is what people actually get.
-ftxt = mods["nabla.f"]["text"]
+ftxt = mods["ozzit.f"]["text"]
 _s = ftxt.index("SumDepreciateλ = LAMBDA")
 _e = ftxt.index("\n);", _s) + 3
 block = ftxt[_s:_e]
@@ -542,7 +542,7 @@ for _old, _new in (
 ):
     assert block.count(_old) == 1, _old[:40]
     block = block.replace(_old, _new)
-mods["nabla.f"]["text"] = ftxt[:_s] + block + ftxt[_e:]
+mods["ozzit.f"]["text"] = ftxt[:_s] + block + ftxt[_e:]
 
 # Four functions were written by copying a neighbour, and their help still announces the
 # neighbour's name on the FUNCTION line. The description and the parameter list below it
@@ -552,10 +552,10 @@ mods["nabla.f"]["text"] = ftxt[:_s] + block + ftxt[_e:]
 # disagreeing. Name the function each one documents, in both representations.
 HELP_NAMES_ITSELF = [
     # function,               the neighbour its help names,  modules holding it
-    ("AvgColsλ",            "SumColsλ",                ("nabla.e", "nabla.u")),
-    ("CorkScrewReversalλ",  "Corkscrewλ",              ("nabla.f",)),
-    ("DDBλ",                "DBλ",                     ("nabla.f",)),
-    ("EquityRatioλ",        "InterestCoverageRatioλ",  ("nabla.r",)),
+    ("AvgColsλ",            "SumColsλ",                ("ozzit.e", "ozzit.u")),
+    ("CorkScrewReversalλ",  "Corkscrewλ",              ("ozzit.f",)),
+    ("DDBλ",                "DBλ",                     ("ozzit.f",)),
+    ("EquityRatioλ",        "InterestCoverageRatioλ",  ("ozzit.r",)),
 ]
 
 _wbx = get("xl/workbook.xml")
@@ -638,52 +638,52 @@ for _wrong, _right in HELP_PARAM_TYPOS:
 # and a fragment written in Australian English matches only after that sweep.
 HELP_SIGNATURES = [
     # module,     function,          what the signature said,          what the function takes
-    ("nabla.f", "CorkScrewReversalλ", "( Opening, Flow1,", "( Opening, ReversalFlags, Flow1,"),
-    ("nabla.f", "Movementλ", "( [BeginningValue], Values)", "( [BeginningValues], Values)"),
-    ("nabla.f", "LabelAmortiseλ", "λ([LoanNames])",
+    ("ozzit.f", "CorkScrewReversalλ", "( Opening, Flow1,", "( Opening, ReversalFlags, Flow1,"),
+    ("ozzit.f", "Movementλ", "( [BeginningValue], Values)", "( [BeginningValues], Values)"),
+    ("ozzit.f", "LabelAmortiseλ", "λ([LoanNames])",
      "λ(LoanNames, [LoanAmounts], [LoanAPRs], [LoanTerms])"),
-    ("nabla.f", "Depreciateλ", "[Methods], [Factor])", "[Methods], [Factors])"),
-    ("nabla.f", "DBλ", "(Cost, Salvage, Life, [Month])", "(Cost, Salvage, Life, [Months])"),
-    ("nabla.f", "TimelineOffsetλ", "λ(ArrayStart, Timeline)", "λ(Date, Timeline)"),
-    ("nabla.f", "FilterContainsλ", "FilterByArray, Text,", "FilterByArray, FilterByText,"),
-    ("nabla.r", "QuickRatioλ", "λ( LiquidAssets, Liabilities)", "λ( QuickAssets, Liabilities)"),
-    ("nabla.r", "WorkingCapitalTurnoverRatioλ", "λ( CostOfGoodsSold, AverageInventory)",
+    ("ozzit.f", "Depreciateλ", "[Methods], [Factor])", "[Methods], [Factors])"),
+    ("ozzit.f", "DBλ", "(Cost, Salvage, Life, [Month])", "(Cost, Salvage, Life, [Months])"),
+    ("ozzit.f", "TimelineOffsetλ", "λ(ArrayStart, Timeline)", "λ(Date, Timeline)"),
+    ("ozzit.f", "FilterContainsλ", "FilterByArray, Text,", "FilterByArray, FilterByText,"),
+    ("ozzit.r", "QuickRatioλ", "λ( LiquidAssets, Liabilities)", "λ( QuickAssets, Liabilities)"),
+    ("ozzit.r", "WorkingCapitalTurnoverRatioλ", "λ( CostOfGoodsSold, AverageInventory)",
      "λ( NetAnnualSales, WorkingCapital)"),
-    ("nabla.r", "DSCRλ", "λ( NetOperatingIncome, Totaldebtservice)",
+    ("ozzit.r", "DSCRλ", "λ( NetOperatingIncome, Totaldebtservice)",
      "λ( NetOperatingIncome, TotalDebtService)"),
-    ("nabla.r", "CashFlowMarginλ", "λ( NetIncome, Revenue)",
+    ("ozzit.r", "CashFlowMarginλ", "λ( NetIncome, Revenue)",
      "λ( CashFlowFromOperatingActivities, Revenue)"),
-    ("nabla.r", "PriceToBookRatioλ", "BookValuePerShareBvps)", "BookValuePerShare)"),
-    ("nabla.r", "PriceToCashRatioλ", "λ( MarketPricePerShare, SalesPerShare)",
+    ("ozzit.r", "PriceToBookRatioλ", "BookValuePerShareBvps)", "BookValuePerShare)"),
+    ("ozzit.r", "PriceToCashRatioλ", "λ( MarketPricePerShare, SalesPerShare)",
      "λ( MarketPricePerShare, OperatingCashFlowPerShare)"),
     # Two parameter tables spell an argument differently again, in the label column. The
     # labels are padded to a fixed width, so the replacement keeps the column aligned.
-    ("nabla.f", "LabelAmortiseλ", '"LoanAPR       →', '"LoanAPRs      →'),
-    ("nabla.f", "LabelAmortiseλ", '"LoanTerm      →', '"LoanTerms     →'),
-    ("nabla.r", "DSCRλ", '"TotaldebtService   →', '"TotalDebtService   →'),
+    ("ozzit.f", "LabelAmortiseλ", '"LoanAPR       →', '"LoanAPRs      →'),
+    ("ozzit.f", "LabelAmortiseλ", '"LoanTerm      →', '"LoanTerms     →'),
+    ("ozzit.r", "DSCRλ", '"TotaldebtService   →', '"TotalDebtService   →'),
     # Four labels put the colon after the padding instead of before it, so the help
     # reads "EXAMPLES :" and its arrow sits one column right of every other row's.
     # These four are clones of one another; every other EXAMPLES label is already right.
-    ("nabla.e", "IsBetweenλ", '"EXAMPLES       :→', '"EXAMPLES:      →'),
-    ("nabla.e", "IsInListλ", '"EXAMPLES       :→', '"EXAMPLES:      →'),
-    ("nabla.u", "IsBetweenλ", '"EXAMPLES       :→', '"EXAMPLES:      →'),
-    ("nabla.u", "IsInListλ", '"EXAMPLES       :→', '"EXAMPLES:      →'),
+    ("ozzit.e", "IsBetweenλ", '"EXAMPLES       :→', '"EXAMPLES:      →'),
+    ("ozzit.e", "IsInListλ", '"EXAMPLES       :→', '"EXAMPLES:      →'),
+    ("ozzit.u", "IsBetweenλ", '"EXAMPLES       :→', '"EXAMPLES:      →'),
+    ("ozzit.u", "IsInListλ", '"EXAMPLES       :→', '"EXAMPLES:      →'),
     # IsBetweenλ's parameter table calls its second argument Lo, which is not what the
     # LAMBDA declares or what the signature above it says, and describes the upper limit
     # as the lower one, copied from the row above. The Dates module's own IsBetweenλ has
     # both right and reads "The higher limit that the value(s) must be less than".
-    ("nabla.e", "IsBetweenλ", '"Lo             →', '"Low            →'),
-    ("nabla.e", "IsBetweenλ", "(Required) The lower limit that the value must be less than",
+    ("ozzit.e", "IsBetweenλ", '"Lo             →', '"Low            →'),
+    ("ozzit.e", "IsBetweenλ", "(Required) The lower limit that the value must be less than",
      "(Required) The higher limit that the value must be less than"),
-    ("nabla.e", "IsBetweenλ", "equal to Lo and/or Hi", "equal to Low and/or Hi"),
-    ("nabla.u", "IsBetweenλ", '"Lo             →', '"Low            →'),
-    ("nabla.u", "IsBetweenλ", "(Required) The lower limit that the value must be less than",
+    ("ozzit.e", "IsBetweenλ", "equal to Lo and/or Hi", "equal to Low and/or Hi"),
+    ("ozzit.u", "IsBetweenλ", '"Lo             →', '"Low            →'),
+    ("ozzit.u", "IsBetweenλ", "(Required) The lower limit that the value must be less than",
      "(Required) The higher limit that the value must be less than"),
-    ("nabla.u", "IsBetweenλ", "equal to Lo and/or Hi", "equal to Low and/or Hi"),
+    ("ozzit.u", "IsBetweenλ", "equal to Lo and/or Hi", "equal to Low and/or Hi"),
     # EquityMultiplierλ's table drops the Total from its second parameter. The LAMBDA and
     # the signature agree on TotalShareholdersEquity; only the table shortens it, which is
     # the name the neighbouring DebtToEquityRatioλ genuinely uses.
-    ("nabla.r", "EquityMultiplierλ", '"ShareholdersEquity →(Required)',
+    ("ozzit.r", "EquityMultiplierλ", '"ShareholdersEquity →(Required)',
      '"TotalShareholdersEquity →(Required)'),
     # EquityRatioλ's table is not its own at all: it documents InterestCoverageRatioλ's two
     # arguments, which is the same copy that gave this function the wrong name until v1.2.3.
@@ -694,24 +694,24 @@ HELP_SIGNATURES = [
     # right for the function they belong to, which is how it went unnoticed: only the
     # call is wrong. RollingAvgλ is the same copy going the other way, its call correct
     # and its result lifted from RollingSumλ. Excel gives 1, 1.5, 2, 3, 4.
-    ("nabla.f", "RollingMinλ", "RollingMaxλ({5,3,4,6,2,7}, 3)", "RollingMinλ({5,3,4,6,2,7}, 3)"),
-    ("nabla.f", "RollingSumλ", "RollingMinλ(SEQUENCE(, 5), 3)", "RollingSumλ(SEQUENCE(, 5), 3)"),
-    ("nabla.f", "RollingAvgλ", '"1,3,6,9,12     →', '"1,1.5,2,3,4    →'),
-    ("nabla.d", "ScheduleValuesByItemsλ", "ScheduleRatesByItemsλ(", "ScheduleValuesByItemsλ("),
+    ("ozzit.f", "RollingMinλ", "RollingMaxλ({5,3,4,6,2,7}, 3)", "RollingMinλ({5,3,4,6,2,7}, 3)"),
+    ("ozzit.f", "RollingSumλ", "RollingMinλ(SEQUENCE(, 5), 3)", "RollingSumλ(SEQUENCE(, 5), 3)"),
+    ("ozzit.f", "RollingAvgλ", '"1,3,6,9,12     →', '"1,1.5,2,3,4    →'),
+    ("ozzit.d", "ScheduleValuesByItemsλ", "ScheduleRatesByItemsλ(", "ScheduleValuesByItemsλ("),
     # and one help points the reader at a function that does not exist, by transposition
-    ("nabla.f", "Amortiseλ", "LableAmortiseλ", "LabelAmortiseλ"),
+    ("ozzit.f", "Amortiseλ", "LableAmortiseλ", "LabelAmortiseλ"),
     # MaxColsλ's description was copied from MinColsλ and never changed, so both copies of
     # the function tell the reader they return the minimum. The Utilities clone says it too.
-    ("nabla.e", "MaxColsλ", "→Get the minimum for each Column", "→Get the maximum for each Column"),
-    ("nabla.u", "MaxColsλ", "→Get the minimum for each Column", "→Get the maximum for each Column"),
+    ("ozzit.e", "MaxColsλ", "→Get the minimum for each Column", "→Get the maximum for each Column"),
+    ("ozzit.u", "MaxColsλ", "→Get the minimum for each Column", "→Get the maximum for each Column"),
     # and CountColsλ's signature carries a trailing comma, so the printed call has an empty
     # second argument in it
-    ("nabla.e", "CountColsλ", "CountColsλ( Array,)", "CountColsλ( Array)"),
-    ("nabla.u", "CountColsλ", "CountColsλ( Array,)", "CountColsλ( Array)"),
-    ("nabla.r", "EquityRatioλ",
+    ("ozzit.e", "CountColsλ", "CountColsλ( Array,)", "CountColsλ( Array)"),
+    ("ozzit.u", "CountColsλ", "CountColsλ( Array,)", "CountColsλ( Array)"),
+    ("ozzit.r", "EquityRatioλ",
      '"OperatingIncome    →(Required) Operating Income (EBIT) ¶"',
      '"ShareholdersEquity →(Required) Shareholders\' Equity (total assets - total liabilities) ¶"'),
-    ("nabla.r", "EquityRatioλ",
+    ("ozzit.r", "EquityRatioλ",
      '"InterestExpenses   →(Required) Interest Expense ¶"',
      '"TotalAssets        →(Required) Both current and long-term assets¶" & \n'
      '                        "IntangibleAssets   →(Required) Deducted from total assets before '
@@ -730,42 +730,42 @@ HELP_SIGNATURES = [
     # timeline, one date inside it and one before it, since a date before the timeline is
     # what the function's own DISCUSSION comment is for. Both results are checked in a real
     # Excel by tools/excel_selftest.ps1. The name is still the module-qualified one here:
-    # the flat nb. namespace is applied much further down.
-    ("nabla.f", "TimelineOffsetλ",
-     '                                           "→=nabla.f.TimelineOffsetλ(""15/2/2024"", '
+    # the flat oz. namespace is applied much further down.
+    ("ozzit.f", "TimelineOffsetλ",
+     '                                           "→=ozzit.f.TimelineOffsetλ(""15/2/2024"", '
      'EDATE(""1/1/2025"", SEQUENCE( , 12, 0)"',
-     '                            "1              →=nabla.f.TimelineOffsetλ(""15/2/2026"", '
+     '                            "1              →=ozzit.f.TimelineOffsetλ(""15/2/2026"", '
      'EDATE(""1/1/2026"", SEQUENCE( , 12, 0)))¶" &\n'
-     '                            "-11            →=nabla.f.TimelineOffsetλ(""15/2/2025"", '
+     '                            "-11            →=ozzit.f.TimelineOffsetλ(""15/2/2025"", '
      'EDATE(""1/1/2026"", SEQUENCE( , 12, 0)))"',
-     '"→=nabla.f.TimelineOffsetλ(""15/2/2024"", EDATE(""1/1/2025"", SEQUENCE( , 12, 0)"',
-     '"1              →=nabla.f.TimelineOffsetλ(""15/2/2026"", EDATE(""1/1/2026"", '
-     'SEQUENCE( , 12, 0)))¶" &amp; "-11            →=nabla.f.TimelineOffsetλ(""15/2/2025"", '
+     '"→=ozzit.f.TimelineOffsetλ(""15/2/2024"", EDATE(""1/1/2025"", SEQUENCE( , 12, 0)"',
+     '"1              →=ozzit.f.TimelineOffsetλ(""15/2/2026"", EDATE(""1/1/2026"", '
+     'SEQUENCE( , 12, 0)))¶" &amp; "-11            →=ozzit.f.TimelineOffsetλ(""15/2/2025"", '
      'EDATE(""1/1/2026"", SEQUENCE( , 12, 0)))"'),
     # and its parameter table misspells the word the function is named after
-    ("nabla.f", "TimelineOffsetλ", "A model's timline (Row", "A model's timeline (Row"),
+    ("ozzit.f", "TimelineOffsetλ", "A model's timline (Row", "A model's timeline (Row"),
     # TimelinePositionλ's parameter table misspells the word the function is named after.
     # TimelineOffsetλ's copy of the same row was corrected in v2.5.0; this is the last one.
-    ("nabla.f", "TimelinePositionλ", "A model's timline", "A model's timeline"),
+    ("ozzit.f", "TimelinePositionλ", "A model's timline", "A model's timeline"),
     # and LabelDepreciateλ's table transposes "the"
-    ("nabla.f", "LabelDepreciateλ", "each asset in teh depreciation", "each asset in the depreciation"),
+    ("ozzit.f", "LabelDepreciateλ", "each asset in teh depreciation", "each asset in the depreciation"),
     # Amortiseλ now answers on a timeline shorter than a month, so its description says what
     # it does there rather than leaving a reader to infer it from a spilled block of noughts.
     # This rewrites the line rather than adding one. A function's help spills down its own
     # demonstration sheet, and this one has a single free row beneath it before the sample
     # data starts; two added rows blocked the spill and the whole help block came back an
     # error. Depreciateλ's sheet below has seven free rows and can take the two it gains.
-    ("nabla.f", "Amortiseλ",
+    ("ozzit.f", "Amortiseλ",
      '"→It assumes all payments are made monthly.¶"',
      '"→Payments are assumed monthly. On periods shorter than a month the figures for '
      'each month land in the period holding its start, the rest nil.¶"'),
     # Depreciateλ's timeline row named the three intervals its dead SWITCH lookups listed.
     # It has always accepted any interval and now collects the final period on the short ones.
-    ("nabla.f", "Depreciateλ",
+    ("ozzit.f", "Depreciateλ",
      "→Timeline can be in Months, Quarters, or Years¶",
      "→Timeline can be any interval: days, weeks, months, quarters or years¶"),
     # and its life row states the bound the function now enforces
-    ("nabla.f", "Depreciateλ",
+    ("ozzit.f", "Depreciateλ",
      '                            "LifeInYears    →(Required) The number of years with which to depreciate each asset¶" & \n',
      '                            "LifeInYears    →(Required) The number of years with which to depreciate each asset.¶" & \n'
      '                            "               →More than 0 and no more than 100. A date here is not a life:¶" & \n'
@@ -791,7 +791,7 @@ def stores(entry):
 # while its own signature, its parameter table and one of its two references all write
 # List. Excel resolves identifiers case-insensitively, so this renames the parameter to
 # match everything else rather than making the help shout back.
-ISINLIST = ("nabla.e", "nabla.u")
+ISINLIST = ("ozzit.e", "ozzit.u")
 
 
 def function_block(module, fn):
@@ -811,21 +811,21 @@ def function_block(module, fn):
 # different one. Each is anchored to the name above it, because the wording on its own is
 # also correct somewhere else: "Count numbers in each row" is right above CountRowsλ.
 BANNER_FIXES = [
-    ("nabla.e", "CountColsλ", "Count numbers in each row", "Count numbers in each column"),
-    ("nabla.u", "CountColsλ", "Count numbers in each row", "Count numbers in each column"),
-    ("nabla.e", "CountAColsλ", "Count everything in each row", "Count everything in each column"),
-    ("nabla.u", "CountAColsλ", "Count everything in each row", "Count everything in each column"),
-    ("nabla.e", "IsInListλ", "Determine if a value is between a lower and upper limit",
+    ("ozzit.e", "CountColsλ", "Count numbers in each row", "Count numbers in each column"),
+    ("ozzit.u", "CountColsλ", "Count numbers in each row", "Count numbers in each column"),
+    ("ozzit.e", "CountAColsλ", "Count everything in each row", "Count everything in each column"),
+    ("ozzit.u", "CountAColsλ", "Count everything in each row", "Count everything in each column"),
+    ("ozzit.e", "IsInListλ", "Determine if a value is between a lower and upper limit",
      "Determine whether a value is one of a list of items"),
-    ("nabla.u", "IsInListλ", "Determine if a value is between a lower and upper limit",
+    ("ozzit.u", "IsInListλ", "Determine if a value is between a lower and upper limit",
      "Determine whether a value is one of a list of items"),
 ]
 
 # and three banners misspell the name they announce
 BANNER_NAMES = [
-    ("nabla.f", "FUNCTION NAME:  →SumContainsλ", "FUNCTION NAME:  SumContainsλ"),
-    ("nabla.r", "FUNCTION NAME:  InterestCoverateRatioλ", "FUNCTION NAME:  InterestCoverageRatioλ"),
-    ("nabla.r", "FUNCTION NAME:  PriceToCashsRatioλ", "FUNCTION NAME:  PriceToCashRatioλ"),
+    ("ozzit.f", "FUNCTION NAME:  →SumContainsλ", "FUNCTION NAME:  SumContainsλ"),
+    ("ozzit.r", "FUNCTION NAME:  InterestCoverateRatioλ", "FUNCTION NAME:  InterestCoverageRatioλ"),
+    ("ozzit.r", "FUNCTION NAME:  PriceToCashsRatioλ", "FUNCTION NAME:  PriceToCashRatioλ"),
 ]
 
 for _mod, _fn, _old, _new in BANNER_FIXES:
@@ -888,24 +888,24 @@ LOGIC_FIXES = [
     # before "7/1/2025", and the help's own third example claims 12 shared days for two
     # January 2025 periods that share 2. Compare the converted values, which is what they
     # are for. Numbers and real dates are unaffected: converting one returns it unchanged.
-    ("nabla.d", "OverLapDaysλ",
+    ("ozzit.d", "OverLapDaysλ",
      "IF(Period2End <= Period1End, Period2End, Period1End)",
      "IF(CvtP2End <= CvtP1End, CvtP2End, CvtP1End)",
      "IF(_xlpm.Period2End &lt;= _xlpm.Period1End, _xlpm.Period2End, _xlpm.Period1End)",
      "IF(_xlpm.CvtP2End &lt;= _xlpm.CvtP1End, _xlpm.CvtP2End, _xlpm.CvtP1End)"),
-    ("nabla.d", "OverLapDaysλ",
+    ("ozzit.d", "OverLapDaysλ",
      "IF(Period2Start >= Period1Start, Period2Start, Period1Start)",
      "IF(CvtP2Start >= CvtP1Start, CvtP2Start, CvtP1Start)",
      "IF(_xlpm.Period2Start &gt;= _xlpm.Period1Start, _xlpm.Period2Start, _xlpm.Period1Start)",
      "IF(_xlpm.CvtP2Start &gt;= _xlpm.CvtP1Start, _xlpm.CvtP2Start, _xlpm.CvtP1Start)"),
-    ("nabla.d", "OverLapDaysλ",
-     '"12             →=nabla.d.OverLapDaysλ', '"2              →=nabla.d.OverLapDaysλ'),
+    ("ozzit.d", "OverLapDaysλ",
+     '"12             →=ozzit.d.OverLapDaysλ', '"2              →=ozzit.d.OverLapDaysλ'),
     # Periodsλ promises "Returns negative values if Date1 is after Date2" and cannot: the
     # difference is floored at 1 before SIGN sees it, so the sign is always +1 and the two
     # negative examples in its own help are unreachable. Take the sign of the difference
     # itself. Equal dates now give SIGN 0 rather than 1, which changes nothing, because
     # DATEDIF of a date with itself is 0 either way.
-    ("nabla.d", "Periodsλ",
+    ("ozzit.d", "Periodsλ",
      "SIGN(Max(DateTwo - DateOne, 1))", "SIGN(DateTwo - DateOne)",
      "SIGN(MAX(_xlpm.DateTwo - _xlpm.DateOne, 1))", "SIGN(_xlpm.DateTwo - _xlpm.DateOne)"),
     # VDBλ declares No_Switch, defaults it to FALSE, and then calls VDB without it, so the
@@ -913,14 +913,14 @@ LOGIC_FIXES = [
     # prints the FALSE answer, which is how it went unnoticed. Excel gives 300.00, 210.00,
     # 147.00, 102.90, 72.03 once the argument is passed, against the 121.50, 121.50 tail
     # that switching to straight line produces.
-    ("nabla.f", "VDBλ",
+    ("ozzit.f", "VDBλ",
      "VDB( Cost, Salvage, Life, SEQUENCE( , Life, 0), SEQUENCE( , Life), Factor)",
      "VDB( Cost, Salvage, Life, SEQUENCE( , Life, 0), SEQUENCE( , Life), Factor, No_Switch)",
      "VDB(_xlpm.Cost, _xlpm.Salvage, _xlpm.Life, _xlfn.SEQUENCE(, _xlpm.Life, 0), "
      "_xlfn.SEQUENCE(, _xlpm.Life), _xlpm.Factor)",
      "VDB(_xlpm.Cost, _xlpm.Salvage, _xlpm.Life, _xlfn.SEQUENCE(, _xlpm.Life, 0), "
      "_xlfn.SEQUENCE(, _xlpm.Life), _xlpm.Factor, _xlpm.No_Switch)"),
-    ("nabla.f", "VDBλ",
+    ("ozzit.f", "VDBλ",
      "→300.00,210.00,147.00,121.50,121.50", "→300.00,210.00,147.00,102.90,72.03"),
     # Periodsλ counted complete intervals where every one of its four worked examples counts
     # the period starts crossed between the two dates. It says so itself: the description
@@ -932,14 +932,14 @@ LOGIC_FIXES = [
     # week numbering, which restarts each 1 January and therefore labels every year with 53
     # weeks, the last of them one or two days long. That is what makes the help's fourth
     # example 53 rather than the 52 whole weeks the two dates are apart.
-    ("nabla.d", "Periodsλ",
+    ("ozzit.d", "Periodsλ",
      "        DPW, 7,     //Days Per Week\n",
      "        DPW, 7,     //Days Per Week\n"
      "        WPY, 53,    //Week labels Per Year: the last one runs 1 or 2 days\n"
      "        QPY, 4,     //Quarters Per Year\n",
      "_xlpm.DPW, 7, ",
      "_xlpm.DPW, 7, _xlpm.WPY, 53, _xlpm.QPY, 4, "),
-    ("nabla.d", "Periodsλ",
+    ("ozzit.d", "Periodsλ",
      '                                Latest,     MAX(DateOne, DateTwo) , //+ 1,\n'
      '                                Sign,       SIGN(DateTwo - DateOne),\n'
      '                                Periods,    Switch(Interval,   \n'
@@ -984,15 +984,15 @@ LOGIC_FIXES = [
      '"Y", YEAR(_xlpm.Latest) - YEAR(_xlpm.Earliest)), '),
     # and the third example passes four arguments to a function that takes three, so it is
     # the one line in this help a reader cannot copy. The -12 it claims is right without it.
-    ("nabla.d", "Periodsλ", '", , FALSE)', '")'),
+    ("ozzit.d", "Periodsλ", '", , FALSE)', '")'),
     # the description's shorthand for what changed, in the row that already carried it
-    ("nabla.d", "Periodsλ", "* End Date is inclusive",
+    ("ozzit.d", "Periodsλ", "* End Date is inclusive",
      "* Counts the period starts crossed, so a part period at the end counts"),
     # Four more functions convert a date argument and then use the raw one, the same defect
     # OverLapDaysλ had. None is reachable through a demonstration sheet, because every one of
     # them is called there with real dates, and converting a date returns it unchanged. Pass
     # any of them a date written as text and the conversion is still thrown away.
-    ("nabla.d", "PeriodLabelλ",
+    ("ozzit.d", "PeriodLabelλ",
      '        Result,     SWITCH(Interval,\n'
      '                        "D", TEXT(Date, "yyyy-mmm-dd"),\n'
      '                        "W", YEAR(Date) & ":W" & TEXT(QUOTIENT(Date - DATE(YEAR(Date), 1, 0) - 1, 7) + 1, "00"),\n'
@@ -1025,12 +1025,12 @@ LOGIC_FIXES = [
      '"Q", YEAR(_xlpm.CvtDate) &amp; ":Q" &amp; QUOTIENT(MONTH(_xlpm.CvtDate) - 1, 3) + 1, '
      '"S", YEAR(_xlpm.CvtDate) &amp; ":S" &amp; QUOTIENT(MONTH(_xlpm.CvtDate) - 1, 6) + 1, '
      '"A", TEXT(_xlpm.CvtDate, "YYYY"), "Y", TEXT(_xlpm.CvtDate, "YYYY"), #VALUE!'),
-    ("nabla.d", "ScheduleRatesλ",
+    ("ozzit.d", "ScheduleRatesλ",
      'XLOOKUP(PeriodEnds, RateStarts, Rates, "", -1)',
      'XLOOKUP(CvtEnds, CvtStarts, Rates, "", -1)',
      '_xlfn.XLOOKUP(_xlpm.PeriodEnds, _xlpm.RateStarts, _xlpm.Rates, "", -1)',
      '_xlfn.XLOOKUP(_xlpm.CvtEnds, _xlpm.CvtStarts, _xlpm.Rates, "", -1)'),
-    ("nabla.d", "ScheduleValuesλ",
+    ("ozzit.d", "ScheduleValuesλ",
      '                            SEQUENCE(, COLUMNS(PeriodStarts)), \n'
      '                            LAMBDA(Period, \n'
      '                                LET(StartDate,  INDEX(PeriodStarts, Period), \n'
@@ -1045,7 +1045,7 @@ LOGIC_FIXES = [
      '_xlfn.SEQUENCE(, COLUMNS(_xlpm.CvtPrdStarts)), _xlfn.LAMBDA(_xlpm.Period, '
      '_xlfn.LET(_xlpm.StartDate, INDEX(_xlpm.CvtPrdStarts, _xlpm.Period), '
      '_xlpm.EndDate, INDEX(_xlpm.CvtPrdEnds, _xlpm.Period),'),
-    ("nabla.d", "Timelineλ",
+    ("ozzit.d", "Timelineλ",
      '                            "Y", EDATE(StartDate, SEQUENCE(1, Periods, EndDates * MPY, MPY)) - EndDates,\n'
      '                            "Q", EDATE(StartDate, SEQUENCE(1, Periods, EndDates * MPQ, MPQ)) - EndDates,\n'
      '                            "M", EDATE(StartDate, SEQUENCE(1, Periods, EndDates, 1)) - EndDates,\n'
@@ -1070,12 +1070,12 @@ LOGIC_FIXES = [
     # the Cvt check added then does not see it: each one does read its conversion, but only
     # to hand it to the recursive call, so the first row of the result is computed from the
     # raw argument and every row below it from the converted one, off the same call.
-    ("nabla.d", "ScheduleValuesByItemsλ",
+    ("ozzit.d", "ScheduleValuesByItemsλ",
      "(ItemDates >= PeriodStarts) * (ItemDates <= PeriodEnds)",
      "(ItemDates >= CvtPrdStarts) * (ItemDates <= CvtPrdEnds)",
      "(_xlpm.ItemDates &gt;= _xlpm.PeriodStarts) * (_xlpm.ItemDates &lt;= _xlpm.PeriodEnds)",
      "(_xlpm.ItemDates &gt;= _xlpm.CvtPrdStarts) * (_xlpm.ItemDates &lt;= _xlpm.CvtPrdEnds)"),
-    ("nabla.d", "ScheduleRatesByItemsλ",
+    ("ozzit.d", "ScheduleRatesByItemsλ",
      "XLOOKUP( PeriodEnds, ItemDates, ItemRates, 0, -1)",
      "XLOOKUP( CvtPrdEnds, ItemDates, ItemRates, 0, -1)",
      "_xlfn.XLOOKUP(_xlpm.PeriodEnds, _xlpm.ItemDates, _xlpm.ItemRates, 0, -1)",
@@ -1092,7 +1092,7 @@ LOGIC_FIXES = [
     # has one and clamps to the month's end where it does not. Checked against every date
     # from 2024 to 2030 at 13-day steps, for eleven anchors and five period lengths: 169
     # of 9,900 came back wrong, all of them month-end anchors.
-    ("nabla.f", "PeriodStartλ",
+    ("ozzit.f", "PeriodStartλ",
      '    //  Procedure\n'
      '        DateDay,            DAY(DateOfInterest), \n'
      '        PeriodDay,          Day(AnyPeriodStart),\n'
@@ -1139,11 +1139,11 @@ LOGIC_FIXES = [
     # TimelineOffsetλ reads a timeline's interval off its first two dates and converts it
     # to whole months. A daily, weekly or fortnightly timeline is no whole number of months
     # long, so that rounds to zero and the next line divides by it: every such call returned
-    # #DIV/0!, and nb.Amortiseλ calls this on every timeline it is given. Those intervals are
+    # #DIV/0!, and oz.Amortiseλ calls this on every timeline it is given. Those intervals are
     # a fixed number of days, which is exactly what makes them easy: count the days instead.
     # The month path is untouched, and gives the same answer it always did on monthly,
     # quarterly and yearly timelines, including those anchored on a month end.
-    ("nabla.f", "TimelineOffsetλ",
+    ("ozzit.f", "TimelineOffsetλ",
      '        MpP,            ROUND( (Period2 - Period1)/30.5, 0), //Months Per Period\n',
      '        DpP,            Period2 - Period1,                    //Days Per Period\n'
      '        MpP,            MAX( ROUND( DpP/30.5, 0), 1),         //Months Per Period, never zero\n'
@@ -1151,7 +1151,7 @@ LOGIC_FIXES = [
      '_xlpm.MpP, ROUND((_xlpm.Period2 - _xlpm.Period1) / 30.5, 0), ',
      '_xlpm.DpP, _xlpm.Period2 - _xlpm.Period1, _xlpm.MpP, MAX(ROUND(_xlpm.DpP / 30.5, 0), 1), '
      '_xlpm.SubMonthly?, ROUND(_xlpm.DpP / 30.5, 0) = 0, '),
-    ("nabla.f", "TimelineOffsetλ",
+    ("ozzit.f", "TimelineOffsetλ",
      '        Result,         MATCH( Date, SearchTimeline, 1) - IF( Direction = 1, 1, PeriodDiff + 2),        \n',
      '        ByMonth,        MATCH( Date, SearchTimeline, 1) - IF( Direction = 1, 1, PeriodDiff + 2),\n'
      '    //  A sub-monthly timeline is a fixed number of days per period, so the offset is the\n'
@@ -1170,7 +1170,7 @@ LOGIC_FIXES = [
     # measure correctly and the schedule arithmetic is generic in the count, confirmed in
     # Excel on a six-month timeline. PpY divides twelve by that count and nothing reads it,
     # so it goes rather than gaining a guard it does not need.
-    ("nabla.f", "Amortiseλ",
+    ("ozzit.f", "Amortiseλ",
      '        MpP,                @ROUND(( SecondPeriod - FirstPeriod) / ADpM, 0),\n'
      '        PpY,                MpY / MpP,\n',
      '        DpP,                SecondPeriod - FirstPeriod,                 //Days Per Period\n'
@@ -1191,7 +1191,7 @@ LOGIC_FIXES = [
     # figures in the period that contains that month's start and leave the periods between
     # them nil, which is what Depreciateλ has always done on the same timelines. The month
     # path is untouched.
-    ("nabla.f", "Amortiseλ",
+    ("ozzit.f", "Amortiseλ",
      '                    NewBlock,           TimelinePositionλ(AmortisationSched, Timeline, Offset),\n',
      '                //  A sub-monthly period is a fixed number of days, so each month lands in\n'
      '                //  the one period that contains its start and the periods between are nil.\n'
@@ -1214,7 +1214,7 @@ LOGIC_FIXES = [
      '                    NewBlock,           IF( SubMonthly?,\n'
      '                                            ByDate,\n'
      '                                            TimelinePositionλ(AmortisationSched, Timeline, Offset)),\n',
-     '_xlpm.NewBlock, nabla.f.TimelinePositionλ(_xlpm.AmortisationSched, _xlpm.Timeline, _xlpm.Offset), ',
+     '_xlpm.NewBlock, ozzit.f.TimelinePositionλ(_xlpm.AmortisationSched, _xlpm.Timeline, _xlpm.Offset), ',
      '_xlpm.MonthStarts, EDATE(_xlpm.StartDate, _xlfn.SEQUENCE(, _xlpm.Periods, 0)), '
      '_xlpm.ByDate, _xlfn.MAKEARRAY(ROWS(_xlpm.AmortisationSched), COUNTA(_xlpm.Timeline), '
      '_xlfn.LAMBDA(_xlpm.R,_xlpm.C, _xlfn.LET(_xlpm.PeriodOpens, INDEX(_xlpm.Timeline, _xlpm.C), '
@@ -1224,7 +1224,7 @@ LOGIC_FIXES = [
      '* (_xlpm.MonthStarts &gt;= _xlpm.PeriodOpens) '
      '* (_xlpm.MonthStarts &lt; _xlpm.PeriodShut))))), '
      '_xlpm.NewBlock, IF(_xlpm.SubMonthly?, _xlpm.ByDate, '
-     'nabla.f.TimelinePositionλ(_xlpm.AmortisationSched, _xlpm.Timeline, _xlpm.Offset)), '),
+     'ozzit.f.TimelinePositionλ(_xlpm.AmortisationSched, _xlpm.Timeline, _xlpm.Offset)), '),
     # Depreciateλ reads the same interval and, unlike Amortiseλ, survives a sub-monthly one:
     # measured in Excel, a weekly timeline already returns each month's depreciation in the
     # week holding that month's start. One thing does not survive. Every period but the last
@@ -1240,7 +1240,7 @@ LOGIC_FIXES = [
     # Excel never evaluates them, which is why two-, four- and six-month timelines have
     # always returned correct schedules rather than the #N/A the source implies. Removed
     # with their readers below rather than generalised.
-    ("nabla.f", "Depreciateλ",
+    ("ozzit.f", "Depreciateλ",
      '        MpP,            @ROUND(( SecondPeriod - FirstPeriod) / 30.5, 0), //Months Per Period\n'
      '        Interval,       SWITCH( MpP, 1, "M", 3, "Q", 12, "Y"),\n'
      '        PpY,            SWITCH( MpP, 1, 12, 3, 4, 12, 1),                //Periods Per Year\n'
@@ -1269,22 +1269,22 @@ LOGIC_FIXES = [
      '_xlpm.EndDates, _xlfn.HSTACK(_xlfn.MAP(_xlfn.SEQUENCE(, _xlpm.TimelineCols - 1), '
      '_xlfn.LAMBDA(_xlpm.n, INDEX(_xlpm.Timeline, _xlpm.n + 1) - 1)), _xlpm.LastEnd), '),
     # and the two bindings that read them, which nothing else reads
-    ("nabla.f", "Depreciateλ",
+    ("ozzit.f", "Depreciateλ",
      '                                    LifeInPeriods,  Years * PpY,\n'
      '                                    LifeInMonths,   PeriodDiffλ( InserviceDate, DisposalDate, "M"),\n'
      '                                    LastPeriod,     PeriodDiffλ( InserviceDate, DisposalDate, Interval),\n',
      '                                    LifeInMonths,   PeriodDiffλ( InserviceDate, DisposalDate, "M"),\n',
      '_xlpm.LifeInPeriods, _xlpm.Years * _xlpm.PpY, '
-     '_xlpm.LifeInMonths, nabla.f.PeriodDiffλ(_xlpm.InServiceDate, _xlpm.DisposalDate, "M"), '
-     '_xlpm.LastPeriod, nabla.f.PeriodDiffλ(_xlpm.InServiceDate, _xlpm.DisposalDate, _xlpm.Interval), ',
-     '_xlpm.LifeInMonths, nabla.f.PeriodDiffλ(_xlpm.InServiceDate, _xlpm.DisposalDate, "M"), '),
+     '_xlpm.LifeInMonths, ozzit.f.PeriodDiffλ(_xlpm.InServiceDate, _xlpm.DisposalDate, "M"), '
+     '_xlpm.LastPeriod, ozzit.f.PeriodDiffλ(_xlpm.InServiceDate, _xlpm.DisposalDate, _xlpm.Interval), ',
+     '_xlpm.LifeInMonths, ozzit.f.PeriodDiffλ(_xlpm.InServiceDate, _xlpm.DisposalDate, "M"), '),
     # Depreciateλ takes InitialValues, InServiceDates, LifeInYears, Timeline. Transposing the
     # middle two puts a date serial where the life belongs, and 1 January 2026 is 46,023, so
     # the function is asked for a schedule 552,276 months long and stops responding rather
     # than answering. No asset has a life over a hundred years, so say so and return a
     # message naming the argument order. The life is clamped where the check fails as well as
     # reported, because a message is no use if the arrays are built before anything reads it.
-    ("nabla.f", "Depreciateλ",
+    ("ozzit.f", "Depreciateλ",
      '        Mpy,            12, //Months Per Year\n',
      '        Mpy,            12, //Months Per Year\n'
      '    //  Check inputs - a life in years must be a life, not a date\n'
@@ -1300,12 +1300,12 @@ LOGIC_FIXES = [
      '_xlpm.BadLife?, OR(MIN(_xlpm.LifeNums) &lt;= 0, MAX(_xlpm.LifeNums) &gt; 100), '
      '_xlpm.LifeMessage, "LifeInYears must be a number of years greater than 0 and no more than 100. " '
      '&amp; "Check the argument order: InitialValues, InServiceDates, LifeInYears, Timeline.", '),
-    ("nabla.f", "Depreciateλ",
+    ("ozzit.f", "Depreciateλ",
      '                                    Years,          @INDEX( LifeInYears, Asset),\n',
      '                                    Years,          IF( BadLife?, 1, @INDEX( LifeInYears, Asset)),\n',
      '_xlpm.Years, _xlfn.SINGLE(INDEX(_xlpm.LifeInYears, _xlpm.Asset))',
      '_xlpm.Years, IF(_xlpm.BadLife?, 1, _xlfn.SINGLE(INDEX(_xlpm.LifeInYears, _xlpm.Asset)))'),
-    ("nabla.f", "Depreciateλ",
+    ("ozzit.f", "Depreciateλ",
      '    //  Return Result\n'
      '        CHOOSE(Help? + 1, Result, Help)\n',
      '    //  Return Result, Help, or the message\n'
@@ -1323,7 +1323,7 @@ LOGIC_FIXES = [
     # its own index. Every published result is unchanged, the last-column adjustment included:
     # it is still the amount less the SUM of the same array of equal parts, in the same order,
     # so the floating-point residue is identical to the bit.
-    ("nabla.f", "Allocateλ",
+    ("ozzit.f", "Allocateλ",
      '        Result,         REDUCE( 0, SEQUENCE( , FromCount),\n'
      '                            LAMBDA( Acc, n,\n'
      '                                LET( \n'
@@ -1406,7 +1406,7 @@ DEBT_FIXES = [
     # at the principal less the interest, and take it off the balance. A negative repayment
     # needs no special case: when the cash cannot cover the interest, subtracting a negative
     # capitalises the shortfall, which is what should happen.
-    ("nabla.debt", "DebtSculptVariableLRVλ",
+    ("ozzit.debt", "DebtSculptVariableLRVλ",
      "MIN(_xlpm.PeriodCFADS / _xlpm.PeriodDSCR - _xlpm.Interest, _xlpm.Principal - _xlpm.Interest), "
      "_xlpm.ClosingDebt, _xlpm.Principal + _xlpm.Interest - _xlpm.Payment",
      "MIN(_xlpm.PeriodCFADS / _xlpm.PeriodDSCR - _xlpm.Interest, _xlpm.Principal), "
@@ -1416,14 +1416,14 @@ DEBT_FIXES = [
     # figures that row reads 250 where the principal repaid is 190. Only the label is wrong.
     # DebtSculptVariableLRVλ keeps the label, because with the fix above its third row is
     # the principal repayment.
-    ("nabla.debt", "DebtSculptFixedλ",
+    ("ozzit.debt", "DebtSculptFixedλ",
      "→Principal repayments¶", "→Debt service (interest and principal)¶"),
-    ("nabla.debt", "DebtSculptVariableλ",
+    ("ozzit.debt", "DebtSculptVariableλ",
      "→Principal repayments¶", "→Debt service (interest and principal)¶"),
     # and the LRV function's one worked example calls its sibling rather than itself, with
     # the closing bracket missing as well, so the line a reader copies runs the schedule
     # this release has just made behave differently.
-    ("nabla.debt", "DebtSculptVariableLRVλ",
+    ("ozzit.debt", "DebtSculptVariableLRVλ",
      "→=DebtSculptVariableλ(, Debt, CFADS, DSCR, APR\"",
      "→=DebtSculptVariableLRVλ(, Debt, CFADS, DSCR, APR)\""),
     # InterestLRVλ solves for the interest on the average balance over the period, taking the
@@ -1442,7 +1442,7 @@ DEBT_FIXES = [
     # principal, nowhere near the cap, and still prints 222.90. No balance moves anywhere,
     # because the closing balance is the principal less the payment and never read the
     # interest, which is why the balance identities in the self-test could not see this.
-    ("nabla.debt", "InterestLRVλ",
+    ("ozzit.debt", "InterestLRVλ",
      "_xlpm.Payment, IF(_xlpm.DoNotUse = 0, _xlpm.CFADS / _xlpm.DSCR, _xlpm.DoNotUse), "
      "_xlpm.Interest, (_xlpm.Principal - _xlpm.Payment / 2) * _xlpm.InterestRate, "
      "_xlpm.Repayment, -_xlpm.CFADS / _xlpm.DSCR + _xlpm.Interest, ",
@@ -1450,35 +1450,35 @@ DEBT_FIXES = [
      "_xlpm.Interest, (_xlpm.Principal - _xlpm.Payment / 2) * _xlpm.InterestRate, "
      "_xlpm.Repayment, -MIN(_xlpm.CFADS / _xlpm.DSCR - _xlpm.Interest, _xlpm.Principal), "),
     # and its description says which balance the interest is charged on
-    ("nabla.debt", "InterestLRVλ",
+    ("ozzit.debt", "InterestLRVλ",
      "→Calculates debt sculpting interest using method presented by Lance Rubin¶",
      "→Calculates debt sculpting interest using method presented by Lance Rubin.¶"
      "→Charged on the average balance over the period, with the principal repaid¶"
      "→capped at the principal outstanding.¶"),
 ]
 
-# fix upstream copy-paste bug: the u module's About suggested "nabla.e" (was BXE) as its own name
-assert "Suggested module name: nabla.e" in mods["nabla.u"]["text"]
-mods["nabla.u"]["text"] = mods["nabla.u"]["text"].replace(
-    "Suggested module name: nabla.e", "Suggested module name: nabla.u")
+# fix upstream copy-paste bug: the u module's About suggested "ozzit.e" (was BXE) as its own name
+assert "Suggested module name: ozzit.e" in mods["ozzit.u"]["text"]
+mods["ozzit.u"]["text"] = mods["ozzit.u"]["text"].replace(
+    "Suggested module name: ozzit.e", "Suggested module name: ozzit.u")
 
 # append the Australian additions to their modules and list them in the f module's About table
 for spec in FUNCS:
     mod = spec["module"].split(".", 1)[1]
-    mods["nabla." + mod]["text"] = mods["nabla." + mod]["text"].rstrip() + "\n\n\n\n" + build_afe(spec)
-_dep = [f for f in FUNCS if f["module"] == "nabla.f" and "GST" not in f["name"]]
-_gst = [f for f in FUNCS if f["module"] == "nabla.f" and "GST" in f["name"]]
+    mods["ozzit." + mod]["text"] = mods["ozzit." + mod]["text"].rstrip() + "\n\n\n\n" + build_afe(spec)
+_dep = [f for f in FUNCS if f["module"] == "ozzit.f" and "GST" not in f["name"]]
+_gst = [f for f in FUNCS if f["module"] == "ozzit.f" and "GST" in f["name"]]
 about_add = "".join('"%-19s→%s¶" & \n%s' % (f["name"], f["desc"], " " * 43) for f in _dep)
 about_add += '"→¶" & \n%s"AUSTRALIAN TAX     →¶" & \n%s' % (" " * 43, " " * 43)
 about_add += "".join('"%-19s→%s¶" & \n%s' % (f["name"], f["desc"], " " * 43) for f in _gst)
 anchor = '"VDBλ               →Variable declining balance depreciation method for one asset or asset class.¶" & '
-assert mods["nabla.f"]["text"].count(anchor) == 1
-mods["nabla.f"]["text"] = mods["nabla.f"]["text"].replace(anchor, anchor + "\n" + " " * 43 + about_add)
+assert mods["ozzit.f"]["text"].count(anchor) == 1
+mods["ozzit.f"]["text"] = mods["ozzit.f"]["text"].replace(anchor, anchor + "\n" + " " * 43 + about_add)
 
 # list the new dates function in its module's About table
 d_anchor = '"Timelineλ              →Creates a horizontal list of start or end dates for a timeline¶" & '
-assert mods["nabla.d"]["text"].count(d_anchor) == 1
-mods["nabla.d"]["text"] = mods["nabla.d"]["text"].replace(
+assert mods["ozzit.d"]["text"].count(d_anchor) == 1
+mods["ozzit.d"]["text"] = mods["ozzit.d"]["text"].replace(
     d_anchor,
     d_anchor + '\n        "%-23s→%s¶" &' % ("FinancialYearλ", "Labels dates with their Australian financial year, starting 1 July"))
 
@@ -1487,10 +1487,10 @@ obj_afe["locale"]["localeName"] = "en-au"
 obj_afe["locale"]["dateOrder"] = "DMY"
 
 names = obj_afe["projectNames"]
-assert "nabla.f.MACRSλ" in names
-names.remove("nabla.f.MACRSλ")
-if "nabla.f.SumDepreciateλ" not in names:  # upstream omitted it from the index
-    names.append("nabla.f.SumDepreciateλ")
+assert "ozzit.f.MACRSλ" in names
+names.remove("ozzit.f.MACRSλ")
+if "ozzit.f.SumDepreciateλ" not in names:  # upstream omitted it from the index
+    names.append("ozzit.f.SumDepreciateλ")
 for spec in FUNCS:
     full = spec["module"] + "." + spec["name"]
     if full not in names:
@@ -1646,7 +1646,7 @@ def left_of(ref):
 # not distinctive: forty-odd cells across the workbook cache that number. Find the row by
 # the formula beside it, which names the function and its arguments, and rewrite only the
 # cell to its left. The marker leaves off the module prefix, because this runs before the
-# flat rename and the cell still reads nabla.d. rather than the nb. it ships as.
+# flat rename and the cell still reads ozzit.d. rather than the oz. it ships as.
 CACHED_EXAMPLES = [('OverLapDaysλ("17/1/2025"', "12", "2")]
 
 CELL = re.compile(r'<c r="([A-Z]+\d+)"[^>]*>((?:(?!<c[ /]).)*?)</c>', re.S)
@@ -1681,8 +1681,8 @@ CACHED_SHEET_CELLS = [
     ("Periodsλ(A25:A29,B25:B29,C25:C29)", [
         ("B8", "* End Date is inclusive",
          "* Counts the period starts crossed, so a part period at the end counts"),
-        ("B19", '=nabla.d.Periodsλ("15/1/2026", "16/1/2025", , FALSE)',
-         '=nabla.d.Periodsλ("15/1/2026", "16/1/2025")'),
+        ("B19", '=ozzit.d.Periodsλ("15/1/2026", "16/1/2025", , FALSE)',
+         '=ozzit.d.Periodsλ("15/1/2026", "16/1/2025")'),
         ("D25", "#VALUE!", "9"),      # 28 Feb 2026 to 30 Nov 2026, months
         ("D26", "#VALUE!", "5"),      # 30 Jun 2026 to 1 Aug 2027, quarters
         ("D27", "#VALUE!", "3"),      # 1 Jan 2026 to 1 Jan 2029, years
@@ -1790,7 +1790,7 @@ print("Amortiseλ demo: first loan moved to 1 Mar 2026, caption restated")
 
 # ---------- 8a5. sheet32: repair inherited #REF! Timeline argument ----------
 s32 = get("xl/worksheets/sheet32.xml")
-s32b = s32.replace('nabla.d.Timelineλ( E23, D23, "Y",#REF!)', 'nabla.d.Timelineλ( E23, D23, "Y")')
+s32b = s32.replace('ozzit.d.Timelineλ( E23, D23, "Y",#REF!)', 'ozzit.d.Timelineλ( E23, D23, "Y")')
 assert s32b != s32
 put("xl/worksheets/sheet32.xml", s32b)
 
@@ -1839,7 +1839,7 @@ for path in parts:
 
 # ---------- 8a3. Remove dead TOC hyperlink (row points at a worksheet that never existed) ----------
 toc = get("xl/worksheets/sheet2.xml")
-toc2 = re.sub(r'<hyperlink ref="A28" location="\'nabla\.f\.Aboutλ\'![^"]*"[^>]*/>', "", toc)
+toc2 = re.sub(r'<hyperlink ref="A28" location="\'ozzit\.f\.Aboutλ\'![^"]*"[^>]*/>', "", toc)
 assert toc2 != toc
 put("xl/worksheets/sheet2.xml", toc2)
 
@@ -1856,12 +1856,12 @@ for path, nm in sheetmap.items():
     new_c = ('<c r="A1" s="\\1" t="str">'
              '<f>_xlfn.TEXTAFTER(CELL("filename",A1),"]")</f>'
              '<v>%s</v></c>' % nm)
-    d2, c1 = re.subn(r'<c r="A1" s="(\d+)" t="e" cm="1"><f t="array" ref="A1">nabla\.u\.Sheetλ</f><v>#NAME\?</v></c>', new_c, d)
-    d2, c2 = re.subn(r'<c r="A1" s="(\d+)" t="e"><f>nabla\.u\.Sheetλ</f><v>#NAME\?</v></c>', new_c, d2)
+    d2, c1 = re.subn(r'<c r="A1" s="(\d+)" t="e" cm="1"><f t="array" ref="A1">ozzit\.u\.Sheetλ</f><v>#NAME\?</v></c>', new_c, d)
+    d2, c2 = re.subn(r'<c r="A1" s="(\d+)" t="e"><f>ozzit\.u\.Sheetλ</f><v>#NAME\?</v></c>', new_c, d2)
     if c1 + c2:
         fixed_titles += c1 + c2
         put(path, d2)
-leftover = [p for p in sheetmap if "nabla.u.Sheetλ" in get(p)]
+leftover = [p for p in sheetmap if "ozzit.u.Sheetλ" in get(p)]
 assert fixed_titles >= 40 and not leftover, (fixed_titles, leftover)
 print("fixed", fixed_titles, "Sheetλ title cells")
 
@@ -1876,11 +1876,11 @@ if "fullCalcOnLoad" not in m.group(0):
     wb = wb.replace(m.group(0), m.group(0)[:-2] + ' fullCalcOnLoad="1"/>')
 put("xl/workbook.xml", wb)
 
-# ---------- 9b. Define nabla.e.Aboutλ (original defect: called on its sheet, never defined; source in AFE) ----------
+# ---------- 9b. Define ozzit.e.Aboutλ (original defect: called on its sheet, never defined; source in AFE) ----------
 store = json.loads(j2)
 wb = get("xl/workbook.xml")
 for mod in ("e", "d"):  # both modules ship an Aboutλ source that was never installed
-    text = next(f["text"] for f in store["files"] if f["path"] == "/projects/nabla." + mod)
+    text = next(f["text"] for f in store["files"] if f["path"] == "/projects/ozzit." + mod)
     i = text.index("Aboutλ = ")
     expr = text[i + len("Aboutλ = "):]
     depth = 0; in_str = False; end = None
@@ -1894,15 +1894,15 @@ for mod in ("e", "d"):  # both modules ship an Aboutλ source that was never ins
     body = " ".join(expr[:end].split())
     assert re.match(r'TRIM\(\s*TEXTSPLIT\(', body) and body.count('"') % 2 == 0
     body = body.replace("TEXTSPLIT(", "_xlfn.TEXTSPLIT(")
-    full = "nabla.%s.Aboutλ" % mod
+    full = "ozzit.%s.Aboutλ" % mod
     assert '<definedName name="%s"' % full not in wb
     wb = wb.replace("</definedNames>",
                     '<definedName name="%s" comment="Displays this module\'s repository URL and function list">%s</definedName></definedNames>'
                     % (full, xesc(body)))
     print("%s defined, %d chars" % (full, len(body)))
 # same upstream copy-paste bug in the installed u-module About
-wb = re.sub(r'(<definedName name="nabla\.u\.Aboutλ"[^>]*>[^<]*?)Suggested module name: nabla\.e',
-            r'\g<1>Suggested module name: nabla.u', wb)
+wb = re.sub(r'(<definedName name="ozzit\.u\.Aboutλ"[^>]*>[^<]*?)Suggested module name: ozzit\.e',
+            r'\g<1>Suggested module name: ozzit.u', wb)
 put("xl/workbook.xml", wb)
 
 # ---------- 9c. Remove MACRS from the compiled workbook and register the new functions ----------
@@ -1914,9 +1914,9 @@ WB_MACRS = [
      '_xlpm.Years * _xlpm.Mpy), _xlfn.SINGLE(INDEX(_xlpm.DisposalDates, _xlpm.Asset))), '
      '_xlfn.SINGLE(INDEX(_xlpm.DisposalDates, _xlpm.Asset)))',
      '_xlpm.DisposalDate, _xlfn.SINGLE(INDEX(_xlpm.DisposalDates, _xlpm.Asset))'),
-    ('nabla.f.MACRSλ(_xlpm.InitialValue, _xlpm.Years - 1)',
-     'nabla.f.DiminishingValueλ(_xlpm.InitialValue, _xlpm.Years), '
-     'nabla.f.PrimeCostλ(_xlpm.InitialValue, _xlpm.Years)'),
+    ('ozzit.f.MACRSλ(_xlpm.InitialValue, _xlpm.Years - 1)',
+     'ozzit.f.DiminishingValueλ(_xlpm.InitialValue, _xlpm.Years), '
+     'ozzit.f.PrimeCostλ(_xlpm.InitialValue, _xlpm.Years)'),
     ('"SLN,SYD,DB,DDB,VDB,MACRS"', '"SLN,SYD,DB,DDB,VDB,DV,PC"'),
     ('Methods must be omitted or one of: SLN, SYD, DB, DDB, MACRS, or VDB.',
      'Methods must be omitted or one of: SLN, SYD, DB, DDB, VDB, DV, or PC.'),
@@ -1929,7 +1929,7 @@ wb = get("xl/workbook.xml")
 for old, new in WB_MACRS:
     assert wb.count(old) == 1, old[:70]
     wb = wb.replace(old, new)
-wb, n = re.subn(r'<definedName name="nabla\.f\.MACRSλ"[^>]*>[^<]*</definedName>', "", wb)
+wb, n = re.subn(r'<definedName name="ozzit\.f\.MACRSλ"[^>]*>[^<]*</definedName>', "", wb)
 assert n == 1
 # list the new f-module functions in its About table
 anchor = ('"VDBλ               →Variable declining balance depreciation method for one asset '
@@ -2094,9 +2094,9 @@ AU_ROWS = {
     5:  txt("A5", H, "Cost") + txt("B5", H, "Effective life (years)"),
     6:  num("A6", MONEY, 50000) + num("B6", 0, 5),
     8:  txt("A8", 0, "Diminishing balance at 200% of straight line")
-        + fml("B8", MONEY, "nabla.f.DiminishingValueλ($A$6,$B$6)", spill="B8:F8"),
+        + fml("B8", MONEY, "ozzit.f.DiminishingValueλ($A$6,$B$6)", spill="B8:F8"),
     9:  txt("A9", 0, "Straight line, whole years")
-        + fml("B9", MONEY, "nabla.f.PrimeCostλ($A$6,$B$6)", spill="B9:F9"),
+        + fml("B9", MONEY, "ozzit.f.PrimeCostλ($A$6,$B$6)", spill="B9:F9"),
     # Both schedules must write off the whole cost, whatever the effective life. Shown on
     # the sheet because it is the property that a part-year or sub-two-year life breaks.
     10: txt("A10", 0, "Total written off, diminishing balance")
@@ -2117,16 +2117,16 @@ AU_ROWS = {
     # marked as dynamic-array cells so Excel does not store them as legacy formulas and
     # display an implicit-intersection @ in front of a function documented to take a range
     16: num("A16", MONEY, 1000)
-        + fml("B16", MONEY, "nabla.f.GSTAddλ(A16)", spill="B16:B16"),
+        + fml("B16", MONEY, "ozzit.f.GSTAddλ(A16)", spill="B16:B16"),
     18: txt("A18", H, "GST-inclusive amount") + txt("B18", H, "GST included"),
     19: num("A19", MONEY, 1100)
-        + fml("B19", MONEY, "nabla.f.GSTExtractλ(A19)", spill="B19:B19"),
+        + fml("B19", MONEY, "ozzit.f.GSTExtractλ(A19)", spill="B19:B19"),
     21: txt("A21", H, "FINANCIAL YEAR"),
     # One spilled call over the whole column, which is how the function is meant to be
     # used. Labelling dates one cell at a time would not exercise the array path.
     22: txt("A22", H, "Date") + txt("B22", H, "Financial year"),
     23: num("A23", DATE, 46203)                                                  # 30 Jun 2026
-        + fml("B23", 0, "nabla.d.FinancialYearλ(A23:A26)", spill="B23:B26"),
+        + fml("B23", 0, "ozzit.d.FinancialYearλ(A23:A26)", spill="B23:B26"),
     24: num("A24", DATE, 46204),                                                 # 1 Jul 2026
     25: num("A25", DATE, 46249),                                                 # 15 Aug 2026
     26: num("A26", DATE, 46387),                                                 # 31 Dec 2026
@@ -2372,7 +2372,7 @@ for n in list(parts):
 print("volatile demo data frozen;", cleared, "always-calculate flags cleared")
 
 # ---------- 9h. Presentation ----------
-TAB = {"Australian tax": "FF157A5F", "nabla.d": "FF1F4E79", "nabla.e": "FF2E75B6", "nabla.f": "FF157A5F", "nabla.r": "FF375623"}
+TAB = {"Australian tax": "FF157A5F", "ozzit.d": "FF1F4E79", "ozzit.e": "FF2E75B6", "ozzit.f": "FF157A5F", "ozzit.r": "FF375623"}
 wbx = get("xl/workbook.xml")
 relmap = dict(re.findall(r'Id="(rId\d+)"[^>]*Target="([^"]+)"', get("xl/_rels/workbook.xml.rels")))
 styled = 0
@@ -2415,61 +2415,61 @@ core = get("docProps/core.xml")
 core = re.sub(r'(<dcterms:modified[^>]*>)[^<]*(</dcterms:modified>)',
               r'\g<1>' + NOW_ISO + r'\g<2>', core)
 core = core.replace("<cp:lastModifiedBy>",
-                    "<dc:title>nabla</dc:title><dc:subject>LAMBDA function library for dynamic-array financial models</dc:subject>"
-                    "<dc:creator>Craig Hatmaker (original library); nabla project (derivative)</dc:creator><cp:lastModifiedBy>")
+                    "<dc:title>ozzit</dc:title><dc:subject>LAMBDA function library for dynamic-array financial models</dc:subject>"
+                    "<dc:creator>Craig Hatmaker (original library); ozzit project (derivative)</dc:creator><cp:lastModifiedBy>")
 put("docProps/core.xml", core)
 
-# ---------- 11. Flat nb. namespace ----------
-# Every function lives in one namespace, nb., so callers type three characters
+# ---------- 11. Flat oz. namespace ----------
+# Every function lives in one namespace, oz., so callers type three characters
 # instead of eight. Where two modules shipped the same base name, the fuller
 # implementation keeps the plain name and the other takes a module tag
 # (B borrowings, E essentials, U utilities). The five About tables take words,
-# because nb.AboutRλ would tell a reader nothing.
+# because oz.AboutRλ would tell a reader nothing.
 FLAT_EXPLICIT = [
-    ("nabla.debt.Amortiseλ", "nb.AmortiseBλ"),
-    ("nabla.u.CountAColsλ", "nb.CountAColsUλ"),
-    ("nabla.u.CountARowsλ", "nb.CountARowsUλ"),
-    ("nabla.e.IsBetweenλ", "nb.IsBetweenEλ"),
-    ("nabla.e.RangeToDAλ", "nb.RangeToDAEλ"),
-    ("nabla.u.CountColsλ", "nb.CountColsUλ"),
-    ("nabla.u.CountRowsλ", "nb.CountRowsUλ"),
-    ("nabla.u.IsBetweenλ", "nb.IsBetweenUλ"),
-    ("nabla.u.RangeToDAλ", "nb.RangeToDAUλ"),
-    ("nabla.u.IsInListλ", "nb.IsInListUλ"),
-    ("nabla.u.AvgColsλ", "nb.AvgColsUλ"),
-    ("nabla.u.AvgRowsλ", "nb.AvgRowsUλ"),
-    ("nabla.u.MaxColsλ", "nb.MaxColsUλ"),
-    ("nabla.u.MaxRowsλ", "nb.MaxRowsUλ"),
-    ("nabla.u.MinColsλ", "nb.MinColsUλ"),
-    ("nabla.u.MinRowsλ", "nb.MinRowsUλ"),
-    ("nabla.u.SumColsλ", "nb.SumColsUλ"),
-    ("nabla.u.SumRowsλ", "nb.SumRowsUλ"),
-    ("nabla.u.CountCλ", "nb.CountCUλ"),
-    ("nabla.d.Aboutλ", "nb.AboutDatesλ"),
-    ("nabla.e.Aboutλ", "nb.AboutEssentialsλ"),
-    ("nabla.f.Aboutλ", "nb.AboutFinancialλ"),
-    ("nabla.r.Aboutλ", "nb.AboutRatiosλ"),
-    ("nabla.u.Aboutλ", "nb.AboutUtilitiesλ"),
+    ("ozzit.debt.Amortiseλ", "oz.AmortiseBλ"),
+    ("ozzit.u.CountAColsλ", "oz.CountAColsUλ"),
+    ("ozzit.u.CountARowsλ", "oz.CountARowsUλ"),
+    ("ozzit.e.IsBetweenλ", "oz.IsBetweenEλ"),
+    ("ozzit.e.RangeToDAλ", "oz.RangeToDAEλ"),
+    ("ozzit.u.CountColsλ", "oz.CountColsUλ"),
+    ("ozzit.u.CountRowsλ", "oz.CountRowsUλ"),
+    ("ozzit.u.IsBetweenλ", "oz.IsBetweenUλ"),
+    ("ozzit.u.RangeToDAλ", "oz.RangeToDAUλ"),
+    ("ozzit.u.IsInListλ", "oz.IsInListUλ"),
+    ("ozzit.u.AvgColsλ", "oz.AvgColsUλ"),
+    ("ozzit.u.AvgRowsλ", "oz.AvgRowsUλ"),
+    ("ozzit.u.MaxColsλ", "oz.MaxColsUλ"),
+    ("ozzit.u.MaxRowsλ", "oz.MaxRowsUλ"),
+    ("ozzit.u.MinColsλ", "oz.MinColsUλ"),
+    ("ozzit.u.MinRowsλ", "oz.MinRowsUλ"),
+    ("ozzit.u.SumColsλ", "oz.SumColsUλ"),
+    ("ozzit.u.SumRowsλ", "oz.SumRowsUλ"),
+    ("ozzit.u.CountCλ", "oz.CountCUλ"),
+    ("ozzit.d.Aboutλ", "oz.AboutDatesλ"),
+    ("ozzit.e.Aboutλ", "oz.AboutEssentialsλ"),
+    ("ozzit.f.Aboutλ", "oz.AboutFinancialλ"),
+    ("ozzit.r.Aboutλ", "oz.AboutRatiosλ"),
+    ("ozzit.u.Aboutλ", "oz.AboutUtilitiesλ"),
 ]
-FLAT_PREFIX = [("nabla.debt.", "nb."), ("nabla.d.", "nb."), ("nabla.e.", "nb."),
-               ("nabla.f.", "nb."), ("nabla.r.", "nb."), ("nabla.u.", "nb.")]
-FLAT_BARE = [("nabla.debt", "nb"), ("nabla.d", "nb"), ("nabla.e", "nb"),
-             ("nabla.f", "nb"), ("nabla.r", "nb"), ("nabla.u", "nb")]
+FLAT_PREFIX = [("ozzit.debt.", "oz."), ("ozzit.d.", "oz."), ("ozzit.e.", "oz."),
+               ("ozzit.f.", "oz."), ("ozzit.r.", "oz."), ("ozzit.u.", "oz.")]
+FLAT_BARE = [("ozzit.debt", "oz"), ("ozzit.d", "oz"), ("ozzit.e", "oz"),
+             ("ozzit.f", "oz"), ("ozzit.r", "oz"), ("ozzit.u", "oz")]
 # The About tables list their functions by bare name, so the tagged ones need it here too.
 ABOUT_ENTRY_FIXES = {
-    "nb.AboutUtilitiesλ": [(b + "λ", b + "Uλ") for b in (
+    "oz.AboutUtilitiesλ": [(b + "λ", b + "Uλ") for b in (
         "CountC", "SumCols", "SumRows", "AvgCols",
         "AvgRows", "MinCols", "MinRows", "MaxCols",
         "MaxRows", "CountCols", "CountRows", "CountACols",
         "CountARows", "IsBetween", "IsInList", "RangeToDA",
     )],
-    "nb.AboutEssentialsλ": [("IsBetweenλ", "IsBetweenEλ"), ("RangeToDAλ", "RangeToDAEλ")],
-    "nb.AboutFinancialλ": [("Aboutλ", "AboutFinancialλ")],
-    "nb.AboutRatiosλ": [("Aboutλ", "AboutRatiosλ")],
+    "oz.AboutEssentialsλ": [("IsBetweenλ", "IsBetweenEλ"), ("RangeToDAλ", "RangeToDAEλ")],
+    "oz.AboutFinancialλ": [("Aboutλ", "AboutFinancialλ")],
+    "oz.AboutRatiosλ": [("Aboutλ", "AboutRatiosλ")],
 }
-# The AFE module containers cannot all collapse to "nb" without colliding, so they take words.
-AFE_MODULES = [("nabla.debt", "Debt"), ("nabla.d", "Dates"), ("nabla.e", "Essentials"),
-               ("nabla.f", "Financial"), ("nabla.r", "Ratios"), ("nabla.u", "Utilities")]
+# The AFE module containers cannot all collapse to "oz" without colliding, so they take words.
+AFE_MODULES = [("ozzit.debt", "Debt"), ("ozzit.d", "Dates"), ("ozzit.e", "Essentials"),
+               ("ozzit.f", "Financial"), ("ozzit.r", "Ratios"), ("ozzit.u", "Utilities")]
 
 def flatten_names(s):
     for a, b in FLAT_EXPLICIT:
@@ -2482,9 +2482,9 @@ def flatten_names(s):
 
 def capitalise_brand(s):
     # the chart template filename and the theme colour scheme are asset ids, not prose
-    s = s.replace("nabla Combo Area", "@@CRTX@@").replace("nabla TnC", "@@TNC@@")
-    s = re.sub(r"(?<![A-Za-z/])nabla(?![A-Za-z])", "Nabla", s)
-    return s.replace("@@CRTX@@", "nabla Combo Area").replace("@@TNC@@", "nabla TnC")
+    s = s.replace("ozzit Combo Area", "@@CRTX@@").replace("ozzit TnC", "@@TNC@@")
+    s = re.sub(r"(?<![A-Za-z/])ozzit(?![A-Za-z])", "Ozzit", s)
+    return s.replace("@@CRTX@@", "ozzit Combo Area").replace("@@TNC@@", "ozzit TnC")
 
 def fix_about_entries(s):
     for nm, subs in ABOUT_ENTRY_FIXES.items():
@@ -2499,30 +2499,30 @@ def fix_about_entries(s):
 
 # A renamed function still prints its old bare name in its own inline help.
 SELF_NAME_FIXES = [
-    ('nb.AmortiseBλ', 'Amortiseλ', 'AmortiseBλ'),
-    ('nb.CountAColsUλ', 'CountAColsλ', 'CountAColsUλ'),
-    ('nb.CountARowsUλ', 'CountARowsλ', 'CountARowsUλ'),
-    ('nb.IsBetweenEλ', 'IsBetweenλ', 'IsBetweenEλ'),
-    ('nb.RangeToDAEλ', 'RangeToDAλ', 'RangeToDAEλ'),
-    ('nb.CountColsUλ', 'CountColsλ', 'CountColsUλ'),
-    ('nb.CountRowsUλ', 'CountRowsλ', 'CountRowsUλ'),
-    ('nb.IsBetweenUλ', 'IsBetweenλ', 'IsBetweenUλ'),
-    ('nb.RangeToDAUλ', 'RangeToDAλ', 'RangeToDAUλ'),
-    ('nb.IsInListUλ', 'IsInListλ', 'IsInListUλ'),
-    ('nb.AvgColsUλ', 'AvgColsλ', 'AvgColsUλ'),
-    ('nb.AvgRowsUλ', 'AvgRowsλ', 'AvgRowsUλ'),
-    ('nb.MaxColsUλ', 'MaxColsλ', 'MaxColsUλ'),
-    ('nb.MaxRowsUλ', 'MaxRowsλ', 'MaxRowsUλ'),
-    ('nb.MinColsUλ', 'MinColsλ', 'MinColsUλ'),
-    ('nb.MinRowsUλ', 'MinRowsλ', 'MinRowsUλ'),
-    ('nb.SumColsUλ', 'SumColsλ', 'SumColsUλ'),
-    ('nb.SumRowsUλ', 'SumRowsλ', 'SumRowsUλ'),
-    ('nb.CountCUλ', 'CountCλ', 'CountCUλ'),
-    ('nb.AboutDatesλ', 'Aboutλ', 'AboutDatesλ'),
-    ('nb.AboutEssentialsλ', 'Aboutλ', 'AboutEssentialsλ'),
-    ('nb.AboutFinancialλ', 'Aboutλ', 'AboutFinancialλ'),
-    ('nb.AboutRatiosλ', 'Aboutλ', 'AboutRatiosλ'),
-    ('nb.AboutUtilitiesλ', 'Aboutλ', 'AboutUtilitiesλ'),
+    ('oz.AmortiseBλ', 'Amortiseλ', 'AmortiseBλ'),
+    ('oz.CountAColsUλ', 'CountAColsλ', 'CountAColsUλ'),
+    ('oz.CountARowsUλ', 'CountARowsλ', 'CountARowsUλ'),
+    ('oz.IsBetweenEλ', 'IsBetweenλ', 'IsBetweenEλ'),
+    ('oz.RangeToDAEλ', 'RangeToDAλ', 'RangeToDAEλ'),
+    ('oz.CountColsUλ', 'CountColsλ', 'CountColsUλ'),
+    ('oz.CountRowsUλ', 'CountRowsλ', 'CountRowsUλ'),
+    ('oz.IsBetweenUλ', 'IsBetweenλ', 'IsBetweenUλ'),
+    ('oz.RangeToDAUλ', 'RangeToDAλ', 'RangeToDAUλ'),
+    ('oz.IsInListUλ', 'IsInListλ', 'IsInListUλ'),
+    ('oz.AvgColsUλ', 'AvgColsλ', 'AvgColsUλ'),
+    ('oz.AvgRowsUλ', 'AvgRowsλ', 'AvgRowsUλ'),
+    ('oz.MaxColsUλ', 'MaxColsλ', 'MaxColsUλ'),
+    ('oz.MaxRowsUλ', 'MaxRowsλ', 'MaxRowsUλ'),
+    ('oz.MinColsUλ', 'MinColsλ', 'MinColsUλ'),
+    ('oz.MinRowsUλ', 'MinRowsλ', 'MinRowsUλ'),
+    ('oz.SumColsUλ', 'SumColsλ', 'SumColsUλ'),
+    ('oz.SumRowsUλ', 'SumRowsλ', 'SumRowsUλ'),
+    ('oz.CountCUλ', 'CountCλ', 'CountCUλ'),
+    ('oz.AboutDatesλ', 'Aboutλ', 'AboutDatesλ'),
+    ('oz.AboutEssentialsλ', 'Aboutλ', 'AboutEssentialsλ'),
+    ('oz.AboutFinancialλ', 'Aboutλ', 'AboutFinancialλ'),
+    ('oz.AboutRatiosλ', 'Aboutλ', 'AboutRatiosλ'),
+    ('oz.AboutUtilitiesλ', 'Aboutλ', 'AboutUtilitiesλ'),
 ]
 # Same correction inside the Excel Labs module source.
 AFE_BARE_FIXES = {
@@ -2583,7 +2583,7 @@ FLAT_MODULE_OF = {}
 # the old ones and a reader needs somewhere to look the replacement up.
 # The names in the loop below are the build's own intermediate ones, not the names any
 # release carried, and today those happen to coincide. They stop coinciding the moment a
-# function is added: a new nabla.f.PayrollTaxλ would flatten to nb.PayrollTaxλ and publish
+# function is added: a new ozzit.f.PayrollTaxλ would flatten to oz.PayrollTaxλ and publish
 # a predecessor no release ever shipped, which is worse than publishing nothing. So the
 # predecessor is only recorded when the released baseline confirms it existed.
 RELEASED = "released-names-v1.2.6.txt"
@@ -2595,7 +2595,7 @@ assert len(BASELINE) == 130, (RELEASED, len(BASELINE))
 FLAT_PREVIOUS_OF = {}
 _pre_wb = get("xl/workbook.xml")
 _mod_word = dict(AFE_MODULES)
-for _m in re.finditer(r'<definedName name="(nabla\.(?:debt|d|e|f|r|u))\.([^"]+)"', _pre_wb):
+for _m in re.finditer(r'<definedName name="(ozzit\.(?:debt|d|e|f|r|u))\.([^"]+)"', _pre_wb):
     _was = _m.group(1) + "." + _m.group(2)
     _now = flatten_names(_was)
     FLAT_MODULE_OF[_now] = _mod_word[_m.group(1)]
@@ -2621,7 +2621,7 @@ m_flat = re.search(r'>([A-Za-z0-9+/=]{100,})<', afe_flat)
 assert m_flat
 j_flat = base64.b64decode(m_flat.group(1)).decode("utf-16-le")
 obj_flat = json.loads(j_flat)
-# rename the containers first: flattening them all to "nb" would collide
+# rename the containers first: flattening them all to "oz" would collide
 for f in obj_flat["files"]:
     for a, b in AFE_MODULES:
         if f["path"].endswith("/" + a) or f["path"] == a:
@@ -2632,7 +2632,7 @@ for f in obj_flat["files"]:
         f["text"] = re.sub(r"(?<![A-Za-z])" + re.escape(ob), nb_, f["text"])
 # then flatten the whole store, which also covers the projectNames function index
 j2_flat = flat_text(json.dumps(obj_flat, ensure_ascii=False, separators=(",", ":")))
-assert "nabla." not in j2_flat
+assert "ozzit." not in j2_flat
 afe_flat = afe_flat.replace(m_flat.group(1), base64.b64encode(j2_flat.encode("utf-16-le")).decode("ascii"))
 put("customXml/item1.xml", afe_flat)
 
@@ -2651,8 +2651,8 @@ for n in list(parts):
         flat_parts += 1
 for n in parts:
     if n.endswith((".xml", ".rels")):
-        assert "nabla." not in get(n), n
-print("flattened to the nb. namespace across", flat_parts, "parts")
+        assert "ozzit." not in get(n), n
+print("flattened to the oz. namespace across", flat_parts, "parts")
 
 # ---------- write ----------
 os.makedirs(os.path.dirname(DST) or ".", exist_ok=True)
@@ -2686,7 +2686,7 @@ for f in store["files"]:
     exported.append(mod)
 
 wbx_final = parts["xl/workbook.xml"].decode("utf-8")
-NAME_RE = re.compile(r'<definedName name="(nb\.[^"]+)"([^>]*)>(.*?)</definedName>', re.S)
+NAME_RE = re.compile(r'<definedName name="(oz\.[^"]+)"([^>]*)>(.*?)</definedName>', re.S)
 entries = [(n, a, html.unescape(b)) for n, a, b in NAME_RE.findall(wbx_final)]
 
 # The Debt functions are recursive, so Excel Labs cannot hold them; export from the names.
@@ -2730,7 +2730,7 @@ with open(os.path.join(repo, "functions.csv"), "w", encoding="utf-8", newline=""
         bare = name.rsplit(".", 1)[1]
         sig = SIG_RE.search(body)
         # A long signature wraps onto the next help row, which carries no label. Reading
-        # only the first row published nb.Depreciateλ with nine of its parameters missing
+        # only the first row published oz.Depreciateλ with nine of its parameters missing
         # and a bracket left open. Keep taking rows until the brackets balance.
         text, end = (sig.group(1).strip(), sig.end()) if sig else (bare, 0)
         while text.count("(") > text.count(")"):

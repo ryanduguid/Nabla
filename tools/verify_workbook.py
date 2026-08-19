@@ -1,6 +1,6 @@
-"""Integrity checks for nabla.xlsx.
+"""Integrity checks for ozzit.xlsx.
 
-Usage: python tools/verify_workbook.py [path/to/nabla.xlsx]
+Usage: python tools/verify_workbook.py [path/to/ozzit.xlsx]
 
 Exits non-zero and prints every failure. Run by CI on each push.
 """
@@ -18,11 +18,11 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
 
-WORKBOOK = sys.argv[1] if len(sys.argv) > 1 else "nabla.xlsx"
+WORKBOOK = sys.argv[1] if len(sys.argv) > 1 else "ozzit.xlsx"
 
 # Tokens that must never reappear: upstream branding, and any foreign tax content.
 BANNED = re.compile(
-    r"BX[DEFRLU]\.|BXLDebt|\bBXL\b|nabla\.[a-z]+\.|beyondexcel|Eloquens|dropbox|Leonardo"
+    r"BX[DEFRLU]\.|BXLDebt|\bBXL\b|ozzit\.[a-z]+\.|beyondexcel|Eloquens|dropbox|Leonardo"
     r"|Starter Pack|Calibri|MACRS|Modified Accelerated|US GAAP|IRS Depreciation"
     # Excel stamps x15ac:absPath with the directory the file was last saved from, so
     # every release up to v2.2.0 published a path off the build machine. On a machine
@@ -30,7 +30,7 @@ BANNED = re.compile(
     r"|x15ac:absPath|[A-Za-z]:\\\\Users\\\\|/Users/|/home/"
 )
 SHEET_RE = re.compile(r"xl/worksheets/sheet\d+\.xml$")
-TOKEN_RE = re.compile(r"nb\.[A-Za-z0-9_]+λ?(?:DV)?")
+TOKEN_RE = re.compile(r"oz\.[A-Za-z0-9_]+λ?(?:DV)?")
 
 failures = []
 

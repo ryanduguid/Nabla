@@ -1,5 +1,43 @@
 # Changelog
 
+## v3.0.0, 19 August 2026, the library is now Ozzit
+
+- **Every function's prefix changes from `nb.` to `oz.`, and the library is renamed from
+  Nabla to Ozzit.** Nabla sits one edit from an acronym nobody wants beside their name on
+  a public repository, which is reason enough on its own. It was also a poor description:
+  the nabla operator means a gradient, and there is no calculus anywhere in this library.
+  Ozzit says what the library is instead, which is Australian.
+
+  This breaks every formula written against `nb.`. The break is deliberate and it is taken
+  now rather than later, while the repository has no dependants to strand.
+
+  Nothing else changes. The bare names are untouched, so `nb.Amortiseλ` becomes
+  `oz.Amortiseλ` and `nb.SumRowsUλ` becomes `oz.SumRowsUλ`: the migration is a
+  three-character find and replace, and no argument, result or rounding moves with it. The
+  259 assertions in the Excel self-test answer exactly what they answered before.
+
+  The rename is length-preserving throughout, because the help block every function
+  carries is aligned in columns: `Nabla` and `Ozzit` are both five characters, `nb.` and
+  `oz.` both three, and the bare `nb` the help text names in prose is two, like `oz`.
+  `tools/rebrand_to_ozzit.py` asserts that property on every string it rewrites rather
+  than trusting it, so not one of the 130 help blocks needed re-aligning.
+
+  What the rename does not touch is the record of what earlier releases shipped.
+  `tools/released-names-v1.2.6.txt` and the `previous_name` column of `functions.csv`
+  still read `nabla.d.Aboutλ` and the rest, because somebody migrating off an older
+  workbook has to be able to look up a name that existed rather than one that never did.
+  The older entries in this file are left alone for the same reason.
+
+- `nabla.xlsx` is now `ozzit.xlsx`, and `assets/nabla.svg` is now `assets/ozzit.svg`
+  carrying a new mark. The old one drew the nabla operator, which the library never
+  implemented.
+
+- `tools/transform_from_upstream.py` now names the upstream functions `ozzit.*` on the way
+  through and lands them in `oz.`, so a rebuild from the upstream workbook produces this
+  release rather than the previous one.
+
+- The version stamp each function carries reads 19 August 2026, as does the README.
+
 ## v2.6.0, 19 August 2026, any period length
 
 - **`nb.Amortiseλ` returned `#DIV/0!` on every timeline shorter than a month.** It reads

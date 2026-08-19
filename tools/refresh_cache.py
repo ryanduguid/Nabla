@@ -1,6 +1,6 @@
 """Recalculate the workbook in Excel, then tidy what Excel adds on the way out.
 
-Usage: python tools/refresh_cache.py [path/to/nabla.xlsx]
+Usage: python tools/refresh_cache.py [path/to/ozzit.xlsx]
 
 The build is pure zip and XML surgery with no formula engine, so every value it edits
 leaves the cells downstream of it holding an answer their formulas no longer produce.
@@ -34,7 +34,7 @@ import zipfile
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
-WORKBOOK = sys.argv[1] if len(sys.argv) > 1 else "nabla.xlsx"
+WORKBOOK = sys.argv[1] if len(sys.argv) > 1 else "ozzit.xlsx"
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 # A cell may legitimately be marked always-calculate when it is genuinely volatile. Only

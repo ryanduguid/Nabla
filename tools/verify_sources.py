@@ -1,6 +1,6 @@
-"""Check that src/ really is the source of the functions in nabla.xlsx.
+"""Check that src/ really is the source of the functions in ozzit.xlsx.
 
-Usage: python tools/verify_sources.py [path/to/nabla.xlsx] [src dir]
+Usage: python tools/verify_sources.py [path/to/ozzit.xlsx] [src dir]
 
 src/ exists so the library can be read, diffed and imported back into Excel. That
 only means anything if what is published matches what ships, and if it is written
@@ -35,10 +35,10 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
 
-WORKBOOK = sys.argv[1] if len(sys.argv) > 1 else "nabla.xlsx"
+WORKBOOK = sys.argv[1] if len(sys.argv) > 1 else "ozzit.xlsx"
 SRC_DIR = sys.argv[2] if len(sys.argv) > 2 else "src"
 MODULES = ["Dates", "Essentials", "Financial", "Ratios", "Utilities", "Debt"]
-NAMESPACE = "nb"          # every function ships under one prefix, whatever module it lives in
+NAMESPACE = "oz"          # every function ships under one prefix, whatever module it lives in
 
 OPENERS, CLOSERS = "({[", ")}]"
 NAME = re.compile(r"^\s*([A-Za-z_][A-Za-z0-9_.λ]*)\s*=\s*(.+)$", re.S)

@@ -1,6 +1,6 @@
 """Check that the workbook's cached values are the values its formulas produce.
 
-Usage: python tools/verify_cache.py [path/to/nabla.xlsx]
+Usage: python tools/verify_cache.py [path/to/ozzit.xlsx]
 
 An .xlsx stores two things for every calculated cell: the formula, and the answer Excel
 last got from it. Nothing keeps them in step. The build edits values as XML with no formula
@@ -26,7 +26,7 @@ import zipfile
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
-WORKBOOK = sys.argv[1] if len(sys.argv) > 1 else "nabla.xlsx"
+WORKBOOK = sys.argv[1] if len(sys.argv) > 1 else "ozzit.xlsx"
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 # Below this the run proved nothing and the pass would be vacuous.
@@ -127,7 +127,7 @@ def main():
         print("FAIL: no such workbook: %s" % WORKBOOK)
         return 1
 
-    handle, dump = tempfile.mkstemp(suffix=".tsv", prefix="nabla-cache-")
+    handle, dump = tempfile.mkstemp(suffix=".tsv", prefix="ozzit-cache-")
     os.close(handle)
     try:
         proc = subprocess.run(

@@ -1,6 +1,6 @@
-# End-to-end check of nabla.xlsx in a real Excel calculation engine.
+# End-to-end check of ozzit.xlsx in a real Excel calculation engine.
 #
-#   powershell -ExecutionPolicy Bypass -File tools\excel_selftest.ps1 [path\to\nabla.xlsx]
+#   powershell -ExecutionPolicy Bypass -File tools\excel_selftest.ps1 [path\to\ozzit.xlsx]
 #
 # Requires Excel with LAMBDA support (Microsoft 365, or Excel 2024 and later). GitHub's
 # runners have no Excel, so CI runs tools/verify_workbook.py instead and this stays a
@@ -9,7 +9,7 @@
 # The workbook is opened, fully recalculated, scanned for error cells, probed with a
 # temporary sheet of assertions, then closed WITHOUT saving. It is never modified.
 
-param([string]$Path = "$PSScriptRoot\..\nabla.xlsx")
+param([string]$Path = "$PSScriptRoot\..\ozzit.xlsx")
 
 $ErrorActionPreference = 'Stop'
 $L = [char]0x03BB                 # this file stays pure ASCII so encoding cannot corrupt it
@@ -26,11 +26,11 @@ function Same($id, $expr, $want) {
     Check $id "=LET(v, $expr, IF(ISERROR(v), `"ERROR`", IF(v=`"$want`", `"OK`", `"got [`"&v&`"]`")))"
 }
 
-$dv = "nb.DiminishingValue$L"
-$pc = "nb.PrimeCost$L"
-$ga = "nb.GSTAdd$L"
-$ge = "nb.GSTExtract$L"
-$fy = "nb.FinancialYear$L"
+$dv = "oz.DiminishingValue$L"
+$pc = "oz.PrimeCost$L"
+$ga = "oz.GSTAdd$L"
+$ge = "oz.GSTExtract$L"
+$fy = "oz.FinancialYear$L"
 
 # --- Depreciation: a schedule must always sum to cost, whatever the effective life.
 # ATO effective lives are frequently fractional (3 1/3, 6 2/3, 13 1/3), and a life of
@@ -103,10 +103,10 @@ Same 'Sheet: FY 31 Dec 2026'       "${au}B26" 'FY2027'
 # back into a balance the same period's cash had already paid. These are balance
 # identities rather than expected figures: a schedule that satisfies all of them cannot
 # be double-counting, whatever the inputs.
-$lrv = "nb.DebtSculptVariableLRV$L"
-$dsf = "nb.DebtSculptFixed$L"
-$dsv = "nb.DebtSculptVariable$L"
-$ilrv = "nb.InterestLRV$L"
+$lrv = "oz.DebtSculptVariableLRV$L"
+$dsf = "oz.DebtSculptFixed$L"
+$dsv = "oz.DebtSculptVariable$L"
+$ilrv = "oz.InterestLRV$L"
 
 # 1,000 drawn in period 1, 300 of cash a period, 1.2 times covered, 6% a year, 5 years.
 # Rows are opening balance, interest, MINUS the principal repayment, closing balance.
@@ -154,7 +154,7 @@ Near 'Debt: InterestLRV worked example' "$ilrv(6666.37, 3.50, 90000, 0.03/12)" '
 # calendar and took a single day back off whatever overflowed, which put 5 March in a
 # period starting 2 March. Each grid check compares 180 dates at 13-day steps against
 # that EDATE schedule, which is stated here rather than borrowed from the function.
-$ps = "nb.PeriodStart$L"
+$ps = "oz.PeriodStart$L"
 $psWant = 'MAP(ds, LAMBDA(d, LET(s, EDATE(a, SEQUENCE(121,1,-60) * m), MAX(IF(s <= d, s, 0)))))'
 
 foreach ($day in '31', '30', '29', '28', '15', '1') {
@@ -192,7 +192,7 @@ Same 'PeriodStart: help with no args' "INDEX($ps(),1,1)" 'FUNCTION:'
 # --- TimelineOffset. The interval is read off the timeline's first two dates and, up to
 # v2.3.0, converted to whole months and divided by. A daily, weekly or fortnightly
 # timeline rounds to no months at all, so every one of them returned #DIV/0!.
-$to = "nb.TimelineOffset$L"
+$to = "oz.TimelineOffset$L"
 $daily = 'DATE(2026,1,1) + SEQUENCE(1,60,0,1)'
 $weekly = 'DATE(2026,1,1) + SEQUENCE(1,60,0,7)'
 $fortnightly = 'DATE(2026,1,1) + SEQUENCE(1,60,0,14)'
@@ -239,7 +239,7 @@ Near 'TimelineOffset: documented example, before the timeline' `
 # next line divided by it: every daily, weekly and fortnightly call came back #DIV/0!. The
 # schedule is still solved monthly, so the test is that the same money turns up, dated into
 # the period that holds each month's start, and that the periods between hold nothing.
-$am = "nb.Amortise$L"
+$am = "oz.Amortise$L"
 $amMo = "$am(10000, 0.05, 12, DATE(2026,1,1), EDATE(DATE(2026,1,1), SEQUENCE( , 14, 0)))"
 $amWk = "$am(10000, 0.05, 12, DATE(2026,1,1), DATE(2026,1,1) + SEQUENCE( , 52, 0) * 7)"
 $amFn = "$am(10000, 0.05, 12, DATE(2026,1,1), DATE(2026,1,1) + SEQUENCE( , 26, 0) * 14)"
@@ -291,7 +291,7 @@ Same 'Amortise: help with no args' "INDEX($am(),1,1)" 'FUNCTION:'
 # The last had EDATE(its own start, months per period) - 1, which on a sub-monthly timeline
 # is the day BEFORE it opens, so the final period collected nothing: 48 weekly periods from
 # 1 January 2026 dropped December and reported 1,833.37 of a 2,000.00 year.
-$dp = "nb.Depreciate$L"
+$dp = "oz.Depreciate$L"
 $dpA = "10000, DATE(2026,1,1), 5"
 $dpMo = "$dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 12, 0)))"
 $dpW48 = "$dp($dpA, DATE(2026,1,1) + SEQUENCE( , 48, 0) * 7)"
@@ -344,7 +344,7 @@ Same 'Depreciate: help with no args' "INDEX($dp(),1,1)" 'FUNCTION:'
 # was quadratic in the number of amounts; it is a closed form and is now computed one
 # column at a time. Every published result has to come back to the digit, the deliberate
 # last-column adjustment included.
-$al = "nb.Allocate$L"
+$al = "oz.Allocate$L"
 Same 'Allocate: documented example' `
      "TEXTJOIN(`",`",FALSE,$al({999.99,2000},`"Y`",`"Q`"))" '250,250,250,249.99,500,500,500,500'
 Same 'Allocate: quarters to quarters is the identity' `
@@ -377,8 +377,8 @@ Near 'InterestLRV: the retiring period is no longer free' `
      "INDEX($lrv(, {1000,0,0}, {2000,2000,2000}, {1,1,1}, {0.06,0.06,0.06}, 12), 2, 1) - 30" '0' '0.005'
 
 # --- The last two help-text misspellings in the library.
-$tp = "nb.TimelinePosition$L"
-$ld = "nb.LabelDepreciate$L"
+$tp = "oz.TimelinePosition$L"
+$ld = "oz.LabelDepreciate$L"
 Same 'TimelinePosition: help with no args' "INDEX($tp(),1,1)" 'FUNCTION:'
 Near 'TimelinePosition: its table spells timeline' `
      "SUMPRODUCT(--ISNUMBER(SEARCH(`"timline`",$tp())))" '0'
