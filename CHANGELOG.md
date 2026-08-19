@@ -19,7 +19,16 @@
   A twelve-month loan drawn on 1 January 2026 now reports the same money on a weekly, a
   fortnightly and a daily timeline as it does on a monthly one, to the cent, and puts the
   first month in period one and the second in the week that holds 1 February rather than
-  the week after the first. Whole-month timelines are untouched and answer exactly what
+  the week after the first.
+
+  Two details are worth stating because the obvious versions of both are wrong. The by-date
+  path runs whenever the period is under 28 days, not whenever the period rounds to nought
+  months: no month is shorter than 28 days, and a period of 16 to 27 days is no whole number
+  of months either but used to round to one and be laid out as though it were a month long.
+  And a period ends where the next one opens, rather than a fixed number of days after it
+  opens, so a timeline whose periods are not all the same length still counts every month
+  once. Only the last period has no successor to ask, and it runs on as far as the period
+  before it did. Whole-month timelines are untouched and answer exactly what
   they answered before, six-monthly ones included: two- and six-month intervals were never
   affected, measured in Excel, because the schedule arithmetic is generic in the count.
   `PpY` divided twelve by that count, nothing read it, and it is gone.
@@ -48,7 +57,9 @@
   rather than erroring. It now checks that every life is a number over 0 and no more than
   100 and returns a message naming the argument order, and clamps the life it uses as well
   as reporting it, so the arrays are never built. A life of 100 years still works; 101, 0,
-  a date and a word are all refused.
+  a date and a word are all refused. A life that arrives as text rather than as a number
+  still works, because Excel coerced it before and refusing it now would be a regression:
+  the check reads the value rather than the type.
 
 - **`nb.Allocateλ` rebuilt its whole answer on every pass.** It accumulated with `HSTACK`
   inside a `REDUCE`, so each new group copied everything already built and the work was
@@ -95,7 +106,7 @@
   which is enough to tell a rebuild from the same input apart from a rebuild from a
   different one.
 
-- `tools/excel_selftest.ps1` goes from 197 assertions to 247, and waits for Excel to finish
+- `tools/excel_selftest.ps1` goes from 197 assertions to 259, and waits for Excel to finish
   calculating before reading them. It did not: it asked for the answers immediately after
   ordering a full rebuild, and a range Excel is still calculating hands back a null rather
   than a partial answer. With the lighter assertion set that never lost the race. The new

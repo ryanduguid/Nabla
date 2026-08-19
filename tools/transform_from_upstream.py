@@ -754,7 +754,7 @@ HELP_SIGNATURES = [
     # This rewrites the line rather than adding one. A function's help spills down its own
     # demonstration sheet, and this one has a single free row beneath it before the sample
     # data starts; two added rows blocked the spill and the whole help block came back an
-    # error. Depreciateλ's sheet below has seven free rows and can take the three it gains.
+    # error. Depreciateλ's sheet below has seven free rows and can take the two it gains.
     ("nabla.f", "Amortiseλ",
      '"→It assumes all payments are made monthly.¶"',
      '"→Payments are assumed monthly. On periods shorter than a month the figures for '
@@ -1174,15 +1174,15 @@ LOGIC_FIXES = [
      '        MpP,                @ROUND(( SecondPeriod - FirstPeriod) / ADpM, 0),\n'
      '        PpY,                MpY / MpP,\n',
      '        DpP,                SecondPeriod - FirstPeriod,                 //Days Per Period\n'
-     '        WholeMonths,        @ROUND( DpP / ADpM, 0),\n'
-     '        SubMonthly?,        WholeMonths = 0,\n'
-     '        MpP,                MAX( WholeMonths, 1),                       //Months Per Period, never nought\n',
+     '        LastGap,            MAX( Timeline) - INDEX( Timeline, COUNTA( Timeline) - 1),\n'
+     '        SubMonthly?,        DpP < 28,                                   //No month is shorter\n'
+     '        MpP,                MAX( @ROUND( DpP / ADpM, 0), 1),            //Months Per Period, never nought\n',
      '_xlpm.MpP, _xlfn.SINGLE(ROUND((_xlpm.SecondPeriod - _xlpm.FirstPeriod) / _xlpm.ADpM, 0)), '
      '_xlpm.PpY, _xlpm.MpY / _xlpm.MpP, ',
      '_xlpm.DpP, _xlpm.SecondPeriod - _xlpm.FirstPeriod, '
-     '_xlpm.WholeMonths, _xlfn.SINGLE(ROUND(_xlpm.DpP / _xlpm.ADpM, 0)), '
-     '_xlpm.SubMonthly?, _xlpm.WholeMonths = 0, '
-     '_xlpm.MpP, MAX(_xlpm.WholeMonths, 1), '),
+     '_xlpm.LastGap, MAX(_xlpm.Timeline) - INDEX(_xlpm.Timeline, COUNTA(_xlpm.Timeline) - 1), '
+     '_xlpm.SubMonthly?, _xlpm.DpP &lt; 28, '
+     '_xlpm.MpP, MAX(_xlfn.SINGLE(ROUND(_xlpm.DpP / _xlpm.ADpM, 0)), 1), '),
     # Flooring the count at one month is not on its own enough. The schedule is always
     # solved monthly and only then folded into the timeline's periods, and TimelinePositionλ
     # lays the folded block down one period at a time from an offset. On a weekly timeline
@@ -1202,9 +1202,15 @@ LOGIC_FIXES = [
      '                    ByDate,             MAKEARRAY( ROWS( AmortisationSched), COUNTA( Timeline),\n'
      '                                            LAMBDA( R, C,\n'
      '                                                LET( PeriodOpens,   INDEX( Timeline, C),\n'
+     '                                                //  A period ends where the next one opens. Only the last\n'
+     '                                                //  has no successor to ask, so it runs on as far as the\n'
+     '                                                //  period before it did.\n'
+     '                                                     PeriodShut,    IF( C = COUNTA( Timeline),\n'
+     '                                                                        PeriodOpens + LastGap,\n'
+     '                                                                        INDEX( Timeline, C + 1)),\n'
      '                                                    SUM( CHOOSEROWS( AmortisationSched, R)\n'
      '                                                         * ( MonthStarts >= PeriodOpens)\n'
-     '                                                         * ( MonthStarts < PeriodOpens + DpP))))),\n'
+     '                                                         * ( MonthStarts < PeriodShut))))),\n'
      '                    NewBlock,           IF( SubMonthly?,\n'
      '                                            ByDate,\n'
      '                                            TimelinePositionλ(AmortisationSched, Timeline, Offset)),\n',
@@ -1212,9 +1218,11 @@ LOGIC_FIXES = [
      '_xlpm.MonthStarts, EDATE(_xlpm.StartDate, _xlfn.SEQUENCE(, _xlpm.Periods, 0)), '
      '_xlpm.ByDate, _xlfn.MAKEARRAY(ROWS(_xlpm.AmortisationSched), COUNTA(_xlpm.Timeline), '
      '_xlfn.LAMBDA(_xlpm.R,_xlpm.C, _xlfn.LET(_xlpm.PeriodOpens, INDEX(_xlpm.Timeline, _xlpm.C), '
+     '_xlpm.PeriodShut, IF(_xlpm.C = COUNTA(_xlpm.Timeline), _xlpm.PeriodOpens + _xlpm.LastGap, '
+     'INDEX(_xlpm.Timeline, _xlpm.C + 1)), '
      'SUM(_xlfn.CHOOSEROWS(_xlpm.AmortisationSched, _xlpm.R) '
      '* (_xlpm.MonthStarts &gt;= _xlpm.PeriodOpens) '
-     '* (_xlpm.MonthStarts &lt; _xlpm.PeriodOpens + _xlpm.DpP))))), '
+     '* (_xlpm.MonthStarts &lt; _xlpm.PeriodShut))))), '
      '_xlpm.NewBlock, IF(_xlpm.SubMonthly?, _xlpm.ByDate, '
      'nabla.f.TimelinePositionλ(_xlpm.AmortisationSched, _xlpm.Timeline, _xlpm.Offset)), '),
     # Depreciateλ reads the same interval and, unlike Amortiseλ, survives a sub-monthly one:
@@ -1238,13 +1246,13 @@ LOGIC_FIXES = [
      '        PpY,            SWITCH( MpP, 1, 12, 3, 4, 12, 1),                //Periods Per Year\n'
      '        EndDates,       HSTACK( MAP(  SEQUENCE(, TimelineCols - 1), LAMBDA( n, INDEX( Timeline, n + 1) - 1)), EDATE( MAX( Timeline), MpP) -1 ),\n',
      '        DpP,            SecondPeriod - FirstPeriod,                      //Days Per Period\n'
-     '        WholeMonths,    @ROUND( DpP / 30.5, 0),\n'
-     '        SubMonthly?,    WholeMonths = 0,\n'
-     '        MpP,            MAX( WholeMonths, 1),                            //Months Per Period, never nought\n'
+     '        SubMonthly?,    DpP < 28,                                        //No month is shorter\n'
+     '        MpP,            MAX( @ROUND( DpP / 30.5, 0), 1),                 //Months Per Period, never nought\n'
      '    //  The last period has no successor to take its end date from, so it ends one period\n'
      '    //  on from its own start: a whole number of months where the timeline is monthly or\n'
      '    //  longer, the same number of days as every other period where it is shorter.\n'
-     '        LastEnd,        IF( SubMonthly?, MAX( Timeline) + DpP, EDATE( MAX( Timeline), MpP)) - 1,\n'
+     '        LastGap,        MAX( Timeline) - INDEX( Timeline, TimelineCols - 1),\n'
+     '        LastEnd,        IF( SubMonthly?, MAX( Timeline) + LastGap, EDATE( MAX( Timeline), MpP)) - 1,\n'
      '        EndDates,       HSTACK( MAP(  SEQUENCE(, TimelineCols - 1), LAMBDA( n, INDEX( Timeline, n + 1) - 1)), LastEnd),\n',
      '_xlpm.MpP, _xlfn.SINGLE(ROUND((_xlpm.SecondPeriod - _xlpm.FirstPeriod) / 30.5, 0)), '
      '_xlpm.Interval, _xlfn.SWITCH(_xlpm.MpP, 1, "M", 3, "Q", 12, "Y"), '
@@ -1253,10 +1261,10 @@ LOGIC_FIXES = [
      '_xlfn.LAMBDA(_xlpm.n, INDEX(_xlpm.Timeline, _xlpm.n + 1) - 1)), '
      'EDATE(MAX(_xlpm.Timeline), _xlpm.MpP) - 1), ',
      '_xlpm.DpP, _xlpm.SecondPeriod - _xlpm.FirstPeriod, '
-     '_xlpm.WholeMonths, _xlfn.SINGLE(ROUND(_xlpm.DpP / 30.5, 0)), '
-     '_xlpm.SubMonthly?, _xlpm.WholeMonths = 0, '
-     '_xlpm.MpP, MAX(_xlpm.WholeMonths, 1), '
-     '_xlpm.LastEnd, IF(_xlpm.SubMonthly?, MAX(_xlpm.Timeline) + _xlpm.DpP, '
+     '_xlpm.SubMonthly?, _xlpm.DpP &lt; 28, '
+     '_xlpm.MpP, MAX(_xlfn.SINGLE(ROUND(_xlpm.DpP / 30.5, 0)), 1), '
+     '_xlpm.LastGap, MAX(_xlpm.Timeline) - INDEX(_xlpm.Timeline, _xlpm.TimelineCols - 1), '
+     '_xlpm.LastEnd, IF(_xlpm.SubMonthly?, MAX(_xlpm.Timeline) + _xlpm.LastGap, '
      'EDATE(MAX(_xlpm.Timeline), _xlpm.MpP)) - 1, '
      '_xlpm.EndDates, _xlfn.HSTACK(_xlfn.MAP(_xlfn.SEQUENCE(, _xlpm.TimelineCols - 1), '
      '_xlfn.LAMBDA(_xlpm.n, INDEX(_xlpm.Timeline, _xlpm.n + 1) - 1)), _xlpm.LastEnd), '),
@@ -1281,14 +1289,14 @@ LOGIC_FIXES = [
      '        Mpy,            12, //Months Per Year\n'
      '    //  Check inputs - a life in years must be a life, not a date\n'
      '        LifeGiven,      IF( ISOMITTED( LifeInYears), 1, LifeInYears),\n'
-     '        LifeNums,       IF( ISNUMBER( LifeGiven), LifeGiven, -1),\n'
+     '        LifeNums,       IFERROR( VALUE( LifeGiven), -1),\n'
      '        BadLife?,       OR( MIN( LifeNums) <= 0, MAX( LifeNums) > 100),\n'
      '        LifeMessage,    "LifeInYears must be a number of years greater than 0 and no more than 100. "\n'
      '                        & "Check the argument order: InitialValues, InServiceDates, LifeInYears, Timeline.",\n',
      '_xlpm.Mpy, 12, ',
      '_xlpm.Mpy, 12, '
      '_xlpm.LifeGiven, IF(_xlfn.ISOMITTED(_xlpm.LifeInYears), 1, _xlpm.LifeInYears), '
-     '_xlpm.LifeNums, IF(ISNUMBER(_xlpm.LifeGiven), _xlpm.LifeGiven, -1), '
+     '_xlpm.LifeNums, IFERROR(VALUE(_xlpm.LifeGiven), -1), '
      '_xlpm.BadLife?, OR(MIN(_xlpm.LifeNums) &lt;= 0, MAX(_xlpm.LifeNums) &gt; 100), '
      '_xlpm.LifeMessage, "LifeInYears must be a number of years greater than 0 and no more than 100. " '
      '&amp; "Check the argument order: InitialValues, InServiceDates, LifeInYears, Timeline.", '),

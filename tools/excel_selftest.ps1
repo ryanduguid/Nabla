@@ -255,13 +255,31 @@ Near 'Amortise: daily holds the same money as monthly'       "SUM($amDy) - SUM($
 Near 'Amortise: weekly fills no extra periods' `
      "SUMPRODUCT(--(INDEX($amWk,3,0)<>0)) - SUMPRODUCT(--(INDEX($amMo,3,0)<>0))" '0'
 Near 'Amortise: weekly draws the debt down once' "SUMPRODUCT(--(INDEX($amWk,1,0)<>0)) - 1" '0'
-# Both timelines open on 1 January 2026, so month one is period one on each. Month two
-# opens on 1 February, 31 days on, which is the fifth week and not the second.
-Near 'Amortise: weekly, month one is period one' "INDEX($amWk,4,1) - INDEX($amMo,4,1)" '0' '0.0000001'
-Near 'Amortise: weekly, month two is the week holding 1 February' `
-     "INDEX($amWk,4,5) - INDEX($amMo,4,2)" '0' '0.0000001'
-Near 'Amortise: weekly, the weeks between are nil' `
+# Both timelines open on 1 January 2026, so month one is period one on each. Month two opens
+# on 1 February, 31 days on, which is the fifth week and not the second. These read row 3,
+# the interest, and row 2, the balance: both fall month on month, so a figure in the wrong
+# period is a figure that does not match. The payment row would not do, because a level
+# payment is the same number every month and would match wherever it landed.
+Near 'Amortise: weekly, month one interest is period one'  "INDEX($amWk,3,1) - INDEX($amMo,3,1)" '0' '0.0000001'
+Near 'Amortise: weekly, month two interest is the week holding 1 February' `
+     "INDEX($amWk,3,5) - INDEX($amMo,3,2)" '0' '0.0000001'
+Near 'Amortise: weekly, month three interest is the week holding 1 March' `
+     "INDEX($amWk,3,9) - INDEX($amMo,3,3)" '0' '0.0000001'
+Near 'Amortise: weekly, month two balance is the week holding 1 February' `
+     "INDEX($amWk,2,5) - INDEX($amMo,2,2)" '0' '0.0000001'
+Near 'Amortise: weekly, the weeks between hold no interest' `
+     "SUMPRODUCT(ABS(INDEX($amWk,3,SEQUENCE(,3,2))))" '0' '0.0000001'
+Near 'Amortise: weekly, the weeks between hold no payment' `
      "SUMPRODUCT(ABS(INDEX($amWk,4,SEQUENCE(,3,2))))" '0' '0.0000001'
+# A twenty-day period is no whole number of months either, and used to round to one and be
+# laid out as though it were a month long.
+Near 'Amortise: twenty-day periods hold the same money as monthly' `
+     "SUM($am(10000, 0.05, 12, DATE(2026,1,1), DATE(2026,1,1) + SEQUENCE( , 20, 0) * 20)) - SUM($amMo)" '0' '0.0000001'
+# An unevenly spaced sub-monthly timeline must still tile the calendar: no month counted
+# twice, none dropped. This one alternates 5 and 40 day periods.
+$uneven = "DATE(2026,1,1) + SCAN(0, SEQUENCE( , 27, 0), LAMBDA(a,k, IF(k = 0, 0, a + IF(MOD(k,2) = 1, 5, 20))))"
+Near 'Amortise: an uneven timeline still counts each month once' `
+     "SUM($am(10000, 0.05, 12, DATE(2026,1,1), $uneven)) - SUM($amMo)" '0' '0.0000001'
 # The month path is untouched. These three totals are what v2.5.0 produced.
 $amL = "10000, 0.05, 48, DATE(2026,1,1)"
 Near 'Amortise: monthly unchanged'    "SUM($am($amL, EDATE(DATE(2026,1,1), SEQUENCE( , 24, 0))))"     '377875.31' '0.005'
@@ -287,11 +305,26 @@ Near 'Depreciate: no period is counted twice' "SUMPRODUCT(--(INDEX($dpW48,3,0)<>
 # Whole-month intervals are unchanged. Two, four and six months never failed: the SWITCH
 # lookups that only listed 1, 3 and 12 were read by two bindings nothing else read, so
 # Excel never evaluated them. They are gone rather than generalised.
-Near 'Depreciate: monthly unchanged'     "SUM($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 24, 0))))"      '397999.12' '0.005'
-Near 'Depreciate: quarterly unchanged'   "SUM($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 8, 0) * 3)))"   '141999.76' '0.005'
-Near 'Depreciate: two-monthly unchanged' "SUM($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 12, 0) * 2)))"  '205999.60' '0.005'
-Near 'Depreciate: six-monthly unchanged' "SUM($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 8, 0) * 6)))"   '113999.84' '0.005'
-Near 'Depreciate: yearly unchanged'      "SUM($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 6, 0) * 12)))"  '70000.00'  '0.005'
+# Summing the whole block cannot see the depreciation row: BookValue is OpeningAmount less
+# Depreciation on the same period, so the two cancel cell for cell and the total collapses to
+# the CAPEX plus twice the opening balances. Each interval is pinned twice, once on the
+# depreciation row and once on the block, so neither a changed schedule nor a changed
+# balance can pass unnoticed.
+Near 'Depreciate: monthly depreciation unchanged'     "SUM(INDEX($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 24, 0))),3,0))"     '4000.00' '0.005'
+Near 'Depreciate: quarterly depreciation unchanged'   "SUM(INDEX($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 8, 0) * 3)),3,0))"  '4000.00' '0.005'
+Near 'Depreciate: two-monthly depreciation unchanged' "SUM(INDEX($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 12, 0) * 2)),3,0))" '4000.00' '0.005'
+Near 'Depreciate: six-monthly depreciation unchanged' "SUM(INDEX($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 8, 0) * 6)),3,0))"  '8000.00' '0.005'
+Near 'Depreciate: yearly depreciation unchanged'      "SUM(INDEX($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 6, 0) * 12)),3,0))" '10000.00' '0.005'
+Near 'Depreciate: monthly block unchanged'     "SUM($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 24, 0))))"      '397999.12' '0.005'
+Near 'Depreciate: quarterly block unchanged'   "SUM($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 8, 0) * 3)))"   '141999.76' '0.005'
+Near 'Depreciate: two-monthly block unchanged' "SUM($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 12, 0) * 2)))"  '205999.60' '0.005'
+Near 'Depreciate: six-monthly block unchanged' "SUM($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 8, 0) * 6)))"   '113999.84' '0.005'
+Near 'Depreciate: yearly block unchanged'      "SUM($dp($dpA, EDATE(DATE(2026,1,1), SEQUENCE( , 6, 0) * 12)))"  '70000.00'  '0.005'
+# Twenty-day periods and an uneven sub-monthly timeline both have to collect the whole year.
+Near 'Depreciate: twenty-day periods collect a full year' `
+     "SUM(INDEX($dp($dpA, DATE(2026,1,1) + SEQUENCE( , 18, 0) * 20),3,0)) - 2000" '0' '0.005'
+Near 'Depreciate: an uneven timeline collects a full year' `
+     "SUM(INDEX($dp($dpA, $uneven),3,0)) - 2000" '0' '0.005'
 # A life in years is a life, not a date. Transposing arguments two and three puts 46,023
 # where the life belongs and asks for 552,276 months of schedule.
 $dpTL = "EDATE(DATE(2026,1,1), SEQUENCE( , 12, 0))"
@@ -336,9 +369,12 @@ Near 'InterestLRV: documented example'  "$ilrv(6666.37, 3.5, 90000, 0.03/12)" '2
 Near 'InterestLRV: cash over the debt charges half a period' "$ilrv(1200, 1, 1000, 0.05)" '25' '0.0000001'
 Near 'InterestLRV: cash far over the debt charges half a period' "$ilrv(5000, 1, 1000, 0.01)" '5' '0.0000001'
 Near 'InterestLRV: below the cap is unchanged' "$ilrv(300, 1.2, 1000, 0.005)" '4.3859649' '0.0000001'
-Near 'InterestLRV: never more than a period on the whole balance' `
-     "MAX(0, $ilrv(5000, 1, 1000, 0.01) - 1000 * 0.01)" '0' '0.0000001'
-Near 'InterestLRV: never less than nought' "MIN(0, $ilrv(5000, 1, 1000, 0.01))" '0' '0.0000001'
+# A cap that binds must not change what the caller reports as repaid, only the interest.
+Near 'InterestLRV: the sculpted schedule still retires the principal exactly' `
+     "SUM(INDEX($lrv(, {1000,0,0,0,0}, {300,300,300,300,300}, {1.2,1.2,1.2,1.2,1.2}, {0.06,0.06,0.06,0.06,0.06}, 12), 3, 0))" '-1000' '0.0000001'
+# and the period the debt is retired in now carries interest rather than nothing
+Near 'InterestLRV: the retiring period is no longer free' `
+     "INDEX($lrv(, {1000,0,0}, {2000,2000,2000}, {1,1,1}, {0.06,0.06,0.06}, 12), 2, 1) - 30" '0' '0.005'
 
 # --- The last two help-text misspellings in the library.
 $tp = "nb.TimelinePosition$L"
@@ -427,10 +463,14 @@ try {
     Invoke-Excel { $xl.CalculateFullRebuild() }
     # Wait for the rebuild to finish. Reading a range Excel is still calculating hands
     # back a null, not a partial answer, and the assertion loop then indexes into it.
-    # CalculationState comes back as the enum's NAME, so compare against the string.
-    for ($w = 0; $w -lt 600 -and "$($xl.CalculationState)" -notin @('xlDone', '0'); $w++) {
+    # CalculationState comes back as the enum's NAME, so compare against the string, and
+    # read it through Invoke-Excel: it is the one call certain to arrive while Excel is busy.
+    $w = 0
+    while ($w -lt 600 -and (Invoke-Excel { "$($xl.CalculationState)" }) -notin @('xlDone', '0')) {
         Start-Sleep -Milliseconds 500
+        $w++
     }
+    if ($w -ge 600) { throw 'Excel was still calculating after 5 minutes' }
     # leading comma stops PowerShell flattening the 2-D range value on the way out
     $vals = Invoke-Excel { , $tmp.Range($addr).Value2 }
     if ($null -eq $vals) { throw 'Excel returned no values for the assertion range' }
