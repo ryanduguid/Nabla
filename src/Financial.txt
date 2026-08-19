@@ -797,9 +797,9 @@ Amortiseλ = LAMBDA(
         FirstPeriod,        INDEX( Timeline, 1),
         SecondPeriod,       INDEX( TImeline, 2),
         DpP,                SecondPeriod - FirstPeriod,                 //Days Per Period
-        WholeMonths,        @ROUND( DpP / ADpM, 0),
-        SubMonthly?,        WholeMonths = 0,
-        MpP,                MAX( WholeMonths, 1),                       //Months Per Period, never nought
+        LastGap,            MAX( Timeline) - INDEX( Timeline, COUNTA( Timeline) - 1),
+        SubMonthly?,        DpP < 28,                                   //No month is shorter
+        MpP,                MAX( @ROUND( DpP / ADpM, 0), 1),            //Months Per Period, never nought
 
     //  Recursive function (fn) definition
         Recursion, 
@@ -877,9 +877,15 @@ Amortiseλ = LAMBDA(
                     ByDate,             MAKEARRAY( ROWS( AmortisationSched), COUNTA( Timeline),
                                             LAMBDA( R, C,
                                                 LET( PeriodOpens,   INDEX( Timeline, C),
+                                                //  A period ends where the next one opens. Only the last
+                                                //  has no successor to ask, so it runs on as far as the
+                                                //  period before it did.
+                                                     PeriodShut,    IF( C = COUNTA( Timeline),
+                                                                        PeriodOpens + LastGap,
+                                                                        INDEX( Timeline, C + 1)),
                                                     SUM( CHOOSEROWS( AmortisationSched, R)
                                                          * ( MonthStarts >= PeriodOpens)
-                                                         * ( MonthStarts < PeriodOpens + DpP))))),
+                                                         * ( MonthStarts < PeriodShut))))),
                     NewBlock,           IF( SubMonthly?,
                                             ByDate,
                                             TimelinePositionλ(AmortisationSched, Timeline, Offset)),
@@ -1080,7 +1086,7 @@ Depreciateλ = LAMBDA(
         Mpy,            12, //Months Per Year
     //  Check inputs - a life in years must be a life, not a date
         LifeGiven,      IF( ISOMITTED( LifeInYears), 1, LifeInYears),
-        LifeNums,       IF( ISNUMBER( LifeGiven), LifeGiven, -1),
+        LifeNums,       IFERROR( VALUE( LifeGiven), -1),
         BadLife?,       OR( MIN( LifeNums) <= 0, MAX( LifeNums) > 100),
         LifeMessage,    "LifeInYears must be a number of years greater than 0 and no more than 100. "
                         & "Check the argument order: InitialValues, InServiceDates, LifeInYears, Timeline.",
@@ -1117,13 +1123,13 @@ Depreciateλ = LAMBDA(
         FirstPeriod,    INDEX( Timeline, 1),
         SecondPeriod,   INDEX( TImeline, 2),
         DpP,            SecondPeriod - FirstPeriod,                      //Days Per Period
-        WholeMonths,    @ROUND( DpP / 30.5, 0),
-        SubMonthly?,    WholeMonths = 0,
-        MpP,            MAX( WholeMonths, 1),                            //Months Per Period, never nought
+        SubMonthly?,    DpP < 28,                                        //No month is shorter
+        MpP,            MAX( @ROUND( DpP / 30.5, 0), 1),                 //Months Per Period, never nought
     //  The last period has no successor to take its end date from, so it ends one period
     //  on from its own start: a whole number of months where the timeline is monthly or
     //  longer, the same number of days as every other period where it is shorter.
-        LastEnd,        IF( SubMonthly?, MAX( Timeline) + DpP, EDATE( MAX( Timeline), MpP)) - 1,
+        LastGap,        MAX( Timeline) - INDEX( Timeline, TimelineCols - 1),
+        LastEnd,        IF( SubMonthly?, MAX( Timeline) + LastGap, EDATE( MAX( Timeline), MpP)) - 1,
         EndDates,       HSTACK( MAP(  SEQUENCE(, TimelineCols - 1), LAMBDA( n, INDEX( Timeline, n + 1) - 1)), LastEnd),
     //  Process each asset
         Result,         REDUCE( 0, SEQUENCE( ROWS( InitialValues)), 
