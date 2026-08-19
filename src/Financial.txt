@@ -754,7 +754,7 @@ Amortiseλ = LAMBDA(
         Help,       TRIM(TEXTSPLIT( 
                         "FUNCTION:      →Amortiseλ( Principals, APRs, Terms, StartDates, [Timeline])¶" &
                         "DESCRIPTION:   →Creates an amortisation schedule array for one or more loans.¶" &
-                                       "→It assumes all payments are made monthly.¶" &
+                                       "→Payments are assumed monthly. On periods shorter than a month the figures for each month land in the period holding its start, the rest nil.¶" &
                                        "→Use LabelAmortiseλ() to apply labels to this function's results:¶" & 
                                        "→Use SumAmortiseλ() to apply totals to this function's results:¶" & 
                         "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" &
@@ -796,8 +796,10 @@ Amortiseλ = LAMBDA(
     //  Determine timeline's interval (length of periods) and orientation (horizontal or vertical)
         FirstPeriod,        INDEX( Timeline, 1),
         SecondPeriod,       INDEX( TImeline, 2),
-        MpP,                @ROUND(( SecondPeriod - FirstPeriod) / ADpM, 0),
-        PpY,                MpY / MpP,
+        DpP,                SecondPeriod - FirstPeriod,                 //Days Per Period
+        WholeMonths,        @ROUND( DpP / ADpM, 0),
+        SubMonthly?,        WholeMonths = 0,
+        MpP,                MAX( WholeMonths, 1),                       //Months Per Period, never nought
 
     //  Recursive function (fn) definition
         Recursion, 
@@ -866,7 +868,21 @@ Amortiseλ = LAMBDA(
                                             PortionArray),
                 //  Position in timeline
                     Offset,             TimelineOffsetλ(StartDate, Timeline),
-                    NewBlock,           TimelinePositionλ(AmortisationSched, Timeline, Offset),
+                //  A sub-monthly period is a fixed number of days, so each month lands in
+                //  the one period that contains its start and the periods between are nil.
+                //  Rows 2 and 5 are balances rather than flows; a balance is carried into
+                //  the period it is dated in and nowhere else, which is the same treatment
+                //  Depreciateλ gives its own opening balance row.
+                    MonthStarts,        EDATE( StartDate, SEQUENCE( , Periods, 0)),
+                    ByDate,             MAKEARRAY( ROWS( AmortisationSched), COUNTA( Timeline),
+                                            LAMBDA( R, C,
+                                                LET( PeriodOpens,   INDEX( Timeline, C),
+                                                    SUM( CHOOSEROWS( AmortisationSched, R)
+                                                         * ( MonthStarts >= PeriodOpens)
+                                                         * ( MonthStarts < PeriodOpens + DpP))))),
+                    NewBlock,           IF( SubMonthly?,
+                                            ByDate,
+                                            TimelinePositionλ(AmortisationSched, Timeline, Offset)),
                     Result,             IF( Asset = ROWS( Principals), 
                                             NewBlock,
                                             VSTACK(
@@ -1033,9 +1049,11 @@ Depreciateλ = LAMBDA(
                             "PARAMETERS:    →¶" & 
                             "InitialValues  →(Required) The purchase values of each asset to depreciate¶" & 
                             "InServiceDates →(Required) The dates from which to start depreciating each asset¶" & 
-                            "LifeInYears    →(Required) The number of years with which to depreciate each asset¶" & 
+                            "LifeInYears    →(Required) The number of years with which to depreciate each asset.¶" & 
+                            "               →More than 0 and no more than 100. A date here is not a life:¶" & 
+                            "               →the arguments read InitialValues, InServiceDates, LifeInYears, Timeline.¶" & 
                             "Timeline       →(Required) The model's timeline or a row of period start dates. ¶" & 
-                            "               →Timeline can be in Months, Quarters, or Years¶" & 
+                            "               →Timeline can be any interval: days, weeks, months, quarters or years¶" & 
                             "SalvageValues  →(Optional: Default = 0) The book values of each asset after fully depreciated.¶" & 
                             "DisposalDates  →(Optional: Default = End of life) The dates on which the assets are removed from the books.¶" & 
                             "DisposalCosts  →(Optional: Default = 0) The book values of each asset after fully depreciated.¶" & 
@@ -1060,6 +1078,12 @@ Depreciateλ = LAMBDA(
     //  Set Constants
         MethodArray,    {"SLN","SYD","DB","DDB","VDB","DV","PC"},
         Mpy,            12, //Months Per Year
+    //  Check inputs - a life in years must be a life, not a date
+        LifeGiven,      IF( ISOMITTED( LifeInYears), 1, LifeInYears),
+        LifeNums,       IF( ISNUMBER( LifeGiven), LifeGiven, -1),
+        BadLife?,       OR( MIN( LifeNums) <= 0, MAX( LifeNums) > 100),
+        LifeMessage,    "LifeInYears must be a number of years greater than 0 and no more than 100. "
+                        & "Check the argument order: InitialValues, InServiceDates, LifeInYears, Timeline.",
     //  Set defaults and apply convenience conversions
         SalvageValues,  IF( ISOMITTED( SalvageValues), 
                             MAP( InitialValues, LAMBDA( Ele, 0)), 
@@ -1092,26 +1116,29 @@ Depreciateλ = LAMBDA(
         TimelineCols,   COLUMNS( TImeline),
         FirstPeriod,    INDEX( Timeline, 1),
         SecondPeriod,   INDEX( TImeline, 2),
-        MpP,            @ROUND(( SecondPeriod - FirstPeriod) / 30.5, 0), //Months Per Period
-        Interval,       SWITCH( MpP, 1, "M", 3, "Q", 12, "Y"),
-        PpY,            SWITCH( MpP, 1, 12, 3, 4, 12, 1),                //Periods Per Year
-        EndDates,       HSTACK( MAP(  SEQUENCE(, TimelineCols - 1), LAMBDA( n, INDEX( Timeline, n + 1) - 1)), EDATE( MAX( Timeline), MpP) -1 ),
+        DpP,            SecondPeriod - FirstPeriod,                      //Days Per Period
+        WholeMonths,    @ROUND( DpP / 30.5, 0),
+        SubMonthly?,    WholeMonths = 0,
+        MpP,            MAX( WholeMonths, 1),                            //Months Per Period, never nought
+    //  The last period has no successor to take its end date from, so it ends one period
+    //  on from its own start: a whole number of months where the timeline is monthly or
+    //  longer, the same number of days as every other period where it is shorter.
+        LastEnd,        IF( SubMonthly?, MAX( Timeline) + DpP, EDATE( MAX( Timeline), MpP)) - 1,
+        EndDates,       HSTACK( MAP(  SEQUENCE(, TimelineCols - 1), LAMBDA( n, INDEX( Timeline, n + 1) - 1)), LastEnd),
     //  Process each asset
         Result,         REDUCE( 0, SEQUENCE( ROWS( InitialValues)), 
                             LAMBDA(Block, Asset, 
                                 LET( 
                                 //  Create individual values from arguments
                                     Method,         @INDEX( Methods, Asset),
-                                    Years,          @INDEX( LifeInYears, Asset),
+                                    Years,          IF( BadLife?, 1, @INDEX( LifeInYears, Asset)),
                                     InitialValue,   @INDEX( InitialValues, Asset), 
                                     SalvageValue,   IF( OR( Method = "DV", Method = "PC"), 0, @INDEX( SalvageValues, Asset)), 
                                     InServiceDate,  @INDEX( CvtSrvDates, Asset), 
                                     DisposalDate,   @INDEX( DisposalDates, Asset), 
                                     DisposalCost,   @INDEX( DisposalCosts, Asset), 
                                     Factor,         @INDEX( Factors, Asset),
-                                    LifeInPeriods,  Years * PpY,
                                     LifeInMonths,   PeriodDiffλ( InserviceDate, DisposalDate, "M"),
-                                    LastPeriod,     PeriodDiffλ( InserviceDate, DisposalDate, Interval),
                                 //  Procedure
                                 //  Depreciation is calculated annually then allocated equally over the next 12 months
                                     Depreciate,     CHOOSE( MATCH( @Method, MethodArray, 0), //CHOOSE is more efficient than SWITCH
@@ -1164,8 +1191,9 @@ Depreciateλ = LAMBDA(
                                 )
                             )
                         ),
-    //  Return Result
-        CHOOSE(Help? + 1, Result, Help)
+    //  Return Result, Help, or the message
+        Return,         IF( Help?, 2, IF( BadLife?, 3, 1)),
+        CHOOSE( Return, Result, Help, LifeMessage)
     ) 
 );
 
@@ -1188,7 +1216,7 @@ LabelDepreciateλ = LAMBDA(
                             "WEBPAGE:       →https://github.com/ryanduguid/Nabla¶" & 
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
-                            "AssetNames     →(Required) The names or descriptions of each asset in teh depreciation schedule produced by Depreciateλ¶" &                   
+                            "AssetNames     →(Required) The names or descriptions of each asset in the depreciation schedule produced by Depreciateλ¶" &                   
                             "EXAMPLES:      →¶" &
                             "Result         →Formula (nb is assumed to be the module's name)¶" &
                                            "→=nb.LabelDepreciateλ(tblAssets[Asset Name])", 
@@ -1310,21 +1338,17 @@ Allocateλ = LAMBDA(
         To,             SWITCH(ToInterval, "Q", 4, "M", 12, "W", 52),
         FromCount,      COUNT( Amounts),
         ToCount,        To / From,
-        Result,         REDUCE( 0, SEQUENCE( , FromCount),
-                            LAMBDA( Acc, n,
-                                LET( 
-                                    FromAmount,     INDEX( Amounts, n), 
+        Result,         MAKEARRAY( 1, FromCount * ToCount,
+                            LAMBDA( R, C,
+                                LET(
+                                //  Column C holds part C of amount QUOTIENT( C - 1, ToCount) + 1
+                                    FromAmount,     INDEX( Amounts, QUOTIENT( C - 1, ToCount) + 1),
                                     ToAmount,       ROUND( FromAmount * From / To, 2),
-                                    BaseArray,      EXPAND( ToAmount, 1, ToCount, ToAmount),
-                                    ToArray,        IF( ToCount = 1, 
-                                                        BaseArray, 
-                                                        HSTACK( 
-                                                            TAKE(BaseArray, 1, ToCount - 1), 
-                                                            FromAmount - SUM( TAKE(BaseArray, 1, ToCount - 1))
-                                                        )
-                                                    ),
-                                    Result,         IF( n = 1, ToArray, HSTACK( Acc, ToArray )),
-                                    Result
+                                //  The last part of each amount carries the rounding difference
+                                    Last?,          MOD( C - 1, ToCount) + 1 = ToCount,
+                                    IF( AND( Last?, ToCount > 1),
+                                        FromAmount - SUM( EXPAND( ToAmount, 1, MAX( ToCount - 1, 1), ToAmount)),
+                                        ToAmount)
                                 )
                             )
                         ),
@@ -1963,7 +1987,7 @@ TimelinePositionλ = LAMBDA(
                             "VERSION:       →18 Aug 2026¶" &
                             "PARAMETERS:    →¶" & 
                             "Array          →(Required) The array to be positioned relative to a model's timeline¶" & 
-                            "Timeline       →(Required) A model's timline¶" & 
+                            "Timeline       →(Required) A model's timeline¶" & 
                             "Offset         →(Required) The number of rows or columns to start placing the array within the timeline¶" &                     
                             "NOTES!         →¶" & 
                                            "→Timelines can be vertical or horizontal. Whichever way the timeline goes, the array must match.¶" &                     

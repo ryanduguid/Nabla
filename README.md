@@ -107,6 +107,7 @@ Each module has its own tab colour, gridlines are hidden, and every sheet opens 
 | `tools/` | The build pipeline: rebuilds the workbook from upstream and checks it |
 | `CHANGELOG.md` | What changed in this release |
 | `assets/` | Logo |
+| `LICENCE` | MIT, and what it does and does not cover |
 
 `src/` and `functions.csv` are generated from `nabla.xlsx` by the build, not edited by hand, so the published source of a function is always the definition that ships.
 
@@ -146,9 +147,9 @@ powershell -ExecutionPolicy Bypass -File tools/excel_selftest.ps1
 python tools/verify_cache.py nabla.xlsx
 ```
 
-Cached values: an `.xlsx` stores a formula and the answer Excel last got from it, and nothing keeps the two in step. The build edits values as XML with no formula engine, so every cell downstream of an edit keeps the answer it had before: shifting the sample dates forward two years left 3,193 such cells across 43 sheets, and five cells shipped a saved `#VALUE!` from v1.2.0 to v2.2.0. Excel replaces them all on open, which is exactly why it needs a gate: the file can be wrong in a way only a second tool can see, and everything that reads an `.xlsx` without a formula engine reads the cached answer. This opens the workbook, recalculates, and compares all 20,221 cached values against what the formulas produce. Needs Excel, so it is a local gate. Run `python tools/refresh_cache.py` to fix what it reports.
+Cached values: an `.xlsx` stores a formula and the answer Excel last got from it, and nothing keeps the two in step. The build edits values as XML with no formula engine, so every cell downstream of an edit keeps the answer it had before: shifting the sample dates forward two years left 3,193 such cells across 43 sheets, and five cells shipped a saved `#VALUE!` from v1.2.0 to v2.2.0. Excel replaces them all on open, which is exactly why it needs a gate: the file can be wrong in a way only a second tool can see, and everything that reads an `.xlsx` without a formula engine reads the cached answer. This opens the workbook, recalculates, and compares all 20,226 cached values against what the formulas produce. Needs Excel, so it is a local gate. Run `python tools/refresh_cache.py` to fix what it reports.
 
-Arithmetic: opens the workbook in a real Excel, forces a full rebuild, fails on any error cell, then runs 197 assertions over the Australian functions, the worksheet that demonstrates them, and the balance identities of the debt sculpting schedules. Needs Excel with LAMBDA support, so it cannot run on GitHub's runners and stays a local gate. It opens Excel over COM and quits it when finished, so it refuses to start if Excel is already running rather than closing your workbooks; it never saves the file it tests.
+Arithmetic: opens the workbook in a real Excel, forces a full rebuild, fails on any error cell, then runs 247 assertions over the Australian functions, the worksheet that demonstrates them, the timeline and allocation helpers on period lengths from a day to a year, and the balance identities of the debt sculpting schedules. Needs Excel with LAMBDA support, so it cannot run on GitHub's runners and stays a local gate. It opens Excel over COM and quits it when finished, so it refuses to start if Excel is already running rather than closing your workbooks; it never saves the file it tests.
 
 ## Worksheet catalogue
 
@@ -202,6 +203,8 @@ Arithmetic: opens the workbook in a real Excel, forces a full rebuild, fails on 
 
 The other 85 functions (all of Ratios, Utilities and Debt, the depreciation-method, GST and rolling-statistic helpers in Financial, `nb.FinancialYearλ`, and the module About tables) have no dedicated worksheet; call any of them with no arguments for inline help, `nb.FinancialRatios` demonstrates the ratio suite on one worksheet, and [functions.csv](functions.csv) lists every function with its signature.
 
-## Attribution
+## Attribution and licence
 
 Nabla is a renamed and reworked derivative of an existing LAMBDA library. See [ATTRIBUTION.md](ATTRIBUTION.md) for provenance, upstream copyright and the full list of changes.
+
+[LICENCE](LICENCE) is MIT and covers only what was written for this repository: `tools/`, `.github/`, the Markdown files and `assets/`. It does not cover `nabla.xlsx`, `src/` or `functions.csv`, which derive from the upstream workbook. No licence for that work could be located, so its author retains all rights in the original material.
