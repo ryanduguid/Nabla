@@ -121,14 +121,25 @@ def check(workbook: Path, src: Path) -> list[str]:
     return failures
 
 
+def emit_line(text: str, stream=None) -> None:
+    """Write one line without losing unencodable diagnostic characters."""
+    stream = sys.stdout if stream is None else stream
+    encoding = getattr(stream, "encoding", None) or "utf-8"
+    try:
+        text.encode(encoding)
+    except UnicodeEncodeError:
+        text = text.encode(encoding, errors="backslashreplace").decode(encoding)
+    print(text, file=stream)
+
+
 def main() -> None:
     failures = check(Path(WORKBOOK), SRC)
     if failures:
-        print(f"FAIL: {len(failures)} AFE problem(s) in {WORKBOOK}")
+        emit_line(f"FAIL: {len(failures)} AFE problem(s) in {WORKBOOK}")
         for failure in failures:
-            print(f"  - {failure}")
+            emit_line(f"  - {failure}")
         sys.exit(1)
-    print(
+    emit_line(
         f"OK: AFE store in {WORKBOOK} matches {len(MODULES)} non-recursive modules "
         "and excludes recursive Debt"
     )
