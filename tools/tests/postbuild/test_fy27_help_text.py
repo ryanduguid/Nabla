@@ -107,6 +107,36 @@ class Fy27HelpTextTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("FAIL", result.stdout + result.stderr)
 
+    def test_pass_fails_when_an_anchor_and_its_replacement_are_both_absent(self):
+        self.assertTrue(PASS_SCRIPT.exists(), "pass script must exist for this test")
+        workbook, src = self._copy_tree()
+        # Remove the FY27 replacement of one swap from the ENTIRE library: the swap
+        # can neither apply (old is already gone) nor be confirmed applied (new is
+        # now gone), so the aggregate guard must refuse the wrong input.
+        import zipfile
+
+        _old, new = EXAMPLE_SWAPS[1]
+        with zipfile.ZipFile(workbook) as archive:
+            parts = {n: archive.read(n) for n in archive.namelist()}
+        book = parts["xl/workbook.xml"].decode("utf-8")
+        self.assertIn(new, book, "precondition: replacement present in workbook")
+        parts["xl/workbook.xml"] = book.replace(
+            new, 'EDATE(""1/1/1900"", SEQUENCE(,24, 0))'
+        ).encode("utf-8")
+        with zipfile.ZipFile(workbook, "w", zipfile.ZIP_DEFLATED) as archive:
+            for name, data in parts.items():
+                archive.writestr(name, data)
+        for module in ("Dates", "Essentials", "Financial", "Ratios", "Utilities", "Debt"):
+            target = src / f"{module}.txt"
+            text = target.read_text(encoding="utf-8")
+            target.write_text(
+                text.replace(new, 'EDATE(""1/1/1900"", SEQUENCE(,24, 0))'),
+                encoding="utf-8",
+            )
+        result = self._run(workbook, src)
+        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("FAIL", result.stdout + result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()
