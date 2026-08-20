@@ -13,13 +13,12 @@ from __future__ import annotations
 
 import base64
 import json
-import re
 import sys
 import zipfile
 from pathlib import Path
 
 from sanitise_workbook import write_deterministic
-from verify_afe import DEBT_NAMES
+from verify_afe import DEBT_NAMES, find_afe_blob
 
 MODULES = ("Dates", "Essentials", "Financial", "Ratios", "Utilities")
 
@@ -28,8 +27,7 @@ def sync(workbook: Path, src: Path) -> list[str]:
     with zipfile.ZipFile(workbook) as archive:
         parts = {name: archive.read(name) for name in archive.namelist()}
     raw = parts["customXml/item1.xml"]
-    matches = re.findall(rb"[A-Za-z0-9+/]{100,}={0,2}", raw)
-    encoded = max(matches, key=len)
+    encoded = find_afe_blob(raw)
     store = json.loads(base64.b64decode(encoded).decode("utf-16-le"))
 
     files = {item.get("path"): item for item in store.get("files", [])}
@@ -70,7 +68,14 @@ def main() -> None:
         sys.exit(f"FAIL: no such workbook: {workbook}")
     try:
         changes = sync(workbook, src)
-    except (OSError, KeyError, ValueError, json.JSONDecodeError, zipfile.BadZipFile) as exc:
+    except (
+        OSError,
+        FileNotFoundError,
+        KeyError,
+        ValueError,
+        json.JSONDecodeError,
+        zipfile.BadZipFile,
+    ) as exc:
         sys.exit(f"FAIL: cannot sync AFE store: {exc}")
     for change in changes:
         print(change)
