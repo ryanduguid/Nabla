@@ -1,6 +1,5 @@
 import base64
 import json
-import re
 import shutil
 import subprocess
 import sys
@@ -10,15 +9,17 @@ import zipfile
 from pathlib import Path
 
 TOOLS = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(TOOLS))
 ROOT = TOOLS.parent
 WORKBOOK = ROOT / "ozzit.xlsx"
+
+from verify_afe import find_afe_blob
 
 
 def afe_parts(workbook: Path) -> tuple[dict, bytes]:
     with zipfile.ZipFile(workbook) as archive:
         raw = archive.read("customXml/item1.xml")
-    matches = re.findall(rb"[A-Za-z0-9+/]{100,}={0,2}", raw)
-    encoded = max(matches, key=len)
+    encoded = find_afe_blob(raw)
     return json.loads(base64.b64decode(encoded).decode("utf-16-le")), encoded
 
 
