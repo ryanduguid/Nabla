@@ -72,6 +72,10 @@ The library is Australian-only: the foreign tax regimes and references the upstr
 | `oz.GSTExtractλ(Amounts, [Rate])` | Returns the GST inside GST-inclusive amounts |
 | `oz.FinancialYearλ(Dates, [StartMonth])` | Labels dates with their financial year, starting 1 July |
 
+The 10% default and one-eleventh extraction reflect the basic rule for a taxable supply in [*A New Tax System (Goods and Services Tax) Act 1999*](https://www.legislation.gov.au/C2004A00446/latest/text) ss 9-70 and 9-75 (source checked 20 August 2026). Recheck the current Act and any applicable special rule at the time of use. These helpers apply arithmetic only: they do not decide whether a supply is taxable, GST-free, input taxed, outside the GST system or subject to a special rule.
+
+This legislative scope note is not yet embedded in the workbook help. The tracked transformation starts from an upstream workbook that is not committed and reproduces the v3.0.0 baseline, not the current v3.1.0 workbook. Update the embedded GST help only after establishing a committed-input build path for the current workbook, then regenerate the workbook, `src/` and `functions.csv` and rerun the structural, cache and native Excel gates.
+
 `oz.Depreciateλ` accepts the method codes `SLN`, `SYD`, `DB`, `DDB`, `VDB`, `DV` (diminishing value) and `PC` (prime cost).
 
 **These are modelling schedules, not tax calculations.** They take a cost and an effective life and nothing else: no acquisition date, no income year, no days held, and no disposal. `oz.DiminishingValueλ` also writes the whole undeducted residual off in its final period, which a diminishing-balance calculation does not do on its own, so the schedule totals to cost by construction. For a cost of 1,000 over five years it returns 400, 240, 144, 86.40 and 129.60, where the last figure is the residual rather than a computed deduction.
