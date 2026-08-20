@@ -195,6 +195,28 @@ def main():
                 continue
             read += 1
             name, body = m.group(1), m.group(2).strip()
+
+            rows = help_rows(body)
+            for label, text in rows:
+                if label.startswith("WEBPAGE") and "coming soon" in text.lower():
+                    failures.append("%s: its WEBPAGE still says Coming Soon" % name)
+
+            if name.startswith("About"):
+                seen_desc = {}
+                for label, text in rows:
+                    if label not in declared_names or label == name:
+                        continue
+                    key = re.sub(r"\s+", " ", text).strip().lower()
+                    if not key:
+                        continue
+                    if key in seen_desc:
+                        failures.append(
+                            "%s: %s and %s share the same About-table description"
+                            % (name, seen_desc[key], label)
+                        )
+                    else:
+                        seen_desc[key] = label
+
             if not body.startswith("LAMBDA("):
                 not_lambda.append(name)
                 continue
