@@ -24,10 +24,10 @@ import, built-in names are upper-cased the way Excel does, and whitespace is
 ignored, since help text is padded for alignment and TRIM() removes it.
 """
 import html
-import os
 import re
 import sys
 import zipfile
+from pathlib import Path
 
 # Every function name carries a λ, and a Windows console defaults to cp1252, which
 # cannot encode it: without this the check dies printing its own result.
@@ -41,9 +41,9 @@ MODULES = ["Dates", "Essentials", "Financial", "Ratios", "Utilities", "Debt"]
 NAMESPACE = "oz"          # every function ships under one prefix, whatever module it lives in
 
 OPENERS, CLOSERS = "({[", ")}]"
-NAME = re.compile(r"^\s*([A-Za-z_][A-Za-z0-9_.λ]*)\s*=\s*(.+)$", re.S)
+NAME = re.compile(r"^\s*([A-Za-z_][A-Za-z0-9_.λ]*)\s*=\s*(.+)$", re.DOTALL)
 OPTIONAL = re.compile(r"_xlop\.([A-Za-z_][A-Za-z0-9_]*\??)")   # ? is legal in a parameter name
-PREFIX = re.compile(r"_xl[a-z]+\.", re.I)
+PREFIX = re.compile(r"_xl[a-z]+\.", re.IGNORECASE)
 
 failures = []
 
@@ -193,12 +193,13 @@ def main():
     # Two passes: the namespace is flat, so a call in one module may name a function
     # declared in another, and every declaration has to be known before any is qualified.
     raw = {}
+    src = Path(SRC_DIR)
     for mod in MODULES:
-        path = os.path.join(SRC_DIR, mod + ".txt")
-        if not os.path.exists(path):
+        path = src / f"{mod}.txt"
+        if not path.exists():
             fail("missing source module %s" % path)
-            continue
-        text = open(path, encoding="utf-8").read()
+    for path in sorted(src.glob("*.txt")):
+        text = path.read_text(encoding="utf-8")
         # The published source must be in the form Excel accepts as input.
         for token in ("[0]!", "_xlfn.", "_xlpm.", "_xlop.", "_xlws."):
             if token in text:
@@ -224,7 +225,7 @@ def main():
     wbx = z.read("xl/workbook.xml").decode("utf-8")
     shipped = {n: html.unescape(b) for n, b in
                re.findall(r'<definedName name="(%s\.[^"]+)"[^>]*>(.*?)</definedName>' % NAMESPACE,
-                          wbx, re.S)}
+                          wbx, re.DOTALL)}
 
     for name in sorted(set(shipped) - set(parsed)):
         fail("%s ships in the workbook but is not in src/" % name)

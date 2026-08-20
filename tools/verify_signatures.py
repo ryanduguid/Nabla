@@ -44,9 +44,13 @@ import glob
 import os
 import re
 import sys
+from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from verify_sources import NAME, statements   # same statement splitter the src check uses
+from verify_sources import (  # same statement splitter the src check uses
+    NAME,
+    statements,
+)
 
 # Every function name carries a λ, and a Windows console defaults to cp1252, which
 # cannot encode it: without this the check dies printing its own result.
@@ -56,7 +60,7 @@ if hasattr(sys.stdout, "reconfigure"):
 
 SRC = sys.argv[1] if len(sys.argv) > 1 else "src"
 
-SIGNATURE = re.compile(r"^([A-Za-z0-9_.]*λ[A-Za-z0-9_]*)\s*\((.*)\)\s*$", re.S)
+SIGNATURE = re.compile(r"^([A-Za-z0-9_.]*λ[A-Za-z0-9_]*)\s*\((.*)\)\s*$", re.DOTALL)
 # a call in help text, with or without the namespace the EXAMPLES header says to assume
 CALL = re.compile(r"(?<![A-Za-z0-9_.])(?:oz\.)?([A-Za-z_][A-Za-z0-9_]*λ[A-Za-z0-9_]*)\s*\(")
 INTERNAL = "DoNotUse"        # an internal counter, documented but kept out of the signature
@@ -105,10 +109,29 @@ def names(text):
 
 def declared(body):
     """The parameter names the LAMBDA takes."""
-    head = body[body.index("LAMBDA(") + len("LAMBDA("):]
-    head = re.sub(r"//[^\n]*", "", head)
-    cut = head.find("LET(")
-    return names(head[:cut] if cut != -1 else head)
+    head = re.sub(r"//[^\n]*", "", body[body.index("LAMBDA(") + len("LAMBDA("):])
+    depth, in_string, commas = 0, False, []
+    i = 0
+    while i < len(head):
+        char = head[i]
+        if char == '"':
+            if in_string and i + 1 < len(head) and head[i + 1] == '"':
+                i += 2
+                continue
+            in_string = not in_string
+        elif not in_string:
+            if char in "({[":
+                depth += 1
+            elif char in ")}]":
+                if depth == 0:
+                    break
+                depth -= 1
+            elif char == "," and depth == 0:
+                commas.append(i)
+        i += 1
+    if not commas:
+        return []
+    return names(head[: commas[-1]])
 
 
 def worked_examples(body):
@@ -155,17 +178,18 @@ def main():
 
     # every name the library declares, so a help reference can be checked against it.
     # Not `declared`: that is the function just above, which reads a LAMBDA's parameters.
+    modules = {path: statements(Path(path).read_text(encoding="utf-8")) for path in paths}
     declared_names = set()
-    for path in paths:
-        for st in statements(open(path, encoding="utf-8").read()):
+    for path, module_statements in modules.items():
+        for st in module_statements:
             m = NAME.match(st)
             if m:
                 declared_names.add(m.group(1))
 
     failures, no_signature, no_table, not_lambda = [], [], [], []
     signatures = tables = examples = read = 0
-    for path in paths:
-        for st in statements(open(path, encoding="utf-8").read()):
+    for path, module_statements in modules.items():
+        for st in module_statements:
             m = NAME.match(st)
             if not m:
                 continue
