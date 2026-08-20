@@ -113,7 +113,7 @@ Each module has its own tab colour, gridlines are hidden, and every sheet opens 
 
 ## Checks
 
-Eight gates, because they answer different questions. Six run in CI; the two that need Excel run locally.
+Nine gates, because they answer different questions. Seven run in CI; the two that need Excel run locally.
 
 ```bash
 python tools/verify_workbook.py ozzit.xlsx
@@ -144,6 +144,12 @@ python tools/verify_index.py ozzit.xlsx src functions.csv
 ```
 
 Index: re-derives every module, signature and description in `functions.csv` from `src/` and the defined names in the workbook. This catches a stale or hand-edited machine-readable index, including the truncated long signature and escaped line-break descriptions that shipped before the export was fixed. Also runs in CI.
+
+```bash
+python tools/verify_afe.py ozzit.xlsx src
+```
+
+Advanced Formula Environment: the AFE task pane is the documented editing surface, and it has its own copy of the library inside `customXml/item1.xml`. This gate requires the five non-recursive module texts to equal `src/*.txt` and every shipped non-Debt name to be listed. Debt must stay out: the module is recursive and `src/Debt.txt` documents the Name Manager import path. Also runs in CI.
 
 ```bash
 python -m unittest discover -s tools/tests -v
