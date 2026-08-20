@@ -65,15 +65,24 @@ def apply_swaps(text: str, label: str, failures: list[str]) -> str:
         hits = text.count(old)
         expected = wb_expected if label == "workbook" else src_expected
         if hits == 0:
-            # Already applied (or never present): nothing to do. The replacement's
-            # own count is not a valid check on a second run, because the first run
-            # produced it at whatever total the store genuinely carries.
+            # Per-module, most anchors are legitimately absent (a Financial swap never
+            # appears in Essentials.txt). The both-absent guard runs on the aggregate
+            # in run(), not here.
             continue
         if hits != expected:
             failures.append(f"{label}: {old[:50]!r} expected {expected} hits, got {hits}")
             continue
         text = text.replace(old, new)
     return text
+
+
+def guard_anchors(text: str, label: str, failures: list[str]) -> None:
+    """On the aggregate store, every swap must be visible one way or the other."""
+    for old, new, _wb_expected, _src_expected in SWAPS:
+        if old not in text and new not in text:
+            failures.append(
+                f"{label}: {old[:50]!r} absent and its replacement is absent too"
+            )
 
 
 def _read_text(path: Path) -> str:
@@ -90,17 +99,26 @@ def run(workbook: Path, src_dir: Path) -> list[str]:
     failures: list[str] = []
 
     src_texts = {}
+    src_originals = []
     for module in MODULES:
         path = src_dir / f"{module}.txt"
         if not path.is_file():
             failures.append(f"src: missing {path}")
             continue
-        src_texts[module] = apply_swaps(_read_text(path), "src", failures)
+        original = _read_text(path)
+        src_originals.append(original)
+        src_texts[module] = apply_swaps(original, "src", failures)
 
     with zipfile.ZipFile(workbook) as archive:
         parts = {n: archive.read(n) for n in archive.namelist()}
     book = parts["xl/workbook.xml"].decode("utf-8")
     parts["xl/workbook.xml"] = apply_swaps(book, "workbook", failures).encode("utf-8")
+
+    # Aggregate guard: across the whole library (pre-swap text), every swap must
+    # be visible as either its old anchor or its replacement — otherwise the input
+    # is the wrong artefact or the swap table is stale.
+    aggregate = book + "\n" + "\n".join(src_originals)
+    guard_anchors(aggregate, "library", failures)
 
     if failures:
         raise ValueError("; ".join(failures))
