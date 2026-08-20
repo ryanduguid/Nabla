@@ -86,6 +86,12 @@
   now state what their sheets demonstrate. `tools/polish_workbook.py` makes the pass
   reproducible and idempotent, with an executable presentation contract in CI.
 
+- **The AFE authoring view now carries the same library the workbook calculates.** Four
+  modules in the Advanced Formula Environment store still said 19 Aug 2026 after the
+  shipped names and `src/` moved to 20 Aug; six stale strings are synchronised. A new
+  gate requires all five AFE-compatible modules to equal `src/` and keeps recursive Debt
+  out, matching the documented import path.
+
 ## v3.0.0, 19 August 2026, the library is now Ozzit
 
 - **Every function's prefix changes from `nb.` to `oz.`, and the library is renamed from
