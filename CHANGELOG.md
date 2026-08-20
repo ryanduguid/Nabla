@@ -79,6 +79,13 @@
   maintainer's Git configuration or local tools from creating whole-file or accidental
   public diffs.
 
+- **The final legacy palette and copy defects are gone.** The mint formula highlights on
+  109 cells become pale lavender `#DED9E8`; the 44 visible function straplines move from
+  sub-AA `#808080` to the existing `#6E6862` neutral; 23 real date cells stop using the
+  reader's locale-dependent short-date format; and eight copied or missing A2 descriptions
+  now state what their sheets demonstrate. `tools/polish_workbook.py` makes the pass
+  reproducible and idempotent, with an executable presentation contract in CI.
+
 ## v3.0.0, 19 August 2026, the library is now Ozzit
 
 - **Every function's prefix changes from `nb.` to `oz.`, and the library is renamed from
