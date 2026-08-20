@@ -100,6 +100,30 @@ class LumaPaletteTests(unittest.TestCase):
         self.assertNotIn('rFont val="Aptos Narrow"', shared)
         self.assertNotIn('rgb="FF2E4950"', shared)
 
+    def test_pass_refolds_a_reverted_rich_text_run_in_shared_strings(self):
+        # Exercise the folding path itself: put the pre-v3.1.0 run back into
+        # sharedStrings.xml, then require the pass to fold it again. The end-state
+        # test above cannot catch a broken sharedStrings path on a clean workbook.
+        with zipfile.ZipFile(self.workbook) as archive:
+            parts = {n: archive.read(n) for n in archive.namelist()}
+        shared = parts["xl/sharedStrings.xml"].decode("utf-8")
+        self.assertIn('rgb="FF2B2733"', shared, "precondition: folded colour present")
+        self.assertIn('rFont val="Aptos"', shared, "precondition: folded font present")
+        shared = shared.replace('rgb="FF2B2733"', 'rgb="FF2E4950"', 1)
+        shared = shared.replace('rFont val="Aptos"', 'rFont val="Aptos Narrow"', 1)
+        parts["xl/sharedStrings.xml"] = shared.encode("utf-8")
+        with zipfile.ZipFile(self.workbook, "w", zipfile.ZIP_DEFLATED) as archive:
+            for name, data in parts.items():
+                archive.writestr(name, data)
+
+        result = self._run()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        with zipfile.ZipFile(self.workbook) as archive:
+            shared = archive.read("xl/sharedStrings.xml").decode("utf-8")
+        self.assertNotIn('rFont val="Aptos Narrow"', shared)
+        self.assertNotIn('rgb="FF2E4950"', shared)
+        self.assertIn('rgb="FF2B2733"', shared)
+
 
 if __name__ == "__main__":
     unittest.main()
