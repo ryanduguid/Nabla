@@ -33,5 +33,7 @@ jobs:
         run: python tools/verify_previous_names.py functions.csv
       - name: Check the published index matches the current artefacts
         run: python tools/verify_index.py ozzit.xlsx src functions.csv
+      - name: Check the Advanced Formula Environment store matches src/
+        run: python tools/verify_afe.py ozzit.xlsx src
       - name: Run tool regression tests
         run: python -m unittest discover -s tools/tests -v
