@@ -92,6 +92,14 @@
   gate requires all five AFE-compatible modules to equal `src/` and keeps recursive Debt
   out, matching the documented import path.
 
+- **The deterministic postbuild passes are now tracked, idempotent tools.** The FY27
+  help-text swaps and the Luma palette that produced v3.1.0 live in `tools/postbuild/`,
+  each with asserted hit counts and a byte no-op on the current workbook, covered by the
+  CI test suite. The COM date shift is deliberately not ported: it is Excel-state-dependent
+  and cannot be reproduced byte-for-byte, which ATTRIBUTION.md now says plainly. One dead
+  bold font entry (Aptos Narrow, pre-palette colour) and the TOC's rich-text `Totals` run,
+  both of which the original restyle missed, are folded into the palette by the new pass.
+
 ## v3.0.0, 19 August 2026, the library is now Ozzit
 
 - **Every function's prefix changes from `nb.` to `oz.`, and the library is renamed from
