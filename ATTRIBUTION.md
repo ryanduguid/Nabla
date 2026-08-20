@@ -16,7 +16,9 @@ The repository's own work is separately licensed. [LICENCE](LICENCE) is MIT and 
 
 ## The build input
 
-`tools/transform_from_upstream.py` rebuilds `ozzit.xlsx` from the upstream workbook, which is not in this repository and cannot be. The build was last run against a file of 1,478,643 bytes, sha256 `f38dbc83b4a18fc7d71d0f4bcf39680d74694b9aa129f5b3deb39b014e0bbb67`, holding 224 parts. A rebuild that starts from that file reproduces `src/` and `functions.csv` exactly; anything else is a different input and the build's own assertions will say so.
+`tools/transform_from_upstream.py` rebuilds `ozzit.xlsx` from the upstream workbook, which is not in this repository and cannot be. The build was last run against a file of 1,478,643 bytes, sha256 `f38dbc83b4a18fc7d71d0f4bcf39680d74694b9aa129f5b3deb39b014e0bbb67`, holding 224 parts. A rebuild that starts from that file reproduces the v3.0.0 `src/` and `functions.csv`; anything else is a different input and the build's own assertions will say so.
+
+That claim describes the v3.0.0 baseline. v3.1.0's FY27 examples, Luma palette and later maintenance passes changed the built workbook after that baseline was produced, and the tracked repository tools now preserve and verify those changes rather than regenerate the historical pass from upstream. A rebuild from the upstream file reproduces the v3.0.0 artefacts, then requires those later passes to reach the current release. Byte-for-byte reproduction of the current workbook is not claimed: the FY27 date shift was Excel-state-dependent and an Excel save is not stable across Excel builds.
 
 ## What changed from the upstream workbook
 
