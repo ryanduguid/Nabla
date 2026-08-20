@@ -7,9 +7,8 @@
 # produce. Excel replaced them on open, so no reader ever saw one, but a file that
 # disagrees with itself cannot be checked by anything except Excel.
 #
-# This is the only step in the pipeline that needs Excel, and it changes no formula: all
-# 4,506 formula cells come out byte-identical. Run tools/verify_cache.py afterwards, which
-# is the gate that proves it.
+# This is the only step in the pipeline that saves through Excel. It changes no formula;
+# run tools/verify_cache.py afterwards, which is the gate that proves the saved answers.
 param([string]$Path = 'ozzit.xlsx')
 
 $ErrorActionPreference = 'Stop'

@@ -27,10 +27,18 @@ BANNED = re.compile(
     # Excel stamps x15ac:absPath with the directory the file was last saved from, so
     # every release up to v2.2.0 published a path off the build machine. On a machine
     # whose account is not named "-" that path carries the account name with it.
-    r"|x15ac:absPath|[A-Za-z]:\\\\Users\\\\|/Users/|/home/"
+    r"|x15ac:absPath|[A-Za-z]:\\{1,2}Users\\{1,2}|/Users/|/home/"
 )
 SHEET_RE = re.compile(r"xl/worksheets/sheet\d+\.xml$")
 TOKEN_RE = re.compile(r"oz\.[A-Za-z0-9_]+λ?(?:DV)?")
+FORBIDDEN_PARTS = (
+    "xl/activeX/",
+    "xl/ctrlProps/",
+    "xl/externalLinks/",
+    "xl/embeddings/",
+    "xl/macrosheets/",
+    "xl/dialogsheets/",
+)
 
 failures = []
 
@@ -39,16 +47,28 @@ def fail(msg):
     failures.append(msg)
 
 
+def check_xml_part(name, data):
+    """Reject declarations with entity expansion before parsing workbook XML."""
+    if b"<!DOCTYPE" in data.upper():
+        fail(f"DOCTYPE declaration in {name}")
+        return
+    try:
+        ET.fromstring(data.decode("utf-8"))
+    except (UnicodeDecodeError, ET.ParseError) as exc:
+        fail(f"malformed XML in {name}: {exc}")
+
+
 def main():
     z = zipfile.ZipFile(WORKBOOK)
     parts = z.namelist()
 
     for name in parts:
+        if name == "xl/vbaProject.bin" or name.startswith(FORBIDDEN_PARTS):
+            fail(f"forbidden workbook part {name}")
+
+    for name in parts:
         if name.endswith((".xml", ".rels")):
-            try:
-                ET.fromstring(z.read(name).decode("utf-8"))
-            except ET.ParseError as exc:
-                fail(f"malformed XML in {name}: {exc}")
+            check_xml_part(name, z.read(name))
 
     for name in parts:
         if name.endswith((".xml", ".rels")) and name != "customXml/item1.xml":
