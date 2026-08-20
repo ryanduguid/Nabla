@@ -2,16 +2,25 @@
 
 ## Supported versions
 
-Security fixes are applied to the latest version on the default branch.
+Only the latest published GitHub release is supported for security fixes.
+Older releases and unreleased branches are not supported release lines.
+Publishing a newer release supersedes the previously supported release.
 
 ## Reporting a vulnerability
 
-Please use this repository's private vulnerability reporting feature. Do not
-open a public issue for a suspected security vulnerability. Include a clear
-description, reproduction steps, impact, and any suggested mitigation.
+Report a suspected vulnerability through [GitHub private vulnerability
+reporting](https://github.com/ryanduguid/Ozzit/security/advisories/new). The
+form's availability depends on the live GitHub private vulnerability reporting
+setting for this repository.
 
-A valid report will be acknowledged within seven days, and the fix and
-disclosure timeline will be agreed with the reporter.
+Do not disclose a suspected vulnerability in a public issue, discussion, pull request or commit before coordinated disclosure.
+
+Include the affected release, impact, reproduction steps, suggested mitigation
+and a minimal synthetic reproduction. Do not upload client workbooks, real
+client or production data, credentials, access tokens, private keys, session
+material, private URLs, .env files or other sensitive files. The public
+`ozzit.xlsx` release artefact is not a client workbook, but a user workbook or
+an extract containing client information remains sensitive.
 
 ## What this library does and does not do
 
