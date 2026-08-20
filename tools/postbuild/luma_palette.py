@@ -155,7 +155,8 @@ def recolour(text: str) -> tuple[str, int]:
     # still remappable after one pass would drift on every subsequent run.
     residual = re.findall(r'rgb="[0-9A-Fa-f]{8}"', text) + re.findall(
         r'val="[0-9A-Fa-f]{6}"(?=/>|")', text
-    )
+    )  # invariant: these two shapes are exactly what rep8/rep6 write. Add a
+    # substitution shape elsewhere and this scan must grow the same pattern.
     for token in residual:
         hexv = token.split('"')[1]
         rgb = hexv[2:] if len(hexv) == 8 else hexv
