@@ -104,7 +104,7 @@ Each module has its own tab colour, gridlines are hidden, and every sheet opens 
 | `src/*.txt` | Plain-text LAMBDA source per group (Dates, Essentials, Financial, Ratios, Utilities, Debt), diffable and importable |
 | `ATTRIBUTION.md` | Provenance and upstream copyright |
 | `functions.csv` | Machine-readable index of every function |
-| `tools/` | The build pipeline: rebuilds the workbook from upstream and checks it |
+| `tools/` | The build pipeline: rebuilds the workbook from upstream, canonicalises/polishes it, and checks it |
 | `CHANGELOG.md` | What changed in this release |
 | `assets/` | Logo |
 | `LICENCE` | MIT, and what it does and does not cover |
@@ -161,9 +161,11 @@ Arithmetic: opens the workbook in a real Excel, forces a full rebuild, fails on 
 python tools/verify_cache.py ozzit.xlsx
 ```
 
-Cached values: an `.xlsx` stores a formula and the answer Excel last got from it, and nothing keeps them in step. The build edits values as XML with no formula engine, so every cell downstream of an edit keeps the answer it had before: shifting the sample dates forward two years left 3,193 such cells across 43 sheets, and five cells shipped a saved `#VALUE!` from v1.2.0 to v2.2.0. Excel replaces them all on open, which is exactly why it needs a gate: the file can be wrong in a way only a second tool can see, and everything that reads an `.xlsx` without a formula engine reads the cached answer. This opens the workbook, recalculates, and compares all 20,227 cached values against what the formulas produce. Needs Excel, so it is a local gate. Run `python tools/refresh_cache.py` to fix what it reports.
+Cached values: an `.xlsx` stores a formula and the answer Excel last got from it, and nothing keeps them in step. The build edits values as XML with no formula engine, so every cell downstream of an edit keeps the answer it had before: shifting the sample dates forward two years left 3,193 such cells across 43 sheets, and five cells shipped a saved `#VALUE!` from v1.2.0 to v2.2.0. Excel replaces them all on open, which is exactly why it needs a gate: the file can be wrong in a way only a second tool can see, and everything that reads an `.xlsx` without a formula engine reads the cached answer. This opens the workbook, recalculates, and compares all 20,228 cached values against what the formulas produce. Needs Excel, so it is a local gate. Run `python tools/refresh_cache.py` to fix what it reports.
 
 Sanitising is a fixer, not a gate. Any save through Excel, not only the pipeline's, adds parts that do not belong in a distributed file — `printerSettings` binaries on machines with a printer installed, an `x15ac:absPath` recording the save directory, always-calculate flags on non-volatile cells, and empty worksheet rels. `python tools/sanitise_workbook.py ozzit.xlsx` strips all of it and rewrites the archive canonically, so two saves of the same content produce the same bytes. `refresh_cache.py` delegates its own save to the same sanitiser; run it directly after every other time Excel touched the file.
+
+Presentation is reproducible too: `python tools/polish_workbook.py ozzit.xlsx` applies the Luma-neutral help highlights, accessible strapline colour, locale-safe date styles and the reviewed function-sheet descriptions. The pass is idempotent and the CI presentation contract checks each of those rules.
 
 ## Worksheet catalogue
 
