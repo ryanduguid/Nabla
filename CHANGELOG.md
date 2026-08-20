@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased, help copy-paste
+
+- **`oz.CorkscrewλDV` described `oz.Depreciateλ`.** Its Name Manager comment, source
+  header and `functions.csv` row were copied from the neighbouring DV function. The
+  LAMBDA takes Opening and Flow1–4; the comment now says Corkscrewλ.
+- **`oz.AboutFinancialλ` described `oz.RollingAvgλ` as a maximum.** The About table
+  reused `oz.RollingMaxλ`'s sentence. It now matches the dedicated RollingAvgλ help:
+  averages of a moving window, not a maximum.
+- **`oz.CountColsλ`, `oz.CountColsUλ`, `oz.CountAColsλ` and `oz.CountAColsUλ` were
+  indexed as row functions.** Source help already said column; the workbook comments
+  and `functions.csv` still said "each row", which is what `CountRowsλ` correctly
+  says. The index now says column.
+- **`oz.Corkscrewλ` and `oz.CorkScrewReversalλ` still advertised `<Coming Soon>` as
+  their WEBPAGE.** Every other function points at the repository; they now do too.
+- **A Corkscrewλ revision comment dated the help rewrite 1 May 2924.** That is a
+  mistyped 2024. Source comments are stripped before the src-vs-workbook check, so
+  only the comment changes.
+
 ## v3.1.0, 20 August 2026, FY27 examples, Luma styling, a cleaner file
 
 - **Every worked example now starts on 1 July 2026**, the start of FY27. The demo inputs
