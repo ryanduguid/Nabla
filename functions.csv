@@ -19,14 +19,14 @@ oz.CashFlowMarginλ,Ratios,nabla.r.CashFlowMarginλ,"CashFlowMarginλ( CashFlowF
 oz.CashRatioλ,Ratios,nabla.r.CashRatioλ,"CashRatioλ( Cash, Liabilities)",Evaluates ability to repay short-term debt w/cash or near-cash resources (Cash and Cash Equivalents / Current Liabilities)
 oz.CorkScrewReversalλ,Financial,nabla.f.CorkScrewReversalλ,"CorkScrewReversalλ( Opening, ReversalFlags, Flow1, [Flow2], [Flow3], [Flow4])",Create a corkscrew where the opening balance is reversed in the next period based on a timing parameter.
 oz.Corkscrewλ,Financial,nabla.f.Corkscrewλ,"Corkscrewλ( Opening, Flow1, [Flow2], [Flow3], [Flow4])",Create a corkscrew section that sums the opening balance and up to 4 independent flows.
-oz.CorkscrewλDV,Financial,nabla.f.CorkscrewλDV,CorkscrewλDV,Provides extended data validation of arguments for Depreciateλ.
-oz.CountAColsUλ,Utilities,nabla.u.CountAColsλ,CountAColsUλ( Array ),Count everything in each row
-oz.CountAColsλ,Essentials,nabla.e.CountAColsλ,CountAColsλ( Array ),Count everything in each row
+oz.CorkscrewλDV,Financial,nabla.f.CorkscrewλDV,CorkscrewλDV,Provides extended data validation of arguments for Corkscrewλ.
+oz.CountAColsUλ,Utilities,nabla.u.CountAColsλ,CountAColsUλ( Array ),Count everything in each column
+oz.CountAColsλ,Essentials,nabla.e.CountAColsλ,CountAColsλ( Array ),Count everything in each column
 oz.CountARowsUλ,Utilities,nabla.u.CountARowsλ,CountARowsUλ( Array),Count everything in each row
 oz.CountARowsλ,Essentials,nabla.e.CountARowsλ,CountARowsλ( Array),Count everything in each row
 oz.CountCUλ,Utilities,nabla.u.CountCλ,"CountCUλ( Text, Characters)",Count occurrences of character(s) in a string
-oz.CountColsUλ,Utilities,nabla.u.CountColsλ,CountColsUλ( Array),Count numbers in each row
-oz.CountColsλ,Essentials,nabla.e.CountColsλ,CountColsλ( Array),Count numbers in each row
+oz.CountColsUλ,Utilities,nabla.u.CountColsλ,CountColsUλ( Array),Count numbers in each column
+oz.CountColsλ,Essentials,nabla.e.CountColsλ,CountColsλ( Array),Count numbers in each column
 oz.CountCλ,Essentials,nabla.e.CountCλ,"CountCλ( Text, Characters)",Count occurrences of character(s) in a string
 oz.CountDOWλ,Dates,nabla.d.CountDOWλ,"CountDOWλ(Starts, Ends, DayOfWeek)",Count instances of a specific day of the week between two dates.
 oz.CountRowsUλ,Utilities,nabla.u.CountRowsλ,CountRowsUλ( Array),Count numbers in each row
