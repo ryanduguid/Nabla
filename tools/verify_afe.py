@@ -27,6 +27,15 @@ DEBT_NAMES = {
     "oz.DebtSculptVariableLRVλ",
     "oz.InterestLRVλ",
 }
+AFE_BLOB_RE = rb"[A-Za-z0-9+/]{100,}={0,2}"
+
+
+def find_afe_blob(raw: bytes) -> bytes:
+    """Return the longest base64 payload in the AFE store XML."""
+    matches = re.findall(AFE_BLOB_RE, raw)
+    if not matches:
+        raise ValueError("AFE store has no base64 payload")
+    return max(matches, key=len)
 
 
 def fail(failures, message):
@@ -39,11 +48,12 @@ def decode_store(workbook: Path):
             raw = archive.read("customXml/item1.xml")
     except (FileNotFoundError, KeyError, zipfile.BadZipFile) as exc:
         raise ValueError(f"cannot read AFE store: {exc}") from exc
-    matches = re.findall(rb"[A-Za-z0-9+/]{100,}={0,2}", raw)
-    if not matches:
-        raise ValueError("AFE store has no base64 payload")
     try:
-        return json.loads(base64.b64decode(max(matches, key=len)).decode("utf-16-le"))
+        encoded = find_afe_blob(raw)
+    except ValueError as exc:
+        raise ValueError(str(exc)) from exc
+    try:
+        return json.loads(base64.b64decode(encoded).decode("utf-16-le"))
     except (ValueError, UnicodeDecodeError) as exc:
         raise ValueError(f"cannot decode AFE store: {exc}") from exc
 
