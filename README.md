@@ -113,13 +113,13 @@ Each module has its own tab colour, gridlines are hidden, and every sheet opens 
 
 ## Checks
 
-Six gates, because they answer different questions. Four run in CI; the two that need Excel run locally.
+Eight gates, because they answer different questions. Six run in CI; the two that need Excel run locally.
 
 ```bash
 python tools/verify_workbook.py ozzit.xlsx
 ```
 
-Structure: XML well-formedness, undefined names, `#REF!`, volatile functions, stray always-calculate flags, slicer-cache bindings, the file-properties sheet list against the real one, and tokens that must never reappear. That last list now includes anything describing the machine that built the release: Excel stamps the workbook with the directory it was last saved from, so every release up to v2.2.0 published a path off the build machine. Runs in CI on every push.
+Structure: XML well-formedness, entity-expansion declarations, executable and external-link parts, undefined names, `#REF!`, volatile functions, stray always-calculate flags, slicer-cache bindings, the file-properties sheet list against the real one, and tokens that must never reappear. That last list includes anything describing the machine that built the release: Excel stamps the workbook with the directory it was last saved from, so every release up to v2.2.0 published a path off the build machine. Runs in CI on every push to `main` and on every pull request.
 
 ```bash
 python tools/verify_sources.py ozzit.xlsx src
@@ -140,18 +140,30 @@ python tools/verify_previous_names.py functions.csv
 Migration: v2.0.0 renamed every function, so `functions.csv` carries a `previous_name` column and `tools/released-names-v1.2.6.txt` records the 130 names the last release before that rename shipped. This checks the published index against the published baseline: every old name is claimed by exactly one function, no function claims a name that never shipped, and anything added since records nothing rather than a plausible-looking guess. Also runs in CI.
 
 ```bash
+python tools/verify_index.py ozzit.xlsx src functions.csv
+```
+
+Index: re-derives every module, signature and description in `functions.csv` from `src/` and the defined names in the workbook. This catches a stale or hand-edited machine-readable index, including the truncated long signature and escaped line-break descriptions that shipped before the export was fixed. Also runs in CI.
+
+```bash
+python -m unittest discover -s tools/tests -v
+```
+
+Tooling: exercises the workbook sanitiser against clean and simulated Excel-saved files, deterministic compression, failed atomic replacement, malformed input and privacy leaks; proves the cache refresh delegates to the same implementation; and regression-tests the source and signature parsers against new modules and LAMBDAs without a top-level `LET`. Runs in CI so maintenance edits cannot quietly weaken the gates or corrupt a workbook while replacing it.
+
+```bash
 powershell -ExecutionPolicy Bypass -File tools/excel_selftest.ps1
 ```
+
+Arithmetic: opens the workbook in a real Excel, forces a full rebuild, fails on any error cell, then runs 259 assertions over the Australian functions, the worksheet that demonstrates them, the timeline and allocation helpers on period lengths from a day to a year, and the balance identities of the debt sculpting schedules. Needs Excel with LAMBDA support, so it cannot run on GitHub's runners and stays a local gate. It opens Excel over COM and quits it when finished, so it refuses to start if Excel is already running rather than closing your workbooks; it never saves the file it tests.
 
 ```bash
 python tools/verify_cache.py ozzit.xlsx
 ```
 
-Cached values: an `.xlsx` stores a formula and the answer Excel last got from it, and nothing keeps the two in step. The build edits values as XML with no formula engine, so every cell downstream of an edit keeps the answer it had before: shifting the sample dates forward two years left 3,193 such cells across 43 sheets, and five cells shipped a saved `#VALUE!` from v1.2.0 to v2.2.0. Excel replaces them all on open, which is exactly why it needs a gate: the file can be wrong in a way only a second tool can see, and everything that reads an `.xlsx` without a formula engine reads the cached answer. This opens the workbook, recalculates, and compares all 20,226 cached values against what the formulas produce. Needs Excel, so it is a local gate. Run `python tools/refresh_cache.py` to fix what it reports.
+Cached values: an `.xlsx` stores a formula and the answer Excel last got from it, and nothing keeps them in step. The build edits values as XML with no formula engine, so every cell downstream of an edit keeps the answer it had before: shifting the sample dates forward two years left 3,193 such cells across 43 sheets, and five cells shipped a saved `#VALUE!` from v1.2.0 to v2.2.0. Excel replaces them all on open, which is exactly why it needs a gate: the file can be wrong in a way only a second tool can see, and everything that reads an `.xlsx` without a formula engine reads the cached answer. This opens the workbook, recalculates, and compares all 20,227 cached values against what the formulas produce. Needs Excel, so it is a local gate. Run `python tools/refresh_cache.py` to fix what it reports.
 
-Sanitising: any save through Excel, not only the pipeline's, adds parts that do not belong in a distributed file — `printerSettings` binaries on machines with a printer installed, an `x15ac:absPath` recording the save directory, always-calculate flags on non-volatile cells, and empty worksheet rels. `python tools/sanitise_workbook.py ozzit.xlsx` strips all of it and rewrites the archive deterministically, so two saves of the same content produce the same bytes. `refresh_cache.py` strips its own save already; the sanitiser is for every other time Excel touched the file.
-
-Arithmetic: opens the workbook in a real Excel, forces a full rebuild, fails on any error cell, then runs 259 assertions over the Australian functions, the worksheet that demonstrates them, the timeline and allocation helpers on period lengths from a day to a year, and the balance identities of the debt sculpting schedules. Needs Excel with LAMBDA support, so it cannot run on GitHub's runners and stays a local gate. It opens Excel over COM and quits it when finished, so it refuses to start if Excel is already running rather than closing your workbooks; it never saves the file it tests.
+Sanitising is a fixer, not a gate. Any save through Excel, not only the pipeline's, adds parts that do not belong in a distributed file — `printerSettings` binaries on machines with a printer installed, an `x15ac:absPath` recording the save directory, always-calculate flags on non-volatile cells, and empty worksheet rels. `python tools/sanitise_workbook.py ozzit.xlsx` strips all of it and rewrites the archive canonically, so two saves of the same content produce the same bytes. `refresh_cache.py` delegates its own save to the same sanitiser; run it directly after every other time Excel touched the file.
 
 ## Worksheet catalogue
 

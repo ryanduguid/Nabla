@@ -52,6 +52,33 @@
   covers every save that is not the pipeline's, so a workbook touched by hand no longer
   fails `verify_workbook.py` on `x15ac:absPath` the next time it is committed.
 
+- **The clean-up has one implementation and a regression suite.** `refresh_cache.py` now
+  calls the same sanitiser as a manual save instead of carrying a smaller, second copy of
+  the XML surgery. CI regression tests cover no-op byte identity, deterministic output,
+  printer settings, cache-refresh delegation, atomic replacement failure, local-path and
+  XML-parser guards, LAMBDA signatures without top-level `LET`, and unexpected source
+  modules. The replacement is genuinely atomic on Windows as well as POSIX: it writes a
+  sibling temporary archive, calls `os.replace`, and removes the temporary file if
+  replacement fails.
+
+- **The shipped archive is 3,894 bytes smaller without changing any part payload.** The old
+  writer handed `ZipInfo` objects to `writestr`, which silently ignored the `ZipFile`'s
+  level-9 setting. The canonical writer sets the level on every entry, fixes host-dependent
+  zip metadata, and verifies byte stability on a second run. All 211 OOXML part payloads
+  are byte-identical to the previous workbook.
+
+- **CI now checks the published index and the workbook's executable-part inventory.** A
+  fabricated module or description in `functions.csv` used to pass because only the
+  migration column was verified; all 130 rows are now re-derived from `src/` and the
+  workbook. A workbook with an injected `vbaProject.bin` also used to pass; macros,
+  ActiveX, OLE embeddings and external-link parts are now rejected explicitly.
+
+- **The workflow's third-party actions are pinned to full commit SHAs.** Dependabot checks
+  those pins weekly, so supply-chain integrity does not trade away updates. Repository-wide
+  LF normalisation and explicit ignores for Ruff and Superpowers scratch data also stop a
+  maintainer's Git configuration or local tools from creating whole-file or accidental
+  public diffs.
+
 ## v3.0.0, 19 August 2026, the library is now Ozzit
 
 - **Every function's prefix changes from `nb.` to `oz.`, and the library is renamed from

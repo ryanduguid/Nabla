@@ -1,3 +1,2 @@
+* text=auto eol=lf
 *.xlsx binary
-src/*.txt text eol=lf
-*.md text eol=lf

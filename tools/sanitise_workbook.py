@@ -30,6 +30,8 @@ can pass the gates while Excel still objects to the file.
 
 from __future__ import annotations
 
+import io
+import os
 import re
 import sys
 import zipfile
@@ -39,8 +41,39 @@ CUSTOMPROP_CT = (
     "application/vnd.openxmlformats-officedocument.spreadsheetml.customProperty"
 )
 FIXED_DATE = (2026, 1, 1, 0, 0, 0)
-CELL_RE = re.compile(r"<c\b.*?(?:/>|</c>)", re.DOTALL)
+CELL_RE = re.compile(r"<c\b(?:(?!</c>|<c\b).)*?</c>|<c\b[^>]*/>", re.DOTALL)
 EMPTY_RELS = re.compile(rb"<Relationships[^>]*>\s*</Relationships>")
+
+
+def deterministic_bytes(parts: dict[str, bytes]) -> bytes:
+    """Return one canonical zip representation of a workbook's parts."""
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
+        for name in sorted(parts):
+            zi = zipfile.ZipInfo(name, date_time=FIXED_DATE)
+            zi.compress_type = zipfile.ZIP_DEFLATED
+            zi.create_system = 3
+            zi.external_attr = 0o644 << 16
+            z.writestr(zi, parts[name], compresslevel=9)
+    return buffer.getvalue()
+
+
+def replace_atomically(workbook: Path, data: bytes) -> None:
+    """Replace workbook atomically, retaining the original if replacement fails."""
+    tmp = workbook.with_name(workbook.name + ".tmp")
+    try:
+        tmp.write_bytes(data)
+        os.replace(tmp, workbook)
+    finally:
+        try:
+            tmp.unlink()
+        except FileNotFoundError:
+            pass
+
+
+def write_deterministic(workbook: Path, parts: dict[str, bytes]) -> None:
+    """Atomically replace workbook with its canonical archive."""
+    replace_atomically(workbook, deterministic_bytes(parts))
 
 
 def sanitise(workbook: Path) -> list[str]:
@@ -154,27 +187,27 @@ def sanitise(workbook: Path) -> list[str]:
     if empty:
         log.append(f"dropped {len(empty)} empty worksheet rels")
 
-    if not log:
+    canonical = deterministic_bytes(parts)
+    if not log and workbook.read_bytes() == canonical:
         return ["already clean"]
+    if not log:
+        log.append("canonicalised archive metadata and compression")
 
-    tmp = workbook.with_suffix(".xlsx.tmp")
-    with zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
-        for name in sorted(parts):
-            zi = zipfile.ZipInfo(name, date_time=FIXED_DATE)
-            zi.compress_type = zipfile.ZIP_DEFLATED
-            zi.external_attr = 0o600 << 16
-            z.writestr(zi, parts[name])
-    tmp.replace(workbook)
+    replace_atomically(workbook, canonical)
     return log
 
 
 def main() -> None:
     if len(sys.argv) != 2:
-        sys.exit("usage: python tools/sanitise_workbook.py ozzit.xlsx")
+        sys.exit("FAIL: usage: python tools/sanitise_workbook.py ozzit.xlsx")
     workbook = Path(sys.argv[1])
     if not workbook.is_file():
-        sys.exit(f"no such workbook: {workbook}")
-    for line in sanitise(workbook):
+        sys.exit(f"FAIL: no such workbook: {workbook}")
+    try:
+        log = sanitise(workbook)
+    except (OSError, KeyError, UnicodeDecodeError, zipfile.BadZipFile) as exc:
+        sys.exit(f"FAIL: cannot sanitise {workbook}: {exc}")
+    for line in log:
         print(line)
     print(f"OK: {workbook} sanitised, {workbook.stat().st_size:,} bytes")
 
