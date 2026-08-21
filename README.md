@@ -234,3 +234,11 @@ The other 85 functions (all of Ratios, Utilities and Debt, the depreciation-meth
 Ozzit is a renamed and reworked derivative of an existing LAMBDA library. See [ATTRIBUTION.md](ATTRIBUTION.md) for provenance, upstream copyright and the full list of changes.
 
 [LICENCE](LICENCE) is MIT and covers only what was written for this repository: `tools/`, `.github/`, the Markdown files and `assets/`. It does not cover `ozzit.xlsx`, `src/` or `functions.csv`, which derive from the upstream workbook. No licence for that work could be located, so its author retains all rights in the original material.
+
+## CI coverage
+
+GitHub-hosted runners have no Excel. `verify.yml` proves workbook structure and
+provenance only. The 259 COM assertions in `tools/excel_selftest.ps1` and the
+cached-value checks stay local Windows jobs. Full regeneration from upstream is
+not claimed.
+
