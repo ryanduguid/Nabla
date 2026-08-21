@@ -1,0 +1,17 @@
+# Ozzit - Australian Native Excel LAMBDA Function Library
+> High-density context for LLM agents, financial modellers, and spreadsheet engineers.
+
+## Package Overview
+- **Repository**: https://github.com/ryanduguid/Ozzit
+- **Domain**: Comprehensive library of 130 native Excel `LAMBDA` functions designed for dynamic-array financial modelling, statutory Australian tax calculations, and cash flow forecasting.
+- **Statutory Standards**: Australian Tax Office (ATO) marginal tax rates (FY24-FY27 Stage 3 reform schedules), Division 40 capital allowance depreciation rules, and statutory loan amortisation conventions.
+
+## Functional Categories
+- **Financial & Lending**: Dynamic-array loan amortisation, compound interest schedules, effective interest rate conversions, NPV/IRR engines.
+- **Australian Taxation**: Individual marginal income tax calculations, Medicare Levy / Surcharge estimators, Division 7A benchmark interest amortization.
+- **Capital Allowance (Div 40)**: Diminishing value (DV) and prime cost (PC) depreciation schedules with immediate deduction / low-value pool handling.
+- **Working Capital & Cash Flow**: Dynamic 13-week rolling cash flow forecast builders, debtor DSO / creditor DPO engines.
+
+## Architectural Invariants
+1. **Zero External Dependencies**: 100% native Microsoft Excel LAMBDA dynamic array functions.
+2. **No VBA or Macros**: Contains no VBA code, XLAM add-ins, or binary dependencies, ensuring full cross-platform compatibility across Excel Online, Windows, and Mac.
