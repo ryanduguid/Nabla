@@ -19,6 +19,7 @@ WORKBOOK = ROOT / "ozzit.xlsx"
 XML_PASSES = [
     (TOOLS / "postbuild" / "fy27_help_text.py", True),
     (TOOLS / "postbuild" / "luma_palette.py", False),
+    (TOOLS / "postbuild" / "gst_help_text.py", True),
 ]
 
 

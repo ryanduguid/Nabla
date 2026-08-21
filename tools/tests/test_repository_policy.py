@@ -71,13 +71,15 @@ changes to `src/` or `functions.csv` in isolation. A formula change must update
 the compiled defined names and every publication view together through a
 documented source-owning change process.
 
-The v3.0.0 tracked builder starts from its disclosed upstream input. The
-current v3.1.0 result also includes a one-off Excel-state-dependent date shift
-and direct workbook and source changes. The consistency checks do not prove
-byte-for-byte regeneration of the current workbook. The v3.0.0 builder, the
-v3.1.0 postbuild limits and any future one-off transformation remain disclosed
-in `ATTRIBUTION.md` and `CHANGELOG.md`. Do not broaden a reproducibility claim
-without a complete regenerator and a byte comparison.
+The v3.0.0 tracked builder starts from its disclosed upstream input, which
+is not committed, and stops at the v3.0.0 artefacts. Post-v3.0.0 passes start
+from the committed `ozzit.xlsx` and `src/` recorded in `ATTRIBUTION.md`. They
+do not regenerate the current workbook from upstream. The current result also
+includes a one-off Excel-state-dependent date shift. The consistency checks do not prove
+byte-for-byte regeneration of the current workbook. The v3.0.0
+builder, the postbuild limits and any future one-off transformation remain
+disclosed in `ATTRIBUTION.md` and `CHANGELOG.md`. Do not broaden a
+reproducibility claim without a complete regenerator and a byte comparison.
 
 MIT covers `tools/`, `.github/`, Markdown files and `assets/` written for this repository. MIT does not cover `ozzit.xlsx`, `src/` or `functions.csv`.
 No open-source licence was located for the derived upstream material, so its author retains the relevant rights. Every source archive must include `ATTRIBUTION.md` and `LICENCE` and state this licence split. Do not label the whole workbook and source bundle as MIT, and do not generate an SPDX or CycloneDX document that assigns MIT to the derived material.

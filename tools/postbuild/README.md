@@ -1,20 +1,27 @@
 # Postbuild passes
 
-The v3.0.0 baseline comes from `tools/transform_from_upstream.py`. The current release
-adds passes on top of that baseline. This directory holds the ones that are deterministic
-and safe to re-run.
+The v3.0.0 baseline comes from `tools/transform_from_upstream.py`, which still needs
+the uncommitted upstream workbook and stops at v3.0.0. Later passes start from the
+committed `ozzit.xlsx` and `src/` recorded in ATTRIBUTION.md. This directory holds
+the ones that are deterministic and safe to re-run.
 
 ## Run order
 
 ```bash
 python tools/postbuild/fy27_help_text.py ozzit.xlsx src
 python tools/postbuild/luma_palette.py ozzit.xlsx
+python tools/postbuild/gst_help_text.py ozzit.xlsx src
+python tools/sync_afe_store.py ozzit.xlsx src
 python tools/sanitise_workbook.py ozzit.xlsx   # always last, after any Excel save
 ```
 
-Both passes are idempotent: on a current workbook each reports "already applied" and
-writes nothing. A workbook whose anchors do not match the recorded v3.0.0 counts fails
-loudly rather than writing a partial result.
+All three postbuild passes are idempotent: on a current workbook each reports "already
+applied" and writes nothing. A workbook whose anchors do not match the recorded counts
+fails loudly rather than writing a partial result. `sync_afe_store.py` then copies the
+five non-recursive `src/` modules into the workbook's Advanced Formula Environment
+store; this step is required after a text pass changes `src/`. The FY27 and Luma passes
+record the v3.0.0 → v3.1.0 swaps. The GST help pass records a later insert against the
+committed v3.1.0 workbook and `src/`.
 
 ## What is intentionally not here
 
@@ -25,5 +32,6 @@ workbook's state at the moment it ran. Two runs from different starting states g
 different bytes. That is why ATTRIBUTION.md scopes the reproducible baseline to v3.0.0 and
 states that byte-for-byte reproduction of the current workbook is not claimed.
 
-The one-off scripts that produced v3.1.0 remain in the session record; the two passes here
-are the parts of that work that are deterministic.
+The one-off scripts that produced v3.1.0 remain in the session record; the FY27 and
+Luma passes here are the parts of that work that are deterministic. The GST help pass
+is a later committed-input insert, not a regeneration from upstream.

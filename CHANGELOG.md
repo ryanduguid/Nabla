@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased, GST legislative scope note
+
+- **`oz.GSTAddλ` and `oz.GSTExtractλ` now spill the legislative scope note.** Their
+  inline help carries a NOTES! block after DESCRIPTION: the 10% default and
+  one-eleventh extraction, GST Act 1999 ss 9-70 and 9-75, and that the helpers
+  apply arithmetic only. The About table and Name Manager comments stay the
+  one-line descriptions. `tools/postbuild/gst_help_text.py` applies the insert
+  to the committed workbook and `src/`; it does not run through the upstream
+  transform.
+
 ## Unreleased, help copy-paste
 
 - **`oz.CorkscrewλDV` described `oz.Depreciateλ`.** Its Name Manager comment, source
