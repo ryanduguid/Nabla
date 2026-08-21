@@ -74,7 +74,7 @@ The library is Australian-only: the foreign tax regimes and references the upstr
 
 The 10% default and one-eleventh extraction reflect the basic rule for a taxable supply in [*A New Tax System (Goods and Services Tax) Act 1999*](https://www.legislation.gov.au/C2004A00446/latest/text) ss 9-70 and 9-75 (source checked 20 August 2026). Recheck the current Act and any applicable special rule at the time of use. These helpers apply arithmetic only: they do not decide whether a supply is taxable, GST-free, input taxed, outside the GST system or subject to a special rule.
 
-This legislative scope note is not yet embedded in the workbook help. The tracked transformation starts from an upstream workbook that is not committed and reproduces the v3.0.0 baseline, not the current v3.1.0 workbook. Update the embedded GST help only after establishing a committed-input build path for the current workbook, then regenerate the workbook, `src/` and `functions.csv` and rerun the structural, cache and native Excel gates.
+The same scope note is embedded as NOTES! rows in the `oz.GSTAddλ` and `oz.GSTExtractλ` inline help. The About table and Name Manager comments keep the one-line descriptions. `tools/postbuild/gst_help_text.py` applies it to the committed `ozzit.xlsx` and `src/`; `tools/transform_from_upstream.py` still needs the uncommitted upstream workbook and still stops at v3.0.0.
 
 `oz.Depreciateλ` accepts the method codes `SLN`, `SYD`, `DB`, `DDB`, `VDB`, `DV` (diminishing value) and `PC` (prime cost).
 
@@ -108,7 +108,7 @@ Each module has its own tab colour, gridlines are hidden, and every sheet opens 
 | `src/*.txt` | Plain-text LAMBDA source per group (Dates, Essentials, Financial, Ratios, Utilities, Debt), diffable and importable |
 | `ATTRIBUTION.md` | Provenance and upstream copyright |
 | `functions.csv` | Machine-readable index of every function |
-| `tools/` | The build and maintenance pipeline: rebuilds the v3.0.0 workbook baseline from upstream (the current release is later; see CHANGELOG), applies the tracked postbuild passes in `tools/postbuild/`, synchronises the AFE store, canonicalises/polishes it, and checks it |
+| `tools/` | The build and maintenance pipeline: `transform_from_upstream.py` rebuilds the v3.0.0 baseline from an uncommitted upstream workbook and stops there; later tracked postbuild passes start from the committed `ozzit.xlsx` and `src/` (see ATTRIBUTION.md), then the AFE store is synchronised, the workbook is canonicalised/polished, and the gates check it |
 | `CHANGELOG.md` | What changed in this release |
 | `assets/` | Logo |
 | `LICENCE` | MIT, and what it does and does not cover |

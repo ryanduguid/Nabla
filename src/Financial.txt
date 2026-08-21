@@ -2286,7 +2286,7 @@ GSTAddλ = LAMBDA(
     //  Help
         Help,           TRIM(TEXTSPLIT(
                             "FUNCTION:      →GSTAddλ(Amounts, [Rate])¶" &
-                            "DESCRIPTION:   →Adds GST to one or more GST-exclusive amounts.¶" &
+                            "DESCRIPTION:   →Adds GST to one or more GST-exclusive amounts.¶NOTES!         →The 10% default and one-eleventh extraction reflect the basic rule¶               →for a taxable supply in A New Tax System (Goods and Services Tax)¶               →Act 1999 ss 9-70 and 9-75 (source checked 20 August 2026).¶               →Recheck the current Act. These helpers apply arithmetic only: they¶               →do not decide whether a supply is taxable, GST-free, input taxed,¶               →or subject to a special rule.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
                             "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" &
@@ -2326,7 +2326,7 @@ GSTExtractλ = LAMBDA(
     //  Help
         Help,           TRIM(TEXTSPLIT(
                             "FUNCTION:      →GSTExtractλ(Amounts, [Rate])¶" &
-                            "DESCRIPTION:   →Returns the GST contained in one or more GST-inclusive amounts.¶" &
+                            "DESCRIPTION:   →Returns the GST contained in one or more GST-inclusive amounts.¶NOTES!         →The 10% default and one-eleventh extraction reflect the basic rule¶               →for a taxable supply in A New Tax System (Goods and Services Tax)¶               →Act 1999 ss 9-70 and 9-75 (source checked 20 August 2026).¶               →Recheck the current Act. These helpers apply arithmetic only: they¶               →do not decide whether a supply is taxable, GST-free, input taxed,¶               →or subject to a special rule.¶" &
                             "WEBPAGE:       →https://github.com/ryanduguid/Ozzit¶" &
                             "VERSION:       →20 Aug 2026¶" &
                             "PARAMETERS:    →¶" &
