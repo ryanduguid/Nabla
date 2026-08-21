@@ -12,9 +12,9 @@ string so the help stays one Excel string with ¶ rows. Anchors are help-only
 (`DESCRIPTION:   →…¶"`): the same one-line blurbs also live in AboutFinancialλ
 and in comment=, and those must not be rewritten.
 
-Every swap carries an asserted hit count. A second run reports "already applied"
-and writes nothing. A workbook whose anchors do not match fails loudly instead of
-silently corrupting.
+Every swap carries an asserted hit count in both workbook.xml and src/. A second
+run reports "already applied" and writes nothing. A store whose anchors do not
+match fails loudly instead of leaving the workbook and source views out of sync.
 
 Pure text surgery: no COM, no recalculation.
 """
@@ -37,8 +37,10 @@ assert len(NOTES_LABEL) - 1 == 15, "NOTES! label must pad to 15 characters"
 assert len(CONT_LABEL) - 1 == 15, "continuation label must pad to 15 characters"
 
 # Short Australian scope note, not advice. No raw "&" (workbook.xml would see it
-# as the start of an entity); write "and" and "ss 9-70".
-NOTE_ROWS = (
+# as the start of an entity); write "and" and "ss 9-70". Keep the first published
+# branch version as an accepted migration state so the pass can repair that
+# version as well as the pre-note committed input.
+LEGACY_NOTE_ROWS = (
     "The 10% default and one-eleventh extraction reflect the basic rule",
     "for a taxable supply in A New Tax System (Goods and Services Tax)",
     "Act 1999 ss 9-70 and 9-75 (source checked 20 August 2026).",
@@ -46,13 +48,22 @@ NOTE_ROWS = (
     "do not decide whether a supply is taxable, GST-free, input taxed,",
     "or subject to a special rule.",
 )
+NOTE_ROWS = LEGACY_NOTE_ROWS[:-1] + (
+    "outside the GST system, or subject to a special rule.",
+)
 assert all("&" not in row for row in NOTE_ROWS), (
     "raw & is illegal in workbook.xml text; write 'and'"
 )
 
-NOTES = NOTES_LABEL + NOTE_ROWS[0] + "¶" + "".join(
-    CONT_LABEL + row + "¶" for row in NOTE_ROWS[1:]
-)
+
+def _notes(rows: tuple[str, ...]) -> str:
+    return NOTES_LABEL + rows[0] + "¶" + "".join(
+        CONT_LABEL + row + "¶" for row in rows[1:]
+    )
+
+
+LEGACY_NOTES = _notes(LEGACY_NOTE_ROWS)
+NOTES = _notes(NOTE_ROWS)
 
 # (old, new, workbook hits, src hits). The closing quote is part of the anchor
 # so old is not a prefix of new: a second run cannot insert twice.
@@ -74,28 +85,34 @@ SWAPS = [
 ]
 
 
-def apply_swaps(text: str, label: str, failures: list[str]) -> str:
+def _legacy_replacement(old: str) -> str:
+    return old[:-1] + LEGACY_NOTES + '"'
+
+
+def validate_store(text: str, label: str, failures: list[str]) -> None:
+    """Require every target exactly once in this store in a recognised state."""
     for old, new, wb_expected, src_expected in SWAPS:
-        hits = text.count(old)
         expected = wb_expected if label == "workbook" else src_expected
-        if hits == 0:
-            # Per-module, most anchors are legitimately absent. The both-absent
-            # guard runs on the aggregate in run(), not here.
-            continue
+        legacy = _legacy_replacement(old)
+        counts = {
+            "pre-note": text.count(old),
+            "legacy-note": text.count(legacy),
+            "current-note": text.count(new),
+        }
+        hits = sum(counts.values())
         if hits != expected:
-            failures.append(f"{label}: {old[:50]!r} expected {expected} hits, got {hits}")
-            continue
-        text = text.replace(old, new)
-    return text
-
-
-def guard_anchors(text: str, label: str, failures: list[str]) -> None:
-    """On the aggregate store, every swap must be visible one way or the other."""
-    for old, new, _wb_expected, _src_expected in SWAPS:
-        if old not in text and new not in text:
+            states = ", ".join(f"{state}={count}" for state, count in counts.items())
             failures.append(
-                f"{label}: {old[:50]!r} absent and its replacement is absent too"
+                f"{label}: {old[:50]!r} expected {expected} recognised anchor, "
+                f"got {hits} ({states})"
             )
+
+
+def apply_swaps(text: str) -> str:
+    for old, new, _wb_expected, _src_expected in SWAPS:
+        text = text.replace(old, new)
+        text = text.replace(_legacy_replacement(old), new)
+    return text
 
 
 def _read_text(path: Path) -> str:
@@ -111,27 +128,28 @@ def _write_text(path: Path, text: str) -> None:
 def run(workbook: Path, src_dir: Path) -> list[str]:
     failures: list[str] = []
 
-    src_texts = {}
-    src_originals = []
+    src_originals = {}
     for module in MODULES:
         path = src_dir / f"{module}.txt"
         if not path.is_file():
             failures.append(f"src: missing {path}")
             continue
         original = _read_text(path)
-        src_originals.append(original)
-        src_texts[module] = apply_swaps(original, "src", failures)
+        src_originals[module] = original
 
     with zipfile.ZipFile(workbook) as archive:
         parts = {n: archive.read(n) for n in archive.namelist()}
     book = parts["xl/workbook.xml"].decode("utf-8")
-    parts["xl/workbook.xml"] = apply_swaps(book, "workbook", failures).encode("utf-8")
-
-    aggregate = book + "\n" + "\n".join(src_originals)
-    guard_anchors(aggregate, "library", failures)
+    validate_store(book, "workbook", failures)
+    validate_store("\n".join(src_originals.values()), "src", failures)
 
     if failures:
         raise ValueError("; ".join(failures))
+
+    parts["xl/workbook.xml"] = apply_swaps(book).encode("utf-8")
+    src_texts = {
+        module: apply_swaps(original) for module, original in src_originals.items()
+    }
 
     changed = []
     with zipfile.ZipFile(workbook) as archive:

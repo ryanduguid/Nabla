@@ -20,6 +20,9 @@ ROOT = Path(__file__).resolve().parents[3]
 TOOLS = ROOT / "tools"
 WORKBOOK = ROOT / "ozzit.xlsx"
 PASS_SCRIPT = TOOLS / "postbuild" / "gst_help_text.py"
+POSTBUILD_README = TOOLS / "postbuild" / "README.md"
+SYNC_AFE_SCRIPT = TOOLS / "sync_afe_store.py"
+VERIFY_AFE_SCRIPT = TOOLS / "verify_afe.py"
 
 _spec = importlib.util.spec_from_file_location("gst_help_text", PASS_SCRIPT)
 _mod = importlib.util.module_from_spec(_spec)
@@ -68,6 +71,17 @@ class GstHelpTextTests(unittest.TestCase):
         self.assertEqual(len("               "), 15)
         self.assertNotIn("&", NOTES)
         self.assertIn("ss 9-70 and 9-75", NOTES)
+        self.assertIn("outside the GST system", NOTES)
+
+    def test_documented_run_order_syncs_afe_after_text_passes(self):
+        instructions = POSTBUILD_README.read_text(encoding="utf-8")
+        gst = instructions.index(
+            "python tools/postbuild/gst_help_text.py ozzit.xlsx src"
+        )
+        afe = instructions.index("python tools/sync_afe_store.py ozzit.xlsx src")
+        sanitise = instructions.index("python tools/sanitise_workbook.py ozzit.xlsx")
+        self.assertLess(gst, afe)
+        self.assertLess(afe, sanitise)
 
     def test_pass_is_byte_noop_on_current_workbook(self):
         workbook, src = self._copy_tree()
@@ -139,6 +153,55 @@ class GstHelpTextTests(unittest.TestCase):
             defined_name(book_after, "oz.GSTAddλ"),
         )
 
+    def test_documented_sync_step_repairs_afe_after_a_text_change(self):
+        workbook, src = self._copy_tree()
+        with zipfile.ZipFile(workbook) as archive:
+            parts = {n: archive.read(n) for n in archive.namelist()}
+        book = parts["xl/workbook.xml"].decode("utf-8")
+        parts["xl/workbook.xml"] = book.replace(GSTADD_NEW, GSTADD_OLD).encode("utf-8")
+        with zipfile.ZipFile(workbook, "w", zipfile.ZIP_DEFLATED) as archive:
+            for name, data in parts.items():
+                archive.writestr(name, data)
+        target = src / "Financial.txt"
+        text = target.read_text(encoding="utf-8")
+        target.write_text(text.replace(GSTADD_NEW, GSTADD_OLD), encoding="utf-8")
+
+        # Model the committed input: workbook.xml, src/ and AFE all hold pre-note text.
+        initial_sync = subprocess.run(
+            [sys.executable, str(SYNC_AFE_SCRIPT), str(workbook), str(src)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(
+            initial_sync.returncode, 0, initial_sync.stdout + initial_sync.stderr
+        )
+
+        result = self._run(workbook, src)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        stale = subprocess.run(
+            [sys.executable, str(VERIFY_AFE_SCRIPT), str(workbook), str(src)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertNotEqual(stale.returncode, 0, stale.stdout + stale.stderr)
+
+        final_sync = subprocess.run(
+            [sys.executable, str(SYNC_AFE_SCRIPT), str(workbook), str(src)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(final_sync.returncode, 0, final_sync.stdout + final_sync.stderr)
+        verified = subprocess.run(
+            [sys.executable, str(VERIFY_AFE_SCRIPT), str(workbook), str(src)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(verified.returncode, 0, verified.stdout + verified.stderr)
+
     def test_pass_fails_loudly_when_expected_anchors_are_missing(self):
         self.assertTrue(PASS_SCRIPT.exists(), "pass script must exist for this test")
         workbook, src = self._copy_tree()
@@ -175,6 +238,18 @@ class GstHelpTextTests(unittest.TestCase):
         result = self._run(workbook, src)
         self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("FAIL", result.stdout + result.stderr)
+
+    def test_pass_fails_when_one_store_is_missing_an_expected_anchor(self):
+        workbook, src = self._copy_tree()
+        target = src / "Financial.txt"
+        text = target.read_text(encoding="utf-8")
+        dummy = 'DESCRIPTION:   →Adds GST to one or more GST-exclusive amounts (removed).¶"'
+        self.assertIn(GSTADD_NEW, text, "precondition: replacement present in src")
+        target.write_text(text.replace(GSTADD_NEW, dummy), encoding="utf-8")
+
+        result = self._run(workbook, src)
+        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("src", result.stdout + result.stderr)
 
 
 if __name__ == "__main__":
