@@ -201,7 +201,7 @@ Cached values: an `.xlsx` stores a formula and the answer Excel last got from it
 
 Sanitising is a fixer, not a gate. Any save through Excel, not only the pipeline's, adds parts that do not belong in a distributed file: `printerSettings` binaries on machines with a printer installed, an `x15ac:absPath` recording the save directory, always-calculate flags on non-volatile cells, and empty worksheet rels. `python tools/sanitise_workbook.py ozzit.xlsx` strips all of it and rewrites the archive canonically, so two saves of the same content produce the same bytes. `refresh_cache.py` delegates its own save to the same sanitiser; run it directly after every other time Excel touched the file.
 
-Presentation is reproducible too: `python tools/polish_workbook.py ozzit.xlsx` applies the Luma-neutral help highlights, accessible strapline colour, locale-safe date styles and the reviewed function-sheet descriptions. The pass is idempotent and the CI presentation contract checks each of those rules.
+Presentation is reproducible too: `python tools/polish_workbook.py ozzit.xlsx` applies the neutral help highlights, accessible strapline colour, locale-safe date styles and the reviewed function-sheet descriptions. The pass is idempotent and the CI presentation contract checks each of those rules.
 
 ## Worksheet catalogue
 
