@@ -257,6 +257,6 @@ The other 85 functions (all of Ratios, Utilities and Debt, the depreciation-meth
 
 ## Attribution and licence
 
-Ozzit is a renamed and reworked derivative of an existing LAMBDA library. See [ATTRIBUTION.md](ATTRIBUTION.md) for provenance, upstream copyright and the full list of changes.
+Ozzit is a renamed and reworked derivative of Craig Hatmaker's Financial Starter Pack (BXL / 5g). See [ATTRIBUTION.md](ATTRIBUTION.md) for provenance, upstream copyright and the full list of changes. This repository adds Australian GST, financial-year and modelling-depreciation helpers; it is not an individual-tax or Division 7A engine.
 
 [LICENCE](LICENCE) is MIT and covers only what was written for this repository: `tools/`, `.github/`, the Markdown files and `assets/`. It does not cover `ozzit.xlsx`, `src/` or `functions.csv`, which derive from the upstream workbook. No licence for that work could be located, so its author retains all rights in the original material.
