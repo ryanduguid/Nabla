@@ -1,8 +1,8 @@
-"""Luma palette pass: theme, styles, sheets and drawings to the Luma Advisors system.
+"""Workbook palette pass: theme, styles, sheets and drawings to one dark system.
 
-Usage: python tools/postbuild/luma_palette.py [workbook]
+Usage: python tools/postbuild/workbook_palette.py [workbook]
 
-Palette (lumaadvisors.com.au):
+Palette:
   #5C2D91 brand purple — the one accent: titles, links, Financial tab
   #04001F near-black   — section headings
   #2B2733 dark neutral — emphasis font
@@ -247,7 +247,7 @@ def run(workbook: Path) -> list[str]:
 
 def main() -> None:
     if len(sys.argv) > 2:
-        sys.exit("FAIL: usage: python tools/postbuild/luma_palette.py [workbook]")
+        sys.exit("FAIL: usage: python tools/postbuild/workbook_palette.py [workbook]")
     workbook = Path(sys.argv[1] if len(sys.argv) == 2 else "ozzit.xlsx")
     if not workbook.is_file():
         sys.exit(f"FAIL: no such workbook: {workbook}")
@@ -259,7 +259,7 @@ def main() -> None:
         for change in changes:
             print(change)
     else:
-        print("Luma palette already applied; no changes")
+        print("Palette already applied; no changes")
     print(f"OK: {workbook}")
 
 

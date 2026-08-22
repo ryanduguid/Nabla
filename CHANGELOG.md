@@ -1,6 +1,6 @@
 # Changelog
 
-## v3.1.0, 22 August 2026, FY27 examples, Luma styling, help corrections
+## v3.1.0, 22 August 2026, FY27 examples, dark styling, help corrections
 
 This release ships everything since v3.0.0: the 20 August restyle and clean-up,
 the GST scope note, the help copy-paste corrections, and the repository
@@ -50,7 +50,7 @@ baseline that grew around them.
   GitHub detects the licence, with its scope statement moved to `ATTRIBUTION.md`
   and the README; `RELEASING.md`, `SECURITY.md` and a CodeQL workflow;
   `llms.txt`; `.editorconfig`, `.mailmap` and `CODEOWNERS`; CI job timeouts; a
-  social-preview card in `.github/`, restyled to the Luma dark palette; a
+  social-preview card in `.github/`, restyled to the dark palette; a
   dynamic-array walkthrough and claim corrections in the README; and encoding-safe
   AFE diagnostics.
 
@@ -68,8 +68,7 @@ baseline that grew around them.
   there to sit beside 01/07/2026 and show FY2026 turning into FY2027, so moving it would
   delete the thing it demonstrates.
 
-- **The workbook is styled to the Luma Advisors palette**, taken from the published logo
-  and stylesheet rather than guessed: purple `#5C2D91` as the single accent, near-black
+- **The workbook is styled to a dark purple palette**, applied as one deliberate system: purple `#5C2D91` as the single accent, near-black
   `#04001F` and a warm grey for everything else. The legacy accents inherited from
   upstream are gone: two greens, two blues and a maroon in the help blocks fold into the
   brand purple, and the mint, yellow and pink cell fills fold into the neutral greys.
@@ -149,7 +148,7 @@ baseline that grew around them.
   out, matching the documented import path.
 
 - **The deterministic postbuild passes are now tracked, idempotent tools.** The FY27
-  help-text swaps and the Luma palette that produced v3.1.0 live in `tools/postbuild/`,
+  help-text swaps and the palette pass that produced v3.1.0 live in `tools/postbuild/`,
   each with asserted hit counts and a byte no-op on the current workbook, covered by the
   CI test suite. The COM date shift is deliberately not ported: it is Excel-state-dependent
   and cannot be reproduced byte-for-byte, which ATTRIBUTION.md now says plainly. One dead

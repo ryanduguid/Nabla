@@ -1,6 +1,6 @@
-"""Contract for tools/postbuild/luma_palette.py.
+"""Contract for tools/postbuild/workbook_palette.py.
 
-The pass applies the Luma Advisors palette: explicit colour remaps in theme,
+The pass applies the house palette: explicit colour remaps in theme,
 styles, sheets and drawings, plus the font-family consolidation, the help-label
 greens folded to brand purple, and the mint help-block fill folded to pale
 lavender. It must be a byte no-op on the current workbook and must refuse to
@@ -18,10 +18,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 TOOLS = ROOT / "tools"
 WORKBOOK = ROOT / "ozzit.xlsx"
-PASS_SCRIPT = TOOLS / "postbuild" / "luma_palette.py"
+PASS_SCRIPT = TOOLS / "postbuild" / "workbook_palette.py"
 
 
-class LumaPaletteTests(unittest.TestCase):
+class WorkbookPaletteTests(unittest.TestCase):
     def setUp(self):
         self.directory = Path(tempfile.mkdtemp(prefix="ozzit-palette-"))
         self.workbook = self.directory / "ozzit.xlsx"
