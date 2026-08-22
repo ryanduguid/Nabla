@@ -82,6 +82,32 @@ The same scope note is embedded as NOTES! rows in the `oz.GSTAddλ` and `oz.GSTE
 
 Use them for modelling. Do not use them to prepare a return, and do not treat any output as a deduction the ATO would accept. Apportion for part-year ownership yourself.
 
+## Dynamic-Array Formula Walkthrough
+
+Ozzit functions use native Excel dynamic arrays to spill full calculation schedules from a single formula cell:
+
+### 1. Loan Amortisation (`=oz.Amortiseλ(Principal, Rate, Periods, [Type])`)
+Spills a complete 5-column schedule (`Period`, `Payment`, `Principal`, `Interest`, `Closing Balance`):
+
+| Period | Payment | Principal | Interest | Balance |
+| :---: | :---: | :---: | :---: | :---: |
+| 1 | \$1,887.12 | \$1,470.46 | \$416.67 | \$98,529.54 |
+| 2 | \$1,887.12 | \$1,476.58 | \$410.54 | \$97,052.96 |
+| 3 | \$1,887.12 | \$1,482.73 | \$404.39 | \$95,570.22 |
+| ... | ... | ... | ... | \$0.00 |
+
+### 2. Diminishing Value Depreciation (`=oz.DiminishingValueλ(Cost, Life)`)
+Calculates diminishing balance at 200% straight-line rate with exact terminal residual write-off:
+
+| Year 1 | Year 2 | Year 3 | Year 4 | Year 5 (Residual Write-off) | Total Written Off |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| \$400.00 | \$240.00 | \$144.00 | \$86.40 | \$129.60 | \$1,000.00 |
+
+### 3. GST Arithmetic (`=oz.GSTExtractλ(Amounts)` & `=oz.GSTAddλ(Amounts)`)
+Extracts or appends GST across full dynamic arrays according to *ANTS(GST)A 1999* ss 9-70/75:
+- `=oz.GSTExtractλ(1100)` -> returns `$100.00`
+- `=oz.GSTAddλ(1000)` -> returns `$1,100.00`
+
 ## Modern Excel
 
 Excel 365 has gained functions since this library's upstream release in July 2024, and a few of them do natively what some helpers here were written to work around. Where that is the case the function's own inline help carries a `SEE ALSO` line, so you find out while you are using it rather than after:
@@ -234,11 +260,3 @@ The other 85 functions (all of Ratios, Utilities and Debt, the depreciation-meth
 Ozzit is a renamed and reworked derivative of an existing LAMBDA library. See [ATTRIBUTION.md](ATTRIBUTION.md) for provenance, upstream copyright and the full list of changes.
 
 [LICENCE](LICENCE) is MIT and covers only what was written for this repository: `tools/`, `.github/`, the Markdown files and `assets/`. It does not cover `ozzit.xlsx`, `src/` or `functions.csv`, which derive from the upstream workbook. No licence for that work could be located, so its author retains all rights in the original material.
-
-## CI coverage
-
-GitHub-hosted runners have no Excel. `verify.yml` proves workbook structure and
-provenance only. The 259 COM assertions in `tools/excel_selftest.ps1` and the
-cached-value checks stay local Windows jobs. Full regeneration from upstream is
-not claimed.
-
