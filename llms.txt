@@ -3,14 +3,15 @@
 
 ## Package Overview
 - **Repository**: https://github.com/ryanduguid/Ozzit
-- **Domain**: Library of 130 native Excel `LAMBDA` functions for dynamic-array financial modelling, Australian tax arithmetic, and cash flow forecasting.
-- **Source Context**: Australian Taxation Office (ATO) marginal tax rates (FY24-FY27 Stage 3 reform schedules), Division 40 capital allowance rules, and loan amortisation conventions.
+- **Domain**: Library of 130 native Excel `LAMBDA` functions for dynamic-array financial modelling. Australian additions are GST add/extract, a 1 July financial-year label, and two modelling depreciation schedules.
+- **Provenance**: Derivative of Craig Hatmaker's Financial Starter Pack (BXL / 5g). See ATTRIBUTION.md. The 130-function count is real; this file must not invent tax engines the workbook does not ship.
+- **Source Context**: Native Excel financial-modelling conventions (amortisation, corkscrews, ratios, debt sculpting) plus the five Australian helpers listed below.
 
 ## Functional Categories
-- **Financial & Lending**: Dynamic-array loan amortisation, compound interest schedules, effective interest rate conversions, NPV/IRR engines.
-- **Australian Taxation**: Individual marginal income tax calculations, Medicare Levy / Surcharge estimators, Division 7A benchmark interest amortisation.
-- **Capital Allowance (Div 40)**: Diminishing value (DV) and prime cost (PC) depreciation schedules with immediate deduction / low-value pool handling.
-- **Working Capital & Cash Flow**: Dynamic 13-week rolling cash flow forecast builders, debtor DSO / creditor DPO engines.
+- **Financial & Lending**: Dynamic-array loan amortisation, compound interest, IRR, corkscrews, and debt sculpting (`oz.Amortiseλ`, `oz.IRRλ`, `oz.DebtSculptFixedλ`, and related names in functions.csv).
+- **Australian helpers actually shipped**: `oz.GSTAddλ`, `oz.GSTExtractλ`, `oz.FinancialYearλ`, `oz.DiminishingValueλ`, `oz.PrimeCostλ`. GST helpers do 10% arithmetic only. The depreciation helpers are modelling schedules, not ATO Division 40 methods, and they do not implement immediate write-off or low-value pools.
+- **Ratios and array essentials**: Liquidity, leverage, margin and return ratios, plus row/column totals and averages.
+- **Not in this library**: individual marginal income tax, Medicare Levy or Surcharge, Division 7A interest, Stage 3 tax-rate cards, 13-week cash-flow builders, or DSO/DPO engines.
 
 ## Architectural Invariants
 1. **Zero External Dependencies**: 100% native Microsoft Excel LAMBDA dynamic-array functions.
