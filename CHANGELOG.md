@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased, GST legislative scope note
+## v3.1.0, 22 August 2026, FY27 examples, Luma styling, help corrections
+
+This release ships everything since v3.0.0: the 20 August restyle and clean-up,
+the GST scope note, the help copy-paste corrections, and the repository
+baseline that grew around them.
 
 - **`oz.GSTAddλ` and `oz.GSTExtractλ` now spill the legislative scope note.** Their
   inline help carries a NOTES! block after DESCRIPTION: the 10% default and
@@ -9,8 +13,6 @@
   one-line descriptions. `tools/postbuild/gst_help_text.py` applies the insert
   to the committed workbook and `src/`; it does not run through the upstream
   transform.
-
-## Unreleased, help copy-paste
 
 - **`oz.CorkscrewλDV` described `oz.Depreciateλ`.** Its Name Manager comment, source
   header and `functions.csv` row were copied from the neighbouring DV function. The
@@ -28,7 +30,31 @@
   mistyped 2024. Source comments are stripped before the src-vs-workbook check, so
   only the comment changes.
 
-## v3.1.0, 20 August 2026, FY27 examples, Luma styling, a cleaner file
+- **`oz.CurrentRatioλ` and `oz.ROIλ` linked their neighbours' articles.** Their
+  WEBPAGE rows carried `oz.CashRatioλ`'s cash-ratio URL and `oz.ROEλ`'s
+  return-on-equity URL, the same copy-paste class as the help fixes above. Each
+  now points at its own Investopedia article (`currentratio.asp`,
+  `returnoninvestment.asp`). `tools/postbuild/help_links.py` applies the swap to
+  the defined names and `src/Ratios.txt`; the ratio functions have no
+  demonstration sheets, so no cached help needed refreshing.
+
+- **The `oz.SumContains` tab is now `oz.SumContainsλ`.** It was the only
+  single-function demonstration sheet named without the λ its function carries
+  (the sheet's own title drawing already read SumContainsλ). The rename lands in
+  the sheet element, both table-of-contents hyperlinks, the cached
+  `CELL("filename")` title on the sheet, the titles list in `docProps/app.xml`
+  and the contents-table row, applied by `tools/postbuild/sheet_names.py`.
+
+- **The repository baseline that grew alongside the workbook is now recorded.**
+  Since v3.0.0 the repo also gained: `LICENCE` as the verbatim MIT text so
+  GitHub detects the licence, with its scope statement moved to `ATTRIBUTION.md`
+  and the README; `RELEASING.md`, `SECURITY.md` and a CodeQL workflow;
+  `llms.txt`; `.editorconfig`, `.mailmap` and `CODEOWNERS`; CI job timeouts; a
+  social-preview card in `.github/`, restyled to the Luma dark palette; a
+  dynamic-array walkthrough and claim corrections in the README; and encoding-safe
+  AFE diagnostics.
+
+### The 20 August pass, previously headed v3.1.0
 
 - **Every worked example now starts on 1 July 2026**, the start of FY27. The demo inputs
   on 141 cells moved forward, each sheet shifted by whole months so the relationships
@@ -58,9 +84,11 @@
   builds of the same content produce the same bytes, and the part count is back to the
   211 this workbook shipped with.
 
-  Net size is 443,284 bytes against 438,263 before, 1.1% larger: the styling additions
-  cost slightly more than the stripped parts saved. Against the copy in circulation that
-  was last saved through Excel, which carried all of the above, it is 13.6% smaller.
+  Net size was 443,284 bytes at that point against 438,263 before, 1.1% larger: the
+  styling additions cost slightly more than the stripped parts saved. Against the copy
+  in circulation that was last saved through Excel, which carried all of the above, it
+  was 13.6% smaller. The zip-writer fix below and the later help edits bring the
+  released workbook to 440,590 bytes.
 
 - **`RangeToDAλ`, `RangeToDAEλ` and `RangeToDAUλ` keep OFFSET, on purpose.** OFFSET is
   volatile and replacing it looked like the obvious speed win, but INDEX cannot do what

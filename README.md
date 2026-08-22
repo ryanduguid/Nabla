@@ -122,7 +122,7 @@ The helpers are kept because they still work on the Excel 2024 baseline and insi
 
 ## Performance and presentation
 
-The workbook is built to stay responsive on modest hardware. No formula in it is volatile except the sheet-name titles, so editing a cell recalculates only what depends on it rather than the whole file. That covers the random-number formulas behind the sample data in both their forms. The sample data is fixed rather than randomly generated, which also means the worked examples match their captions every time you open them.
+The workbook is built to stay responsive on modest hardware. No formula in it is volatile except the sheet-name titles and the two `oz.RangeToDAEλ` demonstration cells (that function wraps OFFSET by design, as the changelog explains), so editing a cell recalculates only what depends on it rather than the whole file. That covers the random-number formulas behind the sample data in both their forms. The sample data is fixed rather than randomly generated, which also means the worked examples match their captions every time you open them.
 
 Each module has its own tab colour, gridlines are hidden, and every sheet opens at the top left on the cover.
 
@@ -137,7 +137,7 @@ Each module has its own tab colour, gridlines are hidden, and every sheet opens 
 | `tools/` | The build and maintenance pipeline: `transform_from_upstream.py` rebuilds the v3.0.0 baseline from an uncommitted upstream workbook and stops there; later tracked postbuild passes start from the committed `ozzit.xlsx` and `src/` (see ATTRIBUTION.md), then the AFE store is synchronised, the workbook is canonicalised/polished, and the gates check it |
 | `CHANGELOG.md` | What changed in this release |
 | `assets/` | Logo |
-| `LICENCE` | MIT, and what it does and does not cover |
+| `LICENCE` | MIT, verbatim; its scope is stated in ATTRIBUTION.md and the licence section below |
 
 `src/` and `functions.csv` are generated from `ozzit.xlsx` by the build, not edited by hand, so the published source of a function is always the definition that ships.
 
@@ -226,7 +226,7 @@ Presentation is reproducible too: `python tools/polish_workbook.py ozzit.xlsx` a
 | `oz.Depreciateλ` | Create a block of CAPEX, Opening Balance, Depreciation Values, and Book Value for each asset |
 | `oz.LabelDepreciateλ` | Create row labels for Depreciateλ result |
 | `oz.SumDepreciateλ` | Create row totals for CAPEX, Depreciation, Book Value, Salvage Value, and Disposal costs in Depreciateλ results |
-| `oz.SumContains` | Creates a row of totals for each row in an array where its labels contain a unique letter, word, or phrase. |
+| `oz.SumContainsλ` | Creates a row of totals for each row in an array where its labels contain a unique letter, word, or phrase. |
 | `oz.IntOnIntλ` | Calculate Interest on Interest. Use to determine amount needed to cover debt plus interest on debt |
 | `oz.IRRλ` | Calculates IRR, correcting for when the first investment is not in the first period |
 | `oz.Reversalλ` | Create a row that reverses input values in the next period. |
@@ -253,7 +253,7 @@ Presentation is reproducible too: `python tools/polish_workbook.py ozzit.xlsx` a
 | `oz.RangeToDAEλ` | Convert a static range into a dynamic array |
 | `oz.FinancialRatios` | Three dozen financial Ratios |
 
-The other 85 functions (all of Ratios, Utilities and Debt, the depreciation-method, GST and rolling-statistic helpers in Financial, `oz.FinancialYearλ`, and the module About tables) have no dedicated worksheet; call any of them with no arguments for inline help, `oz.FinancialRatios` demonstrates the ratio suite on one worksheet, and [functions.csv](functions.csv) lists every function with its signature.
+The other 86 functions, including all of Ratios, Utilities and Debt and every module About table except `oz.AboutEssentialsλ`, have no dedicated worksheet; call any of them with no arguments for inline help, `oz.FinancialRatios` demonstrates the ratio suite on one worksheet, and [functions.csv](functions.csv) lists every function with its signature.
 
 ## Attribution and licence
 

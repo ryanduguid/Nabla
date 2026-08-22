@@ -87,7 +87,7 @@ CurrentRatioλ = LAMBDA(
                         "FUNCTION:      →CurrentRatioλ( Assets, Liabilities)¶" & 
                         "DESCRIPTION:   →Measures a company’s ability to pay short-term obligations  ¶" & 
                                        "→(Current Assets/Liabilities)¶" & 
-                        "WEBPAGE:       →https://www.investopedia.com/terms/c/cash-ratio.asp ¶" &
+                        "WEBPAGE:       →https://www.investopedia.com/terms/c/currentratio.asp ¶" &
                         "VERSION:       →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "Assets         →(Required) Current Assets. Incluces: ¶" & 
@@ -1157,7 +1157,7 @@ ROIλ = LAMBDA(
                         "DESCRIPTION:           →Return on Investment (ROI) ratio  measures the profitability of¶" & 
                                                "→an investment by comparing the gain or loss to its cost. ¶" & 
                                                "→(Net Return on Investment/Cost of Investment)¶" & 
-                        "WEBPAGE:               →https://www.investopedia.com/terms/r/returnonequity.asp ¶" &
+                        "WEBPAGE:               →https://www.investopedia.com/terms/r/returnoninvestment.asp ¶" &
                         "VERSION:               →20 Aug 2026¶" &
                         "PARAMETERS:→¶" & 
                         "NetReturnonInvestment  →(Required) Net Return on Investment is the ¶" & 
